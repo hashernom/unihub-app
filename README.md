@@ -1,11 +1,12 @@
 # UniHub - Aplicación Universitaria
 
-[![Platform](https://img.shields.io/badge/Platform-Android-green)](https://developer.android.com)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin)](https://kotlinlang.org)
-[![Compose](https://img.shields.io/badge/Jetpack%20Compose-1.7-4285F4?logo=android)](https://developer.android.com/compose)
+[![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20iOS%20%7C%20Android-blue)](https://ionicframework.com)
+[![Ionic](https://img.shields.io/badge/Ionic-7-3880FF?logo=ionic)](https://ionicframework.com)
+[![Angular](https://img.shields.io/badge/Angular-18-DD0031?logo=angular)](https://angular.io)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase)](https://supabase.com)
 
-App Android nativa para universidades que integra anuncios, encuestas, calendario, gestión de aulas y un bot de ayuda interactivo.
+Aplicación cross-platform (web, iOS, Android) construida con **Ionic + Angular** para universidades. Un solo codebase TypeScript que integra anuncios, encuestas, calendario, gestión de aulas y un bot de ayuda interactivo.
 
 ## Módulos
 
@@ -19,44 +20,22 @@ App Android nativa para universidades que integra anuncios, encuestas, calendari
 
 ## Stack
 
-- **Android**: Kotlin + Jetpack Compose + Material Design 3
+- **Frontend**: Ionic 7+ + Angular 18+ + TypeScript
+- **UI**: Ionic Web Components + CSS Custom Properties
+- **Native Bridge**: Capacitor 6+ (notificaciones, storage, cámara)
+- **State**: Angular Services + RxJS + Signals
 - **Backend**: Supabase (PostgreSQL + Auth JWT + Realtime + Edge Functions)
-- **Cache Local**: Room DB
-- **DI**: Hilt
-- **CI/CD**: GitHub Actions
-- **Testing**: JUnit5, MockK, Compose Testing, Firebase Test Lab
-
-## Estructura del Repositorio
-
-```
-unihub-app/
-├── android/                    # App Android (Kotlin + Compose)
-├── supabase/
-│   ├── migrations/             # SQL versionado
-│   ├── edge-functions/         # Deno (TypeScript)
-│   └── seed.sql                # Datos de desarrollo
-├── docs/
-│   ├── ARCHITECTURE.md         # Decisiones de arquitectura (ADR)
-│   ├── DATABASE_SCHEMA.md      # Esquema completo de base de datos
-│   ├── EDGE_FUNCTIONS.md       # Contratos de Edge Functions
-│   └── PLAN_SUMMARY.md         # Plan de desarrollo completo
-├── .github/
-│   └── workflows/              # CI/CD pipelines
-└── scripts/
-```
-
-## Documentación
-
-- [Arquitectura](docs/ARCHITECTURE.md) — Decisiones técnicas y diseño del sistema
-- [Database Schema](docs/DATABASE_SCHEMA.md) — Esquema PostgreSQL completo
-- [Edge Functions](docs/EDGE_FUNCTIONS.md) — Contratos de las 4 funciones serverless
-- [Plan de Desarrollo](docs/PLAN_SUMMARY.md) — 83 issues en 11 fases
+- **Cache Local**: SQLite (Capacitor) + Ionic Storage + PWA Service Worker
+- **CI/CD**: GitHub Actions (npm)
+- **Testing**: Jest, Jasmine, Playwright (E2E), axe-core (a11y)
+- **Monitoring**: Sentry
 
 ## Inicio Rápido
 
 ### Prerrequisitos
-- Android Studio Hedgehog (2023.1.1) o superior
-- JDK 17
+- Node.js 20+
+- Ionic CLI (`npm install -g @ionic/cli`)
+- Angular CLI (`npm install -g @angular/cli`)
 - Supabase CLI (`npm install -g supabase`)
 
 ### Setup Local
@@ -66,36 +45,78 @@ unihub-app/
 git clone https://github.com/hashernom/unihub-app.git
 cd unihub-app
 
-# Iniciar Supabase local
+# Instalar dependencias
+npm install
+
+# Iniciar Supabase local (PostgreSQL + Auth + Realtime)
 supabase start
 
-# Aplicar migraciones
+# Aplicar migraciones y seed data
 supabase db reset
 
-# Abrir proyecto Android
-# File > Open > android/
+# Iniciar app en navegador
+ionic serve
+
+# Ejecutar en dispositivo (iOS/Android)
+ionic capacitor run android
+ionic capacitor run ios
 ```
+
+## Estructura del Repositorio
+
+```
+unihub-app/
+├── src/                        # Ionic + Angular app
+│   ├── app/
+│   │   ├── core/               # AuthService, SupabaseService, StorageService
+│   │   ├── shared/             # Shared components, pipes, directives
+│   │   └── pages/              # Feature pages (auth, dashboard, surveys, calendar, help)
+│   ├── assets/                 # Images, icons, fonts
+│   ├── environments/           # Environment config
+│   └── theme/                  # CSS variables, global styles
+├── supabase/
+│   ├── migrations/             # PostgreSQL versionado
+│   ├── edge-functions/         # Deno TypeScript
+│   └── seed.sql                # Datos de desarrollo
+├── docs/
+│   ├── ARCHITECTURE.md         # Decisiones de arquitectura (ADR)
+│   ├── DATABASE_SCHEMA.md      # Esquema completo de base de datos
+│   ├── EDGE_FUNCTIONS.md       # Contratos de Edge Functions
+│   └── PLAN_SUMMARY.md         # Plan de desarrollo (83 issues, 11 fases)
+├── capacitor.config.ts         # Capacitor configuration
+└── README.md
+```
+
+## Documentación
+
+- [Arquitectura](docs/ARCHITECTURE.md) — ADR: Ionic vs Native, Supabase vs Firebase, capas, seguridad
+- [Database Schema](docs/DATABASE_SCHEMA.md) — 14 tablas PostgreSQL con índices y RLS
+- [Edge Functions](docs/EDGE_FUNCTIONS.md) — Contratos TypeScript de las 4 funciones Deno
+- [Plan de Desarrollo](docs/PLAN_SUMMARY.md) — 83 issues en 11 fases
 
 ## Seguridad
 
-- JWT via Supabase Auth
-- Row Level Security en todas las tablas
-- Certificate Pinning (OkHttp)
-- EncryptedSharedPreferences para tokens
+- JWT via Supabase Auth (almacenado en Ionic Secure Storage)
+- Row Level Security en PostgreSQL
+- Content Security Policy (CSP) en PWA
+- Angular sanitizer contra XSS
 - Rate Limiting en Edge Functions
-- ProGuard/R8 ofuscación
+- npm audit + Dependabot
 
 ## Testing
 
 ```bash
 # Unit tests
-./gradlew test
+npm test
 
-# Instrumented tests
-./gradlew connectedAndroidTest
+# E2E tests
+npm run e2e
+
+# Accessibility audit
+npm run a11y
 ```
 
-Ejecutar más de 200 tests que cubren ViewModels, Repositories, Edge Functions e integración.
+Ejecutar más de 200 tests que cubren Services, Components, Edge Functions y flujos E2E.
 
 ## Licencia
 

@@ -1,5 +1,7 @@
 # UniHub - Database Schema (PostgreSQL via Supabase)
 
+> Este schema es independiente del frontend. Funciona igual con Ionic/Angular, React, o Kotlin.
+
 ## Extensiones Requeridas
 
 ```sql
@@ -85,20 +87,20 @@ CREATE EXTENSION IF NOT EXISTS "btree_gist";  -- para exclusión GIST en events
 - `classroom_id` UUID FK → classrooms (SET NULL)
 - `professor_id` UUID FK → profiles (SET NULL)
 - `start_time`, `end_time` TIMESTAMPTZ NOT NULL
-- `recurring_rule` TEXT — formato RRULE para eventos recurrentes
+- `recurring_rule` TEXT — formato RRULE
 - `color` TEXT DEFAULT '#3B82F6'
 - `is_cancelled` BOOLEAN DEFAULT false
 - `created_by` UUID FK → profiles (SET NULL)
 - `created_at`, `updated_at` TIMESTAMPTZ
 - **CONSTRAINT check**: `end_time > start_time`
-- **EXCLUDE GIST**: no solapamiento de eventos en misma aula (con `btree_gist`)
+- **EXCLUDE GIST**: no solapamiento de eventos en misma aula
 - **Indexes**: `start_time`, `classroom_id`, `professor_id`, `(start_time, end_time)`
 
 ### faq_entries
 - `id` UUID PK, `question` TEXT NOT NULL, `answer` TEXT NOT NULL
 - `category` TEXT, `sort_order` INT DEFAULT 0, `is_active` BOOLEAN DEFAULT true
 - `created_at`, `updated_at` TIMESTAMPTZ
-- **Indexes**: GIN full-text search (`to_tsvector('spanish', ...)`), trigram (`gin_trgm_ops`), `is_active` (partial)
+- **Indexes**: GIN full-text search (`to_tsvector('spanish', ...)`), trigram, `is_active` (partial)
 
 ### help_queries
 - `id` UUID PK, `user_id` UUID FK → profiles (SET NULL)
@@ -107,49 +109,34 @@ CREATE EXTENSION IF NOT EXISTS "btree_gist";  -- para exclusión GIST en events
 - `created_at` TIMESTAMPTZ DEFAULT now()
 - **Indexes**: `user_id`, `resolved`
 
-### notification_tokens *(nueva)*
+### notification_tokens
 - `id` UUID PK, `user_id` UUID FK → profiles (CASCADE) NOT NULL
 - `fcm_token` TEXT NOT NULL
 - `device_info` TEXT
 - `is_active` BOOLEAN DEFAULT true
-- **UNIQUE(user_id, fcm_token)** — evita duplicados
+- **UNIQUE(user_id, fcm_token)**
 - `created_at`, `updated_at` TIMESTAMPTZ
-- **Indexes**: `user_id`, `is_active` (partial)
 
-### student_code_blacklist *(nueva)*
+### student_code_blacklist
 - `id` UUID PK, `student_code` TEXT UNIQUE NOT NULL
-- `reason` TEXT — motivo por el cual el código no es válido
+- `reason` TEXT
 - `created_at` TIMESTAMPTZ DEFAULT now()
-- **Uso**: validada por Edge Function `validate-student-code` durante registro
 
-### survey_results_cache *(nueva)*
+### survey_results_cache
 - `id` UUID PK, `survey_id` UUID FK → surveys (CASCADE) NOT NULL
-- `results` JSONB NOT NULL — resultados precalculados
+- `results` JSONB NOT NULL
 - `generated_at` TIMESTAMPTZ DEFAULT now()
 - `expires_at` TIMESTAMPTZ DEFAULT (now() + 1 hour)
-- **Indexes**: `survey_id`, `expires_at`
 
 ---
 
 ## Triggers
 
-Todas las tablas con `updated_at` tienen un trigger `BEFORE UPDATE` que actualiza el timestamp automáticamente:
-
-```sql
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-```
-
-Tablas con trigger: `profiles`, `announcements`, `notices`, `surveys`, `classrooms`, `events`, `faq_entries`, `notification_tokens`.
+Tablas con `updated_at` tienen trigger `BEFORE UPDATE` que actualiza el timestamp automáticamente: `profiles`, `announcements`, `notices`, `surveys`, `classrooms`, `events`, `faq_entries`, `notification_tokens`.
 
 ---
 
-## Row Level Security (Mejorado)
+## Row Level Security
 
 Todas las tablas tienen RLS habilitado. Políticas completas en `supabase/migrations/00002_rls_policies.sql`.
 
@@ -157,13 +144,13 @@ Todas las tablas tienen RLS habilitado. Políticas completas en `supabase/migrat
 |-------|---------|-------|
 | profiles | SELECT/UPDATE own | SELECT/UPDATE all |
 | announcements | SELECT active + no expirados | CRUD all |
-| notices | SELECT active (`is_active = true`) | CRUD all |
+| notices | SELECT active | CRUD all |
 | surveys | SELECT active + en rango de fechas | CRUD all |
 | survey_questions | SELECT via survey activa | CRUD all |
 | survey_responses | INSERT own, SELECT own | SELECT all |
 | survey_answers | INSERT via own response, SELECT own | SELECT all |
 | classrooms | SELECT active | CRUD all |
-| events | SELECT no cancelados (`is_cancelled = false`) | CRUD all |
+| events | SELECT no cancelados | CRUD all |
 | faq_entries | SELECT active | CRUD all |
 | help_queries | INSERT own, SELECT own | SELECT/UPDATE all |
 | notification_tokens | INSERT/UPDATE/DELETE own, SELECT own | SELECT all |
@@ -172,11 +159,10 @@ Todas las tablas tienen RLS habilitado. Políticas completas en `supabase/migrat
 
 ### Mejoras respecto al diseño original
 
-1. **`expires_at` en RLS**: Los estudiantes ya no ven anuncios expirados (`expires_at IS NULL OR expires_at > now()`)
-2. **`is_active` en notices**: Los estudiantes solo ven avisos activos
-3. **`is_active` en classrooms**: Solo se muestran aulas activas
-4. **`is_active` en faq_entries**: Solo FAQs activas en el help bot
-5. **`is_cancelled` en events**: Eventos cancelados no aparecen para estudiantes
-6. **`is_active` + rango de fechas en surveys**: Validación tanto en RLS como en CHECK constraint
-7. **`is_active` + rango en survey_questions**: Visibilidad condicionada a estado de la encuesta padre
-8. **Tablas nuevas**: `notification_tokens`, `student_code_blacklist`, `survey_results_cache` con sus propias políticas
+1. **`expires_at` en RLS**: Los estudiantes ya no ven anuncios expirados
+2. **`is_active` en notices**: Solo avisos activos
+3. **`is_active` en classrooms**: Solo aulas activas
+4. **`is_active` en faq_entries**: Solo FAQs activas
+5. **`is_cancelled` en events**: Eventos cancelados ocultos
+6. **`is_active` + rango de fechas en surveys**: Validación en RLS y CHECK constraint
+7. **Tablas nuevas**: `notification_tokens`, `student_code_blacklist`, `survey_results_cache`
