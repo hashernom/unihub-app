@@ -120,8 +120,26 @@ unihub-app/
 ├── android/                 # App Android (Kotlin + Compose)
 ├── supabase/
 │   ├── migrations/          # SQL versionado
-│   ├── edge-functions/      # Deno (4 funciones)
-│   └── seed.sql
-├── docs/                    # ARCHITECTURE, DATABASE_SCHEMA, SECURITY, DEPLOYMENT
-└── scripts/
+│   │   ├── 00001_initial_schema.sql   (14 tablas, constraints, índices, triggers)
+│   │   └── 00002_rls_policies.sql     (40+ políticas RLS con filtros por estado)
+│   ├── edge-functions/      # Deno TypeScript (4 funciones con contratos documentados)
+│   └── seed.sql             # 7 aulas, 12 FAQs, 2 encuestas de ejemplo
+├── docs/
+│   ├── ARCHITECTURE.md       # ADR: Supabase vs Firebase, Compose vs XML, MVVM, seguridad
+│   ├── DATABASE_SCHEMA.md    # Esquema completo con índices y RLS mejorado
+│   ├── EDGE_FUNCTIONS.md     # Contratos detallados de las 4 Edge Functions
+│   └── PLAN_SUMMARY.md       # Plan de desarrollo completo (83 issues, 11 fases)
+├── scripts/
+└── README.md
 ```
+
+### ✅ Entregables completados (2026-05-08)
+
+| Entregable | Estado | Descripción |
+|------------|--------|-------------|
+| Migraciones SQL | ✅ | `00001_initial_schema.sql` + `00002_rls_policies.sql` listas para Supabase CLI |
+| RLS Policies | ✅ | 40+ políticas con filtrado por `expires_at`, `is_active`, `is_cancelled` |
+| Seed Data | ✅ | 7 classrooms, 12 FAQ entries, 2 surveys, blacklist inicial |
+| Documentación | ✅ | ARCHITECTURE.md, DATABASE_SCHEMA.md, EDGE_FUNCTIONS.md, README.md |
+| Edge Functions (contratos) | ✅ | 4 funciones documentadas con contratos TypeScript |
+| Nuevas tablas | ✅ | `notification_tokens`, `student_code_blacklist`, `survey_results_cache` |
