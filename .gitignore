@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# IDE
+.idea/
+*.iml
+.gradle/
+build/
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.jks
+*.keystore
+google-services.json
+
+# Kilo
+.kilo/node_modules/
+.kilo/agent-manager.json
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+*.apk
+*.aab
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
