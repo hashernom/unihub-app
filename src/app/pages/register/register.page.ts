@@ -10,7 +10,7 @@ import {
   IonLabel,
   IonInput,
   IonButton,
-  IonText,
+  
   IonToast,
   IonSpinner,
 } from '@ionic/angular/standalone';
@@ -34,7 +34,7 @@ function isValidStudentCode(code: string): boolean {
     IonLabel,
     IonInput,
     IonButton,
-    IonText,
+    
     IonToast,
     IonSpinner,
   ],
@@ -111,3 +111,5 @@ export class RegisterPage {
     this.showToast = true;
   }
 }
+
+

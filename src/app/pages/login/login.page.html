@@ -1,65 +1,30 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Iniciar sesiÃ³n</ion-title>
+    <ion-title>Iniciar sesión</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content class="ion-padding">
   <div class="auth-container">
     <h1>UniHub</h1>
     <p class="subtitle">Accede a tu plataforma universitaria</p>
-
     <form (ngSubmit)="onLogin()">
       <ion-item>
         <ion-label position="floating">Email</ion-label>
-        <ion-input
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          required
-          autocomplete="email"
-        ></ion-input>
+        <ion-input type="email" [(ngModel)]="email" name="email" required autocomplete="email"></ion-input>
       </ion-item>
-
       <ion-item>
-        <ion-label position="floating">ContraseÃ±a</ion-label>
-        <ion-input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          required
-          autocomplete="current-password"
-        ></ion-input>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input type="password" [(ngModel)]="password" name="password" required autocomplete="current-password"></ion-input>
       </ion-item>
-
-      <ion-button
-        expand="block"
-        type="submit"
-        [disabled]="loading"
-        class="ion-margin-top"
-      >
-        @if (loading) {
-          <ion-spinner slot="start"></ion-spinner>
-        }
-        {{ loading ? 'Ingresando...' : 'Iniciar sesiÃ³n' }}
+      <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top">
+        @if (loading) { <ion-spinner slot="start"></ion-spinner> }
+        {{ loading ? "Ingresando..." : "Iniciar sesión" }}
       </ion-button>
     </form>
-
     <div class="auth-links">
-      <ion-text>
-        <a routerLink="/forgot-password">Â¿Olvidaste tu contraseÃ±a?</a>
-      </ion-text>
-      <ion-text>
-        Â¿No tienes cuenta? <a routerLink="/register">RegÃ­strate aquÃ­</a>
-      </ion-text>
+      <ion-button fill="clear" expand="block" routerLink="/forgot-password">¿Olvidaste tu contraseña?</ion-button>
+      <p>¿No tienes cuenta? <ion-button fill="clear" routerLink="/register">Regístrate aquí</ion-button></p>
     </div>
   </div>
-
-  <ion-toast
-    [isOpen]="showToast"
-    message="{{ errorMessage }}"
-    [duration]="4000"
-    color="danger"
-    (didDismiss)="showToast = false"
-  ></ion-toast>
+  <ion-toast [isOpen]="showToast" message="{{ errorMessage }}" [duration]="4000" color="danger" (didDismiss)="showToast = false"></ion-toast>
 </ion-content>

@@ -10,7 +10,7 @@ import {
   IonLabel,
   IonInput,
   IonButton,
-  IonText,
+  
   IonToast,
   IonSpinner,
 } from '@ionic/angular/standalone';
@@ -29,7 +29,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonLabel,
     IonInput,
     IonButton,
-    IonText,
+    
     IonToast,
     IonSpinner,
   ],
@@ -81,4 +81,5 @@ export class LoginPage {
     this.showToast = true;
   }
 }
+
 
