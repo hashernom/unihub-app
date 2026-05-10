@@ -50,7 +50,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: SupabaseService, useValue: supabaseMock },
-        provideRouter([]),
+        provideRouter([{ path: 'login', redirectTo: '', pathMatch: 'full' }]),
       ],
     });
     service = TestBed.inject(AuthService);
