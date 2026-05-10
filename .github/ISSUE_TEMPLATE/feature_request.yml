@@ -1,0 +1,52 @@
+name: Feature Request
+description: Sugerir una nueva funcionalidad
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por sugerir una mejora. Describe la funcionalidad que te gustaría ver.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema relacionado
+      description: ¿Hay algún problema que esta funcionalidad resolvería?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solución propuesta
+      description: Describe la funcionalidad que te gustaría que se implemente.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Has considerado otras soluciones o workarounds?
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Módulo
+      options:
+        - Auth
+        - Dashboard
+        - Encuestas
+        - Calendario
+        - Help Bot
+        - General
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación sugeridos
+      options:
+        - label: He verificado que esta funcionalidad no existe ya en la aplicación
