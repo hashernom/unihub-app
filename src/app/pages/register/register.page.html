@@ -1,0 +1,104 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Crear cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="auth-container">
+    <h1>Regístrate</h1>
+    <p class="subtitle">Ingresa tus datos para crear tu cuenta estudiantil</p>
+
+    <form (ngSubmit)="onRegister()">
+      <ion-item>
+        <ion-label position="floating">Código estudiantil</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="studentCode"
+          name="studentCode"
+          required
+          placeholder="U20231001"
+          maxlength="9"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Nombre completo</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="fullName"
+          name="fullName"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          autocomplete="email"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          autocomplete="new-password"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Confirmar contraseña</ion-label>
+        <ion-input
+          type="password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          required
+          autocomplete="new-password"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="loading"
+        class="ion-margin-top"
+      >
+        @if (loading) {
+          <ion-spinner slot="start"></ion-spinner>
+        }
+        {{ loading ? 'Registrando...' : 'Crear cuenta' }}
+      </ion-button>
+    </form>
+
+    <div class="auth-links">
+      <ion-text>
+        ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+      </ion-text>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="showToast"
+    message="{{ errorMessage }}"
+    [duration]="4000"
+    color="danger"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+
+  <ion-toast
+    [isOpen]="showSuccess"
+    message="Registro exitoso. Revisa tu email para verificar tu cuenta."
+    [duration]="6000"
+    color="success"
+    [buttons]="[{ text: 'Ir a login', handler: () => onDismissSuccess() }]"
+    (didDismiss)="onDismissSuccess()"
+  ></ion-toast>
+</ion-content>
