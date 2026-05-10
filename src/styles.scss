@@ -34,4 +34,5 @@ ion-content {
 }
 
 /* Fix: hide old pages in ion-router-outlet stack */
-.ion-page-hidden { display: none !important; visibility: hidden !important; }
+.ion-page-hidden, .ion-page.ion-page-hidden, app-login.ion-page-hidden, app-register.ion-page-hidden, [class*="ion-page-hidden"] { display: none !important; visibility: hidden !important; position: absolute !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; }
+
