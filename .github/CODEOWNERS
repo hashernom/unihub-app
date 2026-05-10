@@ -1,0 +1,18 @@
+# File-based ownership for automatic review assignment.
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Root-level files
+/README.md           @hashernom
+/CONTRIBUTING.md     @hashernom
+
+# Angular/Ionic application
+/src/                @hashernom
+
+# Supabase backend
+/supabase/           @hashernom
+
+# Documentation
+/docs/               @hashernom
+
+# CI/CD configuration
+/.github/            @hashernom
