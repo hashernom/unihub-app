@@ -1,4 +1,4 @@
-import {
+﻿import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   isDevMode,
@@ -15,10 +15,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideIonicAngular({
-      mode: 'md',
-      animated: true,
-    }),
+    provideIonicAngular({}),
     importProvidersFrom(IonicStorageModule.forRoot()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

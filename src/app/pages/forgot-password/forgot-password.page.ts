@@ -1,6 +1,6 @@
-﻿import { Component, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton, IonSpinner,
@@ -9,7 +9,7 @@ import { AuthService } from "../../core/services/auth.service";
 
 @Component({
   selector: "app-forgot-password",
-  imports: [FormsModule, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSpinner],
+  imports: [FormsModule, RouterLink, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSpinner],
   templateUrl: "./forgot-password.page.html",
   styleUrl: "./forgot-password.page.scss",
 })
@@ -29,3 +29,4 @@ export class ForgotPasswordPage {
     });
   }
 }
+

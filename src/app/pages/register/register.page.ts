@@ -1,6 +1,6 @@
-﻿import { Component, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
@@ -12,7 +12,7 @@ function isValidStudentCode(code: string): boolean { return /^[A-Za-z0-9]{3,}$/.
 
 @Component({
   selector: "app-register",
-  imports: [FormsModule, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonToast, IonSpinner],
+  imports: [FormsModule, RouterLink, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonToast, IonSpinner],
   templateUrl: "./register.page.html",
   styleUrl: "./register.page.scss",
 })
@@ -45,3 +45,4 @@ export class RegisterPage {
   onDismissSuccess(): void { this.router.navigate(["/login"]); }
   private showError(msg: string): void { this.errorMessage = msg; this.showToast = true; }
 }
+

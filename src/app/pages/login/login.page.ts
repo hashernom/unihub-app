@@ -1,6 +1,6 @@
-﻿import { Component, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
@@ -53,3 +53,4 @@ export class LoginPage {
 
   private showError(msg: string): void { this.errorMessage = msg; this.showToast = true; }
 }
+

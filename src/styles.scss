@@ -1,25 +1,37 @@
-/*
- * Ionic CSS import is handled globally by the framework.
- * Theme variables are defined in theme/variables.css.
- * This file is for application-wide overrides only.
- */
+/* Ionic core CSS */
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
+@import '@ionic/angular/css/display.css';
 
+/* Theme */
 @import 'theme/variables.css';
 
-/* Global app styles */
+app-root {
+  display: block;
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 0;
+}
+
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-}
+body { margin: 0; padding: 0; }
 
-/* Safe area insets for notched devices */
 ion-content {
   --padding-top: var(--ion-safe-area-top, 0);
   --padding-bottom: var(--ion-safe-area-bottom, 0);
 }
+
+/* Fix: hide old pages in ion-router-outlet stack */
+.ion-page-hidden { display: none !important; visibility: hidden !important; }
