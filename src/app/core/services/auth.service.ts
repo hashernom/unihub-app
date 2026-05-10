@@ -65,7 +65,12 @@ export class AuthService {
     studentCode: string,
     fullName: string,
   ): Observable<AuthUser> {
-    return from(this.supabase.signUp(email, password)).pipe(
+    // First check if the student code is already taken
+    return from(this.isStudentCodeTaken(studentCode)).pipe(
+      switchMap((taken) => {
+        if (taken) return throwError(() => new Error('already registered'));
+        return from(this.supabase.signUp(email, password));
+      }),
       switchMap((res) => {
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
@@ -97,9 +102,28 @@ export class AuthService {
             this.currentUserSubject.next(authUser);
             return of(authUser);
           }),
+          catchError((profileErr) => {
+            // Profile creation failed (e.g. race condition on student_code).
+            const message =
+              profileErr?.message?.includes('duplicate key') ||
+              profileErr?.message?.includes('unique')
+                ? 'already registered'
+                : profileErr?.message ?? 'Error creating profile';
+            return throwError(() => new Error(message));
+          }),
         );
       }),
     );
+  }
+
+  /** Checks whether a student code is already in use. */
+  private async isStudentCodeTaken(studentCode: string): Promise<boolean> {
+    const { data } = await this.supabase.client
+      .from('profiles')
+      .select('id')
+      .eq('student_code', studentCode)
+      .maybeSingle();
+    return data !== null;
   }
 
   /** Signs in with email + password and loads the profile. */

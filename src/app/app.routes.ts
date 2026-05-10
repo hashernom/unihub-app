@@ -42,9 +42,23 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },
   {
+    path: 'profile',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./pages/profile/profile.page').then((m) => m.ProfilePage),
+  },
+
+  // -- Admin routes --
+  {
     path: 'admin/dashboard',
     canActivate: [AuthGuard, AdminGuard],
-    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.page').then((m) => m.AdminDashboardPage),
+  },
+  {
+    path: 'admin/register',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () =>
+      import('./pages/admin-register/admin-register.page').then((m) => m.AdminRegisterPage),
   },
 
   // -- Default redirects --

@@ -93,8 +93,8 @@ export class RegisterPage {
       error: (err) => {
         this.loading = false;
         const message = err.message ?? '';
-        if (message.includes('already registered')) {
-          this.showError('Este email o código estudiantil ya está registrado');
+        if (message.includes('already registered') || message.includes('duplicate')) {
+          this.showError('Este código estudiantil o email ya está registrado.');
         } else {
           this.showError('Error al registrar. Intenta nuevamente.');
         }
