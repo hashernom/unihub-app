@@ -61,7 +61,40 @@ export const routes: Routes = [
       import('./pages/admin-register/admin-register.page').then((m) => m.AdminRegisterPage),
   },
 
+
+  // -- Admin module pages --
+  {
+    path: 'admin/announcements',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-announcements/admin-announcements.page').then(m => m.AdminAnnouncementsPage),
+  },
+  {
+    path: 'admin/notices',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-notices/admin-notices.page').then(m => m.AdminNoticesPage),
+  },
+  {
+    path: 'admin/surveys',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-surveys/admin-surveys.page').then(m => m.AdminSurveysPage),
+  },
+  {
+    path: 'admin/events',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-events/admin-events.page').then(m => m.AdminEventsPage),
+  },
+  {
+    path: 'admin/faq',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-faq/admin-faq.page').then(m => m.AdminFaqPage),
+  },
+  {
+    path: 'admin/users',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('./pages/admin-users/admin-users.page').then(m => m.AdminUsersPage),
+  },
   // -- Default redirects --
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' },
 ];
+

@@ -36,7 +36,7 @@ export class AdminRegisterPage {
       this.show("Todos los campos son obligatorios"); return;
     }
     this.loading = true;
-    this.auth.signUp(this.email, this.password, this.studentCode, this.fullName).subscribe({
+    this.auth.signUp(this.email, this.password, this.studentCode, this.fullName, 'admin').subscribe({
       next: () => { this.loading = false; this.show("Admin registrado exitosamente"); setTimeout(() => this.router.navigate(["/admin/dashboard"]), 2000); },
       error: (err) => { this.loading = false; this.show(err.message ?? "Error al registrar"); },
     });
@@ -44,4 +44,5 @@ export class AdminRegisterPage {
 
   private show(msg: string): void { this.toastMessage = msg; this.showToast = true; }
 }
+
 

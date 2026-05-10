@@ -1,4 +1,4 @@
-ï»¿<ion-header>
+<ion-header>
   <ion-toolbar color="primary">
     <ion-title>Panel Admin</ion-title>
     <ion-buttons slot="end">
@@ -7,6 +7,11 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <div class="metrics-row">
+    <div class="metric-card"><span class="metric-value">{{ userCount }}</span><span class="metric-label">Usuarios</span></div>
+    <div class="metric-card"><span class="metric-value">{{ surveyCount }}</span><span class="metric-label">Encuestas activas</span></div>
+    <div class="metric-card"><span class="metric-value">{{ eventCount }}</span><span class="metric-label">Próximos eventos</span></div>
+  </div>
   <h1>Administraci&oacute;n</h1>
   <p class="subtitle">Gestiona los m&oacute;dulos de UniHub</p>
   <ion-grid>
@@ -24,3 +29,4 @@
     </ion-row>
   </ion-grid>
 </ion-content>
+

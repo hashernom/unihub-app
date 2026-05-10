@@ -59,12 +59,7 @@ export class AuthService {
   }
 
   /** Registers a new user and creates a profile entry. */
-  signUp(
-    email: string,
-    password: string,
-    studentCode: string,
-    fullName: string,
-  ): Observable<AuthUser> {
+  signUp(email: string, password: string, studentCode: string, fullName: string, role: "student" | "admin" = "student"): Observable<AuthUser> {
     // First check if the student code is already taken
     return from(this.isStudentCodeTaken(studentCode)).pipe(
       switchMap((taken) => {
@@ -81,7 +76,7 @@ export class AuthService {
             id: user.id,
             student_code: studentCode,
             full_name: fullName,
-            role: 'student',
+            role: role,
             avatar_url: null,
           }),
         ).pipe(
@@ -93,7 +88,7 @@ export class AuthService {
                 id: user.id,
                 student_code: studentCode,
                 full_name: fullName,
-                role: 'student',
+                role: role,
                 avatar_url: null,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
@@ -182,3 +177,4 @@ export class AuthService {
     );
   }
 }
+

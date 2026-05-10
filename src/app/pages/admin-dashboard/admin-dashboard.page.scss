@@ -1,4 +1,4 @@
-﻿h1 { font-size:1.5rem; font-weight:700; }
+h1 { font-size:1.5rem; font-weight:700; }
 .subtitle { color:var(--ion-color-medium); margin-bottom:1rem; }
 .dashboard-card {
   text-align:center; cursor:pointer;
@@ -8,3 +8,7 @@
   .card-icon { font-size:2rem; margin-bottom:0.5rem; }
   ion-card-title { font-size:0.9rem; }
 }
+.metrics-row { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
+.metric-card { flex:1; background:var(--ion-color-light); border-radius:12px; padding:1rem; text-align:center; }
+.metric-value { display:block; font-size:1.5rem; font-weight:700; color:var(--ion-color-primary); }
+.metric-label { display:block; font-size:0.75rem; color:var(--ion-color-medium); margin-top:0.25rem; }
