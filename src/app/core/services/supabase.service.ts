@@ -1,0 +1,75 @@
+import { Injectable } from '@angular/core';
+import { createClient, SupabaseClient, type AuthResponse, type UserResponse } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
+
+export interface Profile {
+  id: string;
+  student_code: string;
+  full_name: string;
+  role: 'student' | 'admin';
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseService {
+  private readonly _client: SupabaseClient;
+
+  constructor() {
+    this._client = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    });
+  }
+
+  get client(): SupabaseClient {
+    return this._client;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Auth
+  // ---------------------------------------------------------------------------
+
+  signUp(email: string, password: string): Promise<AuthResponse> {
+    return this._client.auth.signUp({ email, password });
+  }
+
+  signIn(email: string, password: string): Promise<AuthResponse> {
+    return this._client.auth.signInWithPassword({ email, password });
+  }
+
+  signOut(): Promise<{ error: Error | null }> {
+    return this._client.auth.signOut();
+  }
+
+  resetPassword(email: string): Promise<{ error: Error | null }> {
+    return this._client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+  }
+
+  updatePassword(password: string): Promise<UserResponse> {
+    return this._client.auth.updateUser({ password });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Profile
+  // ---------------------------------------------------------------------------
+
+  async fetchProfile(userId: string): Promise<Profile | null> {
+    const { data } = await this._client
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single<Profile>();
+    return data ?? null;
+  }
+
+  async createProfile(profile: Omit<Profile, 'created_at' | 'updated_at'>): Promise<void> {
+    await this._client.from('profiles').insert(profile);
+  }
+}
