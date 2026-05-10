@@ -1,0 +1,20 @@
+﻿<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button defaultHref="/admin/dashboard"></ion-back-button></ion-buttons>
+    <ion-title>Registrar Admin</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <h1>Nuevo administrador</h1>
+  <p class="subtitle">Crea una cuenta de administrador</p>
+  <form (ngSubmit)="register()">
+    <ion-item><ion-label position="floating">Nombre completo</ion-label><ion-input [(ngModel)]="fullName" name="fullName" required></ion-input></ion-item>
+    <ion-item><ion-label position="floating">C&oacute;digo</ion-label><ion-input [(ngModel)]="studentCode" name="studentCode" required placeholder="U########"></ion-input></ion-item>
+    <ion-item><ion-label position="floating">Email</ion-label><ion-input type="email" [(ngModel)]="email" name="email" required></ion-input></ion-item>
+    <ion-item><ion-label position="floating">Contrase&ntilde;a</ion-label><ion-input type="password" [(ngModel)]="password" name="password" required></ion-input></ion-item>
+    <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top">
+      @if (loading) { <ion-spinner slot="start"></ion-spinner> } {{ loading ? "Registrando..." : "Registrar admin" }}
+    </ion-button>
+  </form>
+  <ion-toast [isOpen]="showToast" [message]="toastMessage" [duration]="3000" (didDismiss)="showToast = false"></ion-toast>
+</ion-content>

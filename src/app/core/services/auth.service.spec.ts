@@ -22,6 +22,14 @@ const mockProfile: Profile = {
 const adminProfile: Profile = { ...mockProfile, role: 'admin' };
 
 function createSupabaseMock() {
+  // Build a reusable chained query builder mock
+  const createQueryMock = () => ({
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    single: vi.fn(),
+  });
+
   return {
     signUp: vi.fn(),
     signIn: vi.fn(),
@@ -30,12 +38,11 @@ function createSupabaseMock() {
     updatePassword: vi.fn(),
     fetchProfile: vi.fn(),
     createProfile: vi.fn(),
-    get client() {
-      return {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
-        },
-      };
+    client: {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+      },
+      from: vi.fn().mockReturnValue(createQueryMock()),
     },
   } as unknown as SupabaseService;
 }
