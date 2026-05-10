@@ -22,9 +22,9 @@
       </ion-button>
     </form>
     <div class="auth-links">
-      <ion-button fill="clear" expand="block" routerLink="/forgot-password">¿Olvidaste tu contraseña?</ion-button>
-      <p>¿No tienes cuenta? <ion-button fill="clear" routerLink="/register">Regístrate aquí</ion-button></p>
+      <ion-button fill="clear" expand="block" (click)="goToForgotPassword()">¿Olvidaste tu contraseña?</ion-button>
+      <p>¿No tienes cuenta? <ion-button fill="clear" (click)="goToRegister()">Regístrate aquí</ion-button></p>
     </div>
   </div>
-  <ion-toast [isOpen]="showToast" message="{{ errorMessage }}" [duration]="4000" color="danger" (didDismiss)="showToast = false"></ion-toast>
+  <ion-toast [isOpen]="showToast" message="{{ errorMessage }}" [duration]="3000" color="danger" (didDismiss)="showToast = false"></ion-toast>
 </ion-content>
