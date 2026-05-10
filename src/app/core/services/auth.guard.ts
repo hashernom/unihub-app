@@ -43,9 +43,10 @@ export class NoAuthGuard implements CanActivate {
     return this.auth.isAuthenticated$.pipe(
       take(1),
       map((isAuth) => {
-        if (isAuth) return this.router.parseUrl('/home');
+        if (isAuth) return this.router.parseUrl('/tabs/dashboard');
         return true;
       }),
     );
   }
 }
+

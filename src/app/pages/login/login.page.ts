@@ -59,7 +59,7 @@ export class LoginPage {
       next: (user) => {
         this.loading = false;
         const dashboard =
-          user.profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard';
+          user.profile.role === 'admin' ? '/admin/dashboard' : '/tabs/dashboard';
         this.router.navigate([dashboard]);
       },
       error: (err) => {
@@ -81,3 +81,4 @@ export class LoginPage {
     this.showToast = true;
   }
 }
+
