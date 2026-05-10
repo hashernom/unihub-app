@@ -1,0 +1,7 @@
+{
+  "name": "UniHub",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

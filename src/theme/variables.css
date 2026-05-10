@@ -1,0 +1,86 @@
+:root {
+  /** primary **/
+  --ion-color-primary: #1E3A5F;
+  --ion-color-primary-rgb: 30, 58, 95;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a3354;
+  --ion-color-primary-tint: #354e6f;
+
+  /** secondary **/
+  --ion-color-secondary: #4A90D9;
+  --ion-color-secondary-rgb: 74, 144, 217;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #417fbf;
+  --ion-color-secondary-tint: #5c9bdd;
+
+  /** tertiary **/
+  --ion-color-tertiary: #6C5CE7;
+  --ion-color-tertiary-rgb: 108, 92, 231;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #5f51cb;
+  --ion-color-tertiary-tint: #7b6ee9;
+
+  /** success **/
+  --ion-color-success: #27AE60;
+  --ion-color-success-rgb: 39, 174, 96;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #229954;
+  --ion-color-success-tint: #3db670;
+
+  /** warning **/
+  --ion-color-warning: #F39C12;
+  --ion-color-warning-rgb: 243, 156, 18;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #d68910;
+  --ion-color-warning-tint: #f4a62a;
+
+  /** danger **/
+  --ion-color-danger: #E74C3C;
+  --ion-color-danger-rgb: 231, 76, 60;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #cb4335;
+  --ion-color-danger-tint: #e95e4f;
+
+  /** dark **/
+  --ion-color-dark: #2C3E50;
+  --ion-color-dark-rgb: 44, 62, 80;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #273646;
+  --ion-color-dark-tint: #415162;
+
+  /** medium **/
+  --ion-color-medium: #95A5A6;
+  --ion-color-medium-rgb: 149, 165, 166;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #839192;
+  --ion-color-medium-tint: #a0aeaf;
+
+  /** light **/
+  --ion-color-light: #F8F9FA;
+  --ion-color-light-rgb: 248, 249, 250;
+  --ion-color-light-contrast: #2C3E50;
+  --ion-color-light-contrast-rgb: 44, 62, 80;
+  --ion-color-light-shade: #dadbdc;
+  --ion-color-light-tint: #f9fafb;
+
+  /** font **/
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /** border radius **/
+  --ion-border-radius: 12px;
+}
+
+html {
+  /* 
+   * Material Design uses 4dp shadow for cards, 8dp for modals
+   * These are Ionic defaults – no override needed unless customizing
+   */
+}

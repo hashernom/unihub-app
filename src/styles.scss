@@ -1,0 +1,25 @@
+/*
+ * Ionic CSS import is handled globally by the framework.
+ * Theme variables are defined in theme/variables.css.
+ * This file is for application-wide overrides only.
+ */
+
+@import 'theme/variables.css';
+
+/* Global app styles */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Safe area insets for notched devices */
+ion-content {
+  --padding-top: var(--ion-safe-area-top, 0);
+  --padding-bottom: var(--ion-safe-area-bottom, 0);
+}
