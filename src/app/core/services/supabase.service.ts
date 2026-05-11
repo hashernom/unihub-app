@@ -8,6 +8,8 @@ export interface Profile {
   full_name: string;
   role: 'student' | 'admin';
   avatar_url: string | null;
+  carrera: string;
+  semestre: string;
   created_at: string;
   updated_at: string;
 }
@@ -24,8 +26,12 @@ export class SupabaseService {
 
   get client(): SupabaseClient { return this._client; }
 
-  signUp(email: string, password: string): Promise<AuthResponse> {
-    return this._client.auth.signUp({ email, password });
+  signUp(email: string, password: string, metadata?: Record<string, unknown>): Promise<AuthResponse> {
+    return this._client.auth.signUp({ 
+      email, 
+      password, 
+      options: { data: metadata } 
+    });
   }
 
   signIn(email: string, password: string): Promise<AuthResponse> {
@@ -53,6 +59,10 @@ export class SupabaseService {
 
   async createProfile(profile: Omit<Profile, "created_at" | "updated_at">): Promise<void> {
     await this._client.from("profiles").insert(profile as Record<string, unknown>);
+  }
+
+  async upsertProfile(profile: Omit<Profile, "created_at" | "updated_at">): Promise<void> {
+    await this._client.from("profiles").upsert(profile as Record<string, unknown>, { onConflict: 'id' });
   }
 
   async uploadAvatar(userId: string, base64: string): Promise<string | null> {

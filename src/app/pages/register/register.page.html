@@ -6,19 +6,15 @@
 <ion-content class="ion-padding">
   <div class="auth-container">
     <h1>Regístrate</h1>
-    <p class="subtitle">Ingresa tus datos para crear tu cuenta estudiantil</p>
+    <p class="subtitle">Ingresa tu correo institucional y tus datos</p>
     <form (ngSubmit)="onRegister()">
       <ion-item>
-        <ion-label position="floating">Código estudiantil</ion-label>
-        <ion-input type="text" [(ngModel)]="studentCode" name="studentCode" required placeholder="01240371032"></ion-input>
+        <ion-label position="floating">Correo institucional</ion-label>
+        <ion-input type="email" [(ngModel)]="email" name="email" required autocomplete="email" placeholder="01240371032@mail.udes.edu.co"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Nombre completo</ion-label>
         <ion-input type="text" [(ngModel)]="fullName" name="fullName" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" [(ngModel)]="email" name="email" required autocomplete="email"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Contraseña</ion-label>
@@ -27,6 +23,14 @@
       <ion-item>
         <ion-label position="floating">Confirmar contraseña</ion-label>
         <ion-input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required autocomplete="new-password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Carrera</ion-label>
+        <ion-input type="text" [(ngModel)]="carrera" name="carrera" required placeholder="Ej: Ingeniería de Sistemas"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Semestre vigente</ion-label>
+        <ion-input type="text" [(ngModel)]="semestre" name="semestre" required placeholder="Ej: 5to semestre"></ion-input>
       </ion-item>
       <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top">
         @if (loading) { <ion-spinner slot="start"></ion-spinner> }
@@ -37,6 +41,6 @@
       <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
     </div>
   </div>
-  <ion-toast [isOpen]="showToast" message="{{ errorMessage }}" [duration]="3000" color="danger" (didDismiss)="showToast = false"></ion-toast>
+  <ion-toast [isOpen]="showToast" [message]="errorMessage" [duration]="4000" color="danger" (didDismiss)="showToast = false"></ion-toast>
   <ion-toast [isOpen]="showSuccess" [duration]="6000" color="success" (didDismiss)="onDismissSuccess()">Registro exitoso. Revisa tu email para verificar tu cuenta.</ion-toast>
 </ion-content>

@@ -4,8 +4,8 @@ import {
   Router,
   type UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -29,7 +29,7 @@ export class AdminGuard implements CanActivate {
   canActivate(): Observable<boolean | UrlTree> {
     return this.auth.isAdmin$.pipe(
       take(1),
-      map((isAdmin) => isAdmin || this.router.parseUrl('/student/dashboard')),
+      map((isAdmin) => isAdmin || this.router.parseUrl('/tabs/dashboard')),
     );
   }
 }
@@ -42,9 +42,15 @@ export class NoAuthGuard implements CanActivate {
   canActivate(): Observable<boolean | UrlTree> {
     return this.auth.isAuthenticated$.pipe(
       take(1),
-      map((isAuth) => {
-        if (isAuth) return this.router.parseUrl('/tabs/dashboard');
-        return true;
+      switchMap((isAuth) => {
+        if (!isAuth) return of(true);
+        return this.auth.currentUser$.pipe(
+          take(1),
+          map((u) => {
+            if (u?.profile.role === 'admin') return this.router.parseUrl('/admin/dashboard');
+            return this.router.parseUrl('/tabs/dashboard');
+          }),
+        );
       }),
     );
   }

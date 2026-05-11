@@ -1,10 +1,11 @@
-﻿import { Component, inject } from "@angular/core";
+﻿import { Component, inject, OnDestroy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonAvatar, IonButton, IonInput,
   IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton,
 } from "@ionic/angular/standalone";
+import { Subscription } from "rxjs";
 import { AuthService, type AuthUser } from "../../core/services/auth.service";
 import { SupabaseService } from "../../core/services/supabase.service";
 
@@ -19,9 +20,10 @@ import { SupabaseService } from "../../core/services/supabase.service";
   templateUrl: "./profile.page.html",
   styleUrl: "./profile.page.scss",
 })
-export class ProfilePage {
+export class ProfilePage implements OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService);
+  private sub = new Subscription();
 
   user: AuthUser | null = null;
   editName = "";
@@ -31,11 +33,13 @@ export class ProfilePage {
   toastMessage = "";
 
   constructor() {
-    this.auth.currentUser$.subscribe((u) => {
+    this.sub.add(this.auth.currentUser$.subscribe((u) => {
       this.user = u;
       if (u) this.editName = u.profile.full_name;
-    });
+    }));
   }
+
+  ngOnDestroy(): void { this.sub.unsubscribe(); }
 
   get avatarUrl(): string {
     return this.user?.profile.avatar_url ??
@@ -47,14 +51,18 @@ export class ProfilePage {
     if (this.user) this.editName = this.user.profile.full_name;
   }
 
-  saveProfile(): void {
+  async saveProfile(): Promise<void> {
     if (!this.user || !this.editName.trim()) return;
     this.loading = true;
-    setTimeout(() => {
-      this.loading = false;
+    try {
+      await this.supabase.client.from("profiles").update({ full_name: this.editName.trim() }).eq("id", this.user.id);
+      this.user = { ...this.user, profile: { ...this.user.profile, full_name: this.editName.trim() } };
       this.editing = false;
       this.toast("Perfil actualizado");
-    }, 500);
+    } catch {
+      this.toast("Error al actualizar el perfil");
+    }
+    this.loading = false;
   }
 
   async onAvatarSelected(event: Event): Promise<void> {
@@ -65,22 +73,22 @@ export class ProfilePage {
     if (!["image/png", "image/jpeg", "image/gif", "image/webp"].includes(file.type)) {
       this.toast("Formato no soportado. Usa PNG, JPG, GIF o WebP"); return;
     }
+    if (!this.user) return;
     this.loading = true;
     try {
       const base64 = await this.fileToBase64(file);
-      const url = await this.supabase.uploadAvatar(this.user!.id, base64);
-      if (url && this.user) {
+      const url = await this.supabase.uploadAvatar(this.user.id, base64);
+      if (url) {
         this.user = { ...this.user, profile: { ...this.user.profile, avatar_url: url } };
       }
-      this.loading = false;
       this.toast("Foto actualizada");
     } catch {
-      this.loading = false;
       this.toast("Error al subir la imagen");
     }
+    this.loading = false;
   }
 
-  onLogout(): void { this.auth.signOut().subscribe(); }
+  onLogout(): void { this.sub.add(this.auth.signOut().subscribe()); }
 
   private fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {

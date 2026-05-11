@@ -1,6 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router, RouterLink } from "@angular/router";
+import { Router } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption,
@@ -11,13 +11,13 @@ import { AuthService } from "../../core/services/auth.service";
 @Component({
   selector: "app-admin-register",
   imports: [
-    FormsModule, RouterLink,
+    FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption,
     IonToast, IonSpinner, IonButtons, IonBackButton,
   ],
   templateUrl: "./admin-register.page.html",
-  styleUrls: ["./admin-register.page.scss"],
+  styleUrl: "./admin-register.page.scss",
 })
 export class AdminRegisterPage {
   private readonly auth = inject(AuthService);
@@ -25,20 +25,21 @@ export class AdminRegisterPage {
 
   email = "";
   password = "";
-  studentCode = "";
   fullName = "";
   loading = false;
   showToast = false;
   toastMessage = "";
 
   register(): void {
-    if (!this.email || !this.password || !this.studentCode || !this.fullName) {
+    if (!this.email || !this.password || !this.fullName) {
       this.show("Todos los campos son obligatorios"); return;
     }
+    if (!this.email.includes("@")) { this.show("Ingresa un email valido"); return; }
+    if (this.password.length < 8) { this.show("La contrasena debe tener al menos 8 caracteres"); return; }
     this.loading = true;
-    this.auth.signUp(this.email, this.password, this.studentCode, this.fullName, 'admin').subscribe({
-      next: () => { this.loading = false; this.show("Admin registrado exitosamente"); setTimeout(() => this.router.navigate(["/admin/dashboard"]), 2000); },
-      error: (err) => { this.loading = false; this.show(err.message ?? "Error al registrar"); },
+    this.auth.signUp(this.email, this.password, this.fullName, '', '', 'admin').subscribe({
+      next: () => { this.loading = false; this.show("Admin registrado exitosamente"); this.router.navigate(["/admin/dashboard"]); },
+      error: (err) => { this.loading = false; this.show(String((err as Record<string,unknown>)['message'] ?? "Error al registrar")); },
     });
   }
 

@@ -1,9 +1,14 @@
 import { Component } from "@angular/core";
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonRefresher, IonRefresherContent } from "@ionic/angular/standalone";
+import { RouterLink } from "@angular/router";
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { personCircle } from "ionicons/icons";
 @Component({
   selector: "app-tab-dashboard",
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonRefresher, IonRefresherContent],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, RouterLink],
   templateUrl: "./tab-dashboard.page.html",
-  styleUrls: ["./tab-dashboard.page.scss"],
+  styleUrl: "./tab-dashboard.page.scss",
 })
-export class TabDashboardPage {}
+export class TabDashboardPage {
+  constructor() { addIcons({ personCircle }); }
+}

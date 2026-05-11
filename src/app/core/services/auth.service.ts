@@ -48,78 +48,46 @@ export class AuthService {
 
   /** Fetches the user profile and updates the BehaviourSubject. */
   private async loadProfile(user: User): Promise<void> {
-    const profile = await this.supabase.fetchProfile(user.id);
-    if (profile) {
-      this.currentUserSubject.next({
-        id: user.id,
-        email: user.email ?? '',
-        profile,
-      });
-    }
+    try {
+      await this.ensureProfile(user);
+    } catch { /* ignore */ }
   }
 
-  /** Registers a new user and creates a profile entry. */
-  signUp(email: string, password: string, studentCode: string, fullName: string, role: "student" | "admin" = "student"): Observable<AuthUser> {
-    // First check if the student code is already taken
-    return from(this.isStudentCodeTaken(studentCode)).pipe(
-      switchMap((taken) => {
-        if (taken) return throwError(() => new Error('already registered'));
-        return from(this.supabase.signUp(email, password));
-      }),
+  /** Registers a new user. Profile is auto-created by DB trigger. */
+  signUp(email: string, password: string, fullName: string, carrera: string, semestre: string, role: "student" | "admin" = "student"): Observable<AuthUser> {
+    const studentCode = email.split("@")[0] ?? "";
+    return from(this.supabase.signUp(email, password, {
+      student_code: studentCode,
+      full_name: fullName,
+      role: role,
+      carrera: carrera,
+      semestre: semestre,
+    })).pipe(
       switchMap((res) => {
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
-        if (!user) return throwError(() => new Error('No user returned from signUp'));
-
-        return from(
-          this.supabase.createProfile({
+        if (!user) return throwError(() => new Error('Registro exitoso. Revisa tu email para verificar tu cuenta.'));
+        const authUser: AuthUser = {
+          id: user.id,
+          email: user.email ?? '',
+          profile: {
             id: user.id,
             student_code: studentCode,
             full_name: fullName,
             role: role,
             avatar_url: null,
-          }),
-        ).pipe(
-          switchMap(() => {
-            const authUser: AuthUser = {
-              id: user.id,
-              email: user.email ?? '',
-              profile: {
-                id: user.id,
-                student_code: studentCode,
-                full_name: fullName,
-                role: role,
-                avatar_url: null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            };
-            this.currentUserSubject.next(authUser);
-            return of(authUser);
-          }),
-          catchError((profileErr) => {
-            // Profile creation failed (e.g. race condition on student_code).
-            const message =
-              profileErr?.message?.includes('duplicate key') ||
-              profileErr?.message?.includes('unique')
-                ? 'already registered'
-                : profileErr?.message ?? 'Error creating profile';
-            return throwError(() => new Error(message));
-          }),
-        );
+            carrera: carrera,
+            semestre: semestre,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        };
+        this.currentUserSubject.next(authUser);
+        return of(authUser);
       }),
     );
   }
 
-  /** Checks whether a student code is already in use. */
-  private async isStudentCodeTaken(studentCode: string): Promise<boolean> {
-    const { data } = await this.supabase.client
-      .from('profiles')
-      .select('id')
-      .eq('student_code', studentCode)
-      .maybeSingle();
-    return data !== null;
-  }
 
   /** Signs in with email + password and loads the profile. */
   signIn(email: string, password: string): Observable<AuthUser> {
@@ -128,21 +96,51 @@ export class AuthService {
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
         if (!user) return throwError(() => new Error('No user returned from signIn'));
-
-        return from(this.supabase.fetchProfile(user.id)).pipe(
-          map((profile) => {
-            if (!profile) throw new Error('Profile not found');
-            const authUser: AuthUser = {
-              id: user.id,
-              email: user.email ?? '',
-              profile,
-            };
-            this.currentUserSubject.next(authUser);
-            return authUser;
-          }),
-        );
+        return from(this.ensureProfile(user));
       }),
     );
+  }
+
+  /** Ensures a profile exists for the given user. Creates one if missing (trigger may have failed). */
+  private async ensureProfile(user: User): Promise<AuthUser> {
+    const existing = await this.supabase.fetchProfile(user.id);
+    if (existing) {
+      const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile: existing };
+      this.currentUserSubject.next(authUser);
+      return authUser;
+    }
+    const meta = user.user_metadata ?? {};
+    try {
+      await this.supabase.createProfile({
+        id: user.id,
+        student_code: meta['student_code'] ?? '',
+        full_name: meta['full_name'] ?? user.email ?? '',
+        role: meta['role'] ?? 'student',
+        avatar_url: null,
+        carrera: meta['carrera'] ?? '',
+        semestre: meta['semestre'] ?? '',
+      });
+      const profile = await this.supabase.fetchProfile(user.id);
+      if (profile) {
+        const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile };
+        this.currentUserSubject.next(authUser);
+        return authUser;
+      }
+    } catch { /* fallback to synthetic below */ }
+    const fallback: Profile = {
+      id: user.id,
+      student_code: meta['student_code'] ?? '',
+      full_name: meta['full_name'] ?? user.email ?? '',
+      role: meta['role'] ?? 'student',
+      avatar_url: null,
+      carrera: meta['carrera'] ?? '',
+      semestre: meta['semestre'] ?? '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile: fallback };
+    this.currentUserSubject.next(authUser);
+    return authUser;
   }
 
   /** Signs out, clears state, and navigates to login. */
