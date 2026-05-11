@@ -1,17 +1,11 @@
-/* Ionic core CSS */
-@import '@ionic/angular/css/core.css';
-@import '@ionic/angular/css/normalize.css';
-@import '@ionic/angular/css/structure.css';
-@import '@ionic/angular/css/typography.css';
-@import '@ionic/angular/css/padding.css';
-@import '@ionic/angular/css/float-elements.css';
-@import '@ionic/angular/css/text-alignment.css';
-@import '@ionic/angular/css/text-transformation.css';
-@import '@ionic/angular/css/flex-utils.css';
-@import '@ionic/angular/css/display.css';
+﻿@import 'theme/variables.css';
 
-/* Theme */
-@import 'theme/variables.css';
+/* Force hide ion-page-hidden */
+.ion-page.ion-page-hidden,
+app-login.ion-page-hidden,
+app-register.ion-page-hidden {
+  display: none !important;
+}
 
 app-root {
   display: block;
@@ -32,7 +26,3 @@ ion-content {
   --padding-top: var(--ion-safe-area-top, 0);
   --padding-bottom: var(--ion-safe-area-bottom, 0);
 }
-
-/* Fix: hide old pages in ion-router-outlet stack */
-.ion-page-hidden, .ion-page.ion-page-hidden, app-login.ion-page-hidden, app-register.ion-page-hidden, [class*="ion-page-hidden"] { display: none !important; visibility: hidden !important; position: absolute !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; }
-
