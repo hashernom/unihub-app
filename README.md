@@ -1,59 +1,126 @@
-# UnihubTemp
+# UniHub
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.10.
+Aplicación universitaria multiplataforma para estudiantes y administradores. Construida con Ionic + Angular 21 + Supabase.
 
-## Development server
+## Stack
 
-To start a local development server, run:
+| Capa | Tecnología |
+|------|-----------|
+| Framework | Angular 21 (standalone components) |
+| UI | Ionic 8 + Capacitor 8 |
+| Backend | Supabase (PostgreSQL, Auth, Edge Functions) |
+| Estado | RxJS / BehaviorSubjects |
+| Offline | Ionic Storage + SQLite |
+| PWA | Service Worker (instalable) |
+| Tests | Vitest |
+| CI/CD | GitHub Actions |
+
+## Funcionalidades
+
+- **Auth**: registro con email institucional (`@mail.udes.edu.co`), extracción automática de código estudiantil, login, recuperación de contraseña
+- **Roles**: estudiante y administrador, con guards y redirección por rol
+- **Perfil**: edición de nombre, avatar (DiceBear + upload a Supabase Storage), vista de carrera y semestre
+- **Dashboard admin**: métricas (usuarios, encuestas, eventos), cards de navegación a CRUDs
+- **Offline**: estrategia network-first con cache en SQLite
+- **RLS**: 40+ políticas de seguridad a nivel de base de datos
+- **Edge Functions**: validación de código estudiantil (Deno)
+
+## Requisitos
+
+- Node.js 18+
+- npm 9+
+- Angular CLI 21 (`npm install -g @angular/cli`)
+- Una cuenta en Supabase (gratuita)
+
+## Inicio rápido
 
 ```bash
+git clone <repo>
+cd unihub-src
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abrir `http://localhost:4200/`.
 
-## Code scaffolding
+### Variables de entorno
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Configurar en `src/environments/environment.ts`:
 
-```bash
-ng generate component component-name
+```ts
+export const environment = {
+  production: false,
+  supabaseUrl: 'https://tu-proyecto.supabase.co',
+  supabaseAnonKey: 'tu-anon-key',
+};
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Estructura del proyecto
 
-```bash
-ng generate --help
+```
+src/
+├── app/
+│   ├── core/
+│   │   ├── interfaces/        # Tipos compartidos
+│   │   ├── services/          # Auth, Supabase, Offline, Storage
+│   │   └── storage/           # Database + Storage services
+│   ├── pages/
+│   │   ├── login/             # Inicio de sesión
+│   │   ├── register/          # Registro con email institucional
+│   │   ├── forgot-password/   # Recuperación de contraseña
+│   │   ├── reset-password/    # Cambio de contraseña
+│   │   ├── profile/           # Perfil de usuario
+│   │   ├── tabs/              # Navegación por tabs (estudiante)
+│   │   ├── tab-dashboard/     # Dashboard estudiante
+│   │   ├── tab-surveys/       # Encuestas
+│   │   ├── tab-calendar/      # Calendario
+│   │   ├── tab-help/          # FAQ / Ayuda
+│   │   └── admin-*/           # CRUDs de administración
+│   └── app.routes.ts          # Definición de rutas con guards
+├── supabase/
+│   ├── migrations/            # Migraciones SQL versionadas
+│   ├── edge-functions/        # Edge Functions (Deno)
+│   └── seed.sql               # Datos de prueba
+└── docs/                      # Documentación del proyecto
 ```
 
-## Building
-
-To build the project run:
+## Comandos
 
 ```bash
-ng build
+ng serve           # Servidor de desarrollo
+ng build           # Build de producción
+ng test            # Tests unitarios (Vitest)
+ng lint            # ESLint
+ng build --stats-json # Build con análisis de bundle
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Arquitectura
 
-## Running unit tests
+3 capas con flujo unidireccional:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+1. **Presentación**: Pages (standalone components Ionic)
+2. **Aplicación**: Servicios singleton con BehaviorSubject + RxJS
+3. **Datos**: SupabaseService + StorageService + OfflineManagerService
 
-```bash
-ng test
+### Auth flow
+
+```
+signUp → Supabase Auth → trigger crea profile en BD → AuthUser local
+signIn → Supabase Auth → ensureProfile() → AuthUser desde BD
 ```
 
-## Running end-to-end tests
+El código estudiantil se extrae automáticamente del email institucional (parte antes de `@mail.udes.edu.co`).
 
-For end-to-end (e2e) testing, run:
+## Base de datos
 
-```bash
-ng e2e
-```
+14 tablas en PostgreSQL con RLS habilitado. Ver `supabase/migrations/` y `docs/DATABASE_SCHEMA.md`.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Documentación
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Ver `docs/` para:
+- `ARCHITECTURE.md` — Decisiones técnicas
+- `DATABASE_SCHEMA.md` — Esquema completo
+- `SECURITY.md` — Seguridad multi-capa
+- `EDGE_FUNCTIONS.md` — Funciones serverless
+- `CONTRIBUTING.md` — Cómo contribuir
+- `DEPLOYMENT.md` — Guía de despliegue
