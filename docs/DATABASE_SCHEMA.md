@@ -2,6 +2,93 @@
 
 > Este schema es independiente del frontend. Funciona igual con Ionic/Angular, React, o Kotlin.
 
+## Diagrama de Relaciones (Mermaid ERD)
+
+```mermaid
+erDiagram
+    profiles ||--o{ announcements : "creates"
+    profiles ||--o{ notices : "creates"
+    profiles ||--o{ surveys : "creates"
+    profiles ||--o{ events : "creates"
+    profiles ||--o{ help_queries : "submits"
+    profiles ||--o{ notification_tokens : "owns"
+    surveys ||--o{ survey_questions : "has"
+    surveys ||--o{ survey_responses : "receives"
+    survey_questions ||--o{ survey_answers : "contains"
+    survey_responses ||--o{ survey_answers : "includes"
+    classrooms ||--o{ events : "hosted_in"
+    events ||--o{ event_attendance : "tracked_by"
+    faq_entries ||--o{ help_queries : "resolves"
+    student_code_blacklist ||--|| profiles : "restricts"
+
+    profiles {
+        uuid id PK
+        text student_code UK
+        text full_name
+        text role "student|admin"
+        text avatar_url
+        text carrera
+        text semestre
+        timestamptz created_at
+    }
+
+    announcements {
+        uuid id PK
+        text title
+        text body
+        text category "general|academic|event|urgent"
+        boolean is_pinned
+        uuid created_by FK
+        timestamptz expires_at
+    }
+
+    surveys {
+        uuid id PK
+        text title
+        text description
+        boolean is_active
+        timestamptz start_date
+        timestamptz end_date
+        boolean allow_multiple_responses
+    }
+
+    survey_questions {
+        uuid id PK
+        uuid survey_id FK
+        text question_text
+        text question_type "text|single_choice|multiple_choice|rating"
+        jsonb options
+        boolean is_required
+        int sort_order
+    }
+
+    events {
+        uuid id PK
+        text title
+        text event_type "class|exam|meeting|workshop|other"
+        uuid classroom_id FK
+        timestamptz start_time
+        timestamptz end_time
+        boolean is_cancelled
+    }
+
+    classrooms {
+        uuid id PK
+        text name
+        text building
+        int capacity
+    }
+
+    faq_entries {
+        uuid id PK
+        text question
+        text answer
+        text category
+        text lang "es|en"
+        boolean is_active
+    }
+```
+
 ## Extensiones Requeridas
 
 ```sql
@@ -12,15 +99,18 @@ CREATE EXTENSION IF NOT EXISTS "btree_gist";  -- para exclusión GIST en events
 
 ## Tablas
 
-### profiles
+### profiles ✅
 - `id` UUID PK (references auth.users, CASCADE)
 - `student_code` TEXT UNIQUE NOT NULL
 - `full_name` TEXT NOT NULL
 - `role` TEXT CHECK (student|admin) DEFAULT 'student'
 - `avatar_url` TEXT
+- `carrera` TEXT (carrera universitaria)
+- `semestre` TEXT (semestre actual)
 - `created_at` TIMESTAMPTZ DEFAULT now()
 - `updated_at` TIMESTAMPTZ DEFAULT now()
 - **Indexes**: `role`, `student_code`
+- **Estado**: ✅ Implementado en schema y código
 
 ### announcements
 - `id` UUID PK DEFAULT uuid_generate_v4()

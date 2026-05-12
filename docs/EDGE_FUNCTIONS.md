@@ -4,7 +4,18 @@ Edge Functions son funciones serverless escritas en TypeScript que corren en el 
 
 ---
 
-## 1. `notify-on-announcement`
+## Estado de Implementación
+
+| Función | Estado | Milestone |
+|---------|:------:|-----------|
+| `validate-student-code` | ✅ Implementada | M1 |
+| `notify-on-announcement` | ❌ Planeada | M2 |
+| `process-survey-results` | ❌ Planeada | M3 |
+| `help-bot-search` | ❌ Planeada | M5 |
+
+---
+
+## 1. `notify-on-announcement` ❌ Planeada
 
 **Trigger**: Database Webhook (INSERT en `announcements`)
 
@@ -46,7 +57,7 @@ interface NotificationResult {
 
 ---
 
-## 2. `process-survey-results`
+## 2. `process-survey-results` ❌ Planeada
 
 **Trigger**: HTTP llamada desde la app (admin dashboard)
 
@@ -95,7 +106,7 @@ interface QuestionResult {
 
 ---
 
-## 3. `help-bot-search`
+## 3. `help-bot-search` ❌ Planeada
 
 **Trigger**: HTTP llamada desde la app (help bot screen)
 
@@ -143,7 +154,7 @@ CREATE INDEX idx_faq_trgm ON faq_entries USING GIN(question gin_trgm_ops);
 
 ---
 
-## 4. `validate-student-code`
+## 4. `validate-student-code` ✅ Implementada
 
 **Trigger**: HTTP llamada desde la app (registro de usuario)
 

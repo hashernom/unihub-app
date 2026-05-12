@@ -1,23 +1,26 @@
 # Deploy de UniHub
 
+> ⚠️ Estado: Planeado (M10). La app compila correctamente pero no ha sido desplegada a producción. Este documento contiene el plan de deploy objetivo.
+
 ## Stack de deploy
 
-| Componente | Proveedor |
-|-----------|-----------|
-| PWA (Web) | Vercel / Netlify |
-| iOS App | App Store (via Capacitor + Xcode) |
-| Android App | Play Store (via Capacitor + Android Studio) |
-| Backend | Supabase (PostgreSQL + Auth + Edge Functions) |
-| Errores | Sentry |
-| Monitoreo | Supabase Logs + Sentry |
+| Componente | Proveedor | Estado |
+|-----------|-----------|:------:|
+| PWA (Web) | Vercel / Netlify | ❌ No desplegado |
+| iOS App | App Store (via Capacitor + Xcode) | ❌ No desplegado |
+| Android App | Play Store (via Capacitor + Android Studio) | ❌ No desplegado |
+| Backend | Supabase (PostgreSQL + Auth + Edge Functions) | ✅ Activo (dev) |
+| CI/CD | GitHub Actions | ✅ ionic-ci.yml + supabase-ci.yml |
+| Errores | Sentry | ❌ Planeado (M11) |
+| Monitoreo | Supabase Logs + Sentry | ❌ Planeado (M11) |
 
 ---
 
 ## 1. PWA (Web)
 
 ### Requisitos
-- Node.js 22 LTS
-- Angular CLI (`npm install -g @angular/cli`)
+- Node.js 24 LTS
+- Angular CLI 21 (`npm install -g @angular/cli`)
 - Proyecto compilado: `npm run build`
 
 ### Deploy a Vercel

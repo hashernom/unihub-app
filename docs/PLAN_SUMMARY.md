@@ -84,22 +84,34 @@
 
 ## 📅 Fases y Timeline
 
-| Fase | Semanas | Issues | Dependencia |
-|------|---------|--------|-------------|
-| M0: Foundation | 1 | #1-#6 | - |
-| M1: Auth | 1.5 | #7-#14 | M0 |
-| M2: Dashboard | 1.5 | #15-#22 | M1 |
-| M3: Surveys | 2 | #23-#30 | M1 |
-| M4: Calendar | 2 | #31-#39 | M1 |
-| M5: Help Bot | 1.5 | #40-#45 | M1 |
-| M6: Polish | 1.5 | #46-#52 | M2-M5 |
-| M7: Testing | 1.5 | #53-#60 | M2-M5 |
-| M8: Security | 1 | #61-#67 | M2-M5 |
-| M9: DevOps | 1 | #68-#73 | M0 |
-| M10: Deploy | 1 | #74-#79 | M6-M9 |
-| M11: Maintenance | ongoing | #80-#83 | M10 |
+| Fase | Semanas | Issues | Prioridad | Dependencia |
+|------|---------|--------|:---------:|-------------|
+| M0: Foundation | 1 | #1-#6 | — | — |
+| M1: Auth | 1.5 | #7-#14 | — | M0 |
+| M2: Dashboard | 1.5 | #15-#22 | p0 | M1 |
+| M3: Surveys | 2 | #23-#30 | p1 | M1 |
+| M4: Calendar | 2 | #31-#39 | p1 | M1 + M3 |
+| M5: Help Bot | 1.5 | #40-#45 | p1 | M1 + M2 |
+| M6: Polish | 1.5 | #46-#52 | p2 | ≥2 de M2-M5 funcionales |
+| M7: Testing | 1.5 | #53-#60 | p2 | por módulo (unit → component → E2E) |
+| M8: Security | 1 | #61-#67 | p2 | por capa (CSP temprano, RLS ya hecho, audit final) |
+| M9: DevOps | 1 | #72-#73, #90 | p3 | M0 (CI base ya existe) |
+| M10: Deploy | 1 | #74-#79 | p3 | M6-M8 |
+| M11: Maintenance | ongoing | #80-#83 | p3 | M10 |
 
-**Total: ~14-15 semanas**
+**Total: ~12-14 semanas (con solapamiento)**
+
+### Reglas de ejecución
+
+- **M2 debe completarse primero** (p0): dashboard es la vista principal del estudiante y admin
+- **M3 y M4 pueden solaparse parcialmente**: surveys → survey responses → calendar
+- **M5 puede comenzar tras M2** (necesita contexto del dashboard para la UI del help bot)
+- **M6 NO debe esperar a M2-M5 completos**: empieza cuando ≥2 módulos de feature estén funcionales
+- **M7 va en paralelo con cada módulo**: tests unitarios al cerrar cada issue, E2E al final
+- **M8 por capas**: CSP/input sanitization en paralelo con features, RLS audit al final
+- **M9 (#72, #73, #90)**: CI ya existe desde M0, solo falta entornos+migrations+audit
+- **M10 solo cuando la app esté pulida, testeada y asegurada**
+- **Los issues cerrados #68-#71 eran duplicados de trabajo hecho en M0**
 
 ---
 

@@ -27,7 +27,7 @@ Aplicación universitaria multiplataforma para estudiantes y administradores. Co
 
 ## Requisitos
 
-- Node.js 18+
+- Node.js 24+ (LTS)
 - npm 9+
 - Angular CLI 21 (`npm install -g @angular/cli`)
 - Una cuenta en Supabase (gratuita)

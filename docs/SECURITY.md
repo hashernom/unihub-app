@@ -1,6 +1,21 @@
 # Seguridad en UniHub
 
-UniHub implementa seguridad en múltiples capas. Este documento describe cada capa y cómo verificarla.
+UniHub implementa seguridad en múltiples capas. Este documento describe cada capa, su estado de implementación y cómo verificarla.
+
+## Estado de Implementación (Mayo 2026)
+
+| Capa | Estado | Milestone |
+|------|:------:|-----------|
+| RLS (Row Level Security) | ✅ Implementado | M0 |
+| JWT via Supabase Auth | ✅ Implementado | M1 |
+| Ionic Secure Storage | ✅ Implementado | M1 |
+| Angular XSS sanitizer | ✅ Nativo | M0 |
+| HTTPS + HSTS | ⚠️ Parcial (Supabase HTTPS, HSTS pending) | M8 |
+| Content Security Policy (CSP) | ❌ Planeado | M8 |
+| Rate Limiting Edge Functions | ❌ Planeado | M8 |
+| Input sanitization extra | ❌ Planeado | M8 |
+| npm audit / Dependabot | ⚠️ No configurado | M8 |
+| Backups automatizados | ❌ Planeado | M11 |
 
 ## Arquitectura de seguridad
 

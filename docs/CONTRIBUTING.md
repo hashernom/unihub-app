@@ -14,6 +14,26 @@
 5. **Esperar** a que CI pase (lint + test + build).
 6. **Mergear** tras aprobación.
 
+## Agentes de OpenCode
+
+El proyecto tiene 16 agentes especializados disponibles. Úsalos con `@nombre-del-agente`:
+
+| Agente | Cuándo usarlo |
+|--------|---------------|
+| `@code-reviewer` | Antes de mergear un PR |
+| `@security-auditor` | Antes de release o al tocar auth |
+| `@test-engineer` | Al definir estrategia de tests |
+| `@architect` | Al diseñar nueva funcionalidad |
+| `@refactor-specialist` | Al limpiar código legacy |
+| `@database-engineer` | Al modificar schema o migraciones |
+| `@api-designer` | Al diseñar endpoints |
+| `@frontend-specialist` | Al implementar UI/components |
+| `@devops-engineer` | Al modificar CI/CD o infra |
+| `@debug-specialist` | Al investigar bugs |
+| `@git-workflow` | Al preparar releases |
+
+Ver `~/.config/opencode/agents/` para la lista completa.
+
 ## Convenciones de código
 
 ### TypeScript / Angular
@@ -55,8 +75,8 @@ docs: update API contract for notification endpoint
 git clone https://github.com/hashernom/unihub-app.git
 cd unihub-app
 
-# Node.js 22 LTS requerido
-node --version  # v22.x
+# Node.js 24 LTS requerido
+node --version  # v24.x
 
 # Instalar dependencias
 npm install
