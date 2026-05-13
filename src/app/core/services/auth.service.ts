@@ -35,26 +35,36 @@ export class AuthService {
   );
 
   constructor() {
-    this.restoreSession();
+    // initialize() is called via APP_INITIALIZER
+  }
+
+  async initialize(): Promise<void> {
+    await this.restoreSession();
+  }
+
+  /** Allows the register page to set the user after successful signup. */
+  setCurrentUser(user: AuthUser): void {
+    this.currentUserSubject.next(user);
   }
 
   /** Attempts to restore an existing Supabase session on app start. */
   private async restoreSession(): Promise<void> {
     const { data } = await this.supabase.client.auth.getSession();
     if (data.session?.user) {
-      await this.loadProfile(data.session.user);
+      try {
+        console.log("[Auth] Restoring session:", data.session.user.email);
+        await this.ensureProfile(data.session.user);
+      } catch {
+        console.warn("[Auth] Stale session detected, signing out...");
+        await this.supabase.client.auth.signOut();
+        this.currentUserSubject.next(null);
+      }
     }
-  }
-
-  /** Fetches the user profile and updates the BehaviourSubject. */
-  private async loadProfile(user: User): Promise<void> {
-    try {
-      await this.ensureProfile(user);
-    } catch { /* ignore */ }
   }
 
   /** Registers a new user. Profile is auto-created by DB trigger. */
   signUp(email: string, password: string, fullName: string, carrera: string, semestre: string, role: "student" | "admin" = "student"): Observable<AuthUser> {
+    console.log("[Auth] signUp:", email);
     const studentCode = email.split("@")[0] ?? "";
     return from(this.supabase.signUp(email, password, {
       student_code: studentCode,
@@ -64,6 +74,7 @@ export class AuthService {
       semestre: semestre,
     })).pipe(
       switchMap((res) => {
+        console.log("[Auth] signUp response:", { error: res.error?.message, hasUser: !!res.data.user });
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
         if (!user) return throwError(() => new Error('Registro exitoso. Revisa tu email para verificar tu cuenta.'));
@@ -82,17 +93,17 @@ export class AuthService {
             updated_at: new Date().toISOString(),
           },
         };
-        this.currentUserSubject.next(authUser);
         return of(authUser);
       }),
     );
   }
 
-
   /** Signs in with email + password and loads the profile. */
   signIn(email: string, password: string): Observable<AuthUser> {
+    console.log("[Auth] signIn:", email);
     return from(this.supabase.signIn(email, password)).pipe(
       switchMap((res) => {
+        console.log("[Auth] signIn response:", { error: res.error?.message, hasUser: !!res.data.user });
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
         if (!user) return throwError(() => new Error('No user returned from signIn'));
@@ -101,9 +112,11 @@ export class AuthService {
     );
   }
 
-  /** Ensures a profile exists for the given user. Creates one if missing (trigger may have failed). */
+  /** Ensures a profile exists for the given user. Signs out if profile cannot be created. */
   private async ensureProfile(user: User): Promise<AuthUser> {
+    console.log("[Auth] ensureProfile:", user.id, user.email);
     const existing = await this.supabase.fetchProfile(user.id);
+    console.log("[Auth] fetchProfile result:", existing ? "found" : "not found");
     if (existing) {
       const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile: existing };
       this.currentUserSubject.next(authUser);
@@ -120,27 +133,21 @@ export class AuthService {
         carrera: meta['carrera'] ?? '',
         semestre: meta['semestre'] ?? '',
       });
+      console.log("[Auth] Profile created via fallback");
       const profile = await this.supabase.fetchProfile(user.id);
       if (profile) {
         const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile };
         this.currentUserSubject.next(authUser);
         return authUser;
       }
-    } catch { /* fallback to synthetic below */ }
-    const fallback: Profile = {
-      id: user.id,
-      student_code: meta['student_code'] ?? '',
-      full_name: meta['full_name'] ?? user.email ?? '',
-      role: meta['role'] ?? 'student',
-      avatar_url: null,
-      carrera: meta['carrera'] ?? '',
-      semestre: meta['semestre'] ?? '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile: fallback };
-    this.currentUserSubject.next(authUser);
-    return authUser;
+    } catch (e) {
+      console.warn("[Auth] createProfile failed:", e);
+      throw e;
+    }
+    console.warn("[Auth] Could not load or create profile, signing out");
+    await this.supabase.client.auth.signOut();
+    this.currentUserSubject.next(null);
+    throw new Error("Profile could not be created");
   }
 
   /** Signs out, clears state, and navigates to login. */
@@ -175,4 +182,3 @@ export class AuthService {
     );
   }
 }
-

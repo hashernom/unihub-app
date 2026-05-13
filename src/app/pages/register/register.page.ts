@@ -1,10 +1,11 @@
-import { Component, inject, NgZone } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
-import { firstValueFrom, timeout } from "rxjs";
+import { Subscription } from "rxjs";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
+  IonSelect, IonSelectOption,
   IonToast, IonSpinner,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
@@ -20,21 +21,41 @@ function isValidInstitutionalEmail(email: string): boolean {
 @Component({
   selector: "app-register",
   imports: [FormsModule, RouterLink,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonToast, IonSpinner],
+    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption, IonToast, IonSpinner],
   templateUrl: "./register.page.html",
   styleUrl: "./register.page.scss",
 })
 export class RegisterPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly zone = inject(NgZone);
   email = ""; fullName = ""; password = ""; confirmPassword = "";
   carrera = ""; semestre = "";
-  loading = false; errorMessage = ""; showToast = false; showSuccess = false;
+  loading = false; errorMessage = ""; showToast = false;
+  private registerSub: Subscription | null = null;
+
+  readonly carreras = [
+    "Ingeniería de Sistemas",
+    "Ingeniería Industrial",
+    "Ingeniería Civil",
+    "Ingeniería Electrónica",
+    "Ingeniería Mecánica",
+    "Administración de Empresas",
+    "Contaduría Pública",
+    "Derecho",
+    "Psicología",
+    "Medicina",
+    "Enfermería",
+    "Comunicación Social",
+    "Arquitectura",
+    "Licenciatura en Educación",
+    "Otra",
+  ] as const;
+
+  readonly semestres = Array.from({ length: 12 }, (_, i) => String(i + 1));
 
   goToLogin(): void { this.router.navigate(["/login"]); }
 
-  async onRegister(): Promise<void> {
+  onRegister(): void {
     if (!this.email || !this.fullName || !this.password || !this.confirmPassword || !this.carrera || !this.semestre) {
       this.showError("Todos los campos son obligatorios"); return;
     }
@@ -47,31 +68,46 @@ export class RegisterPage {
     if (this.password !== this.confirmPassword) {
       this.showError("Las contrasenas no coinciden"); return;
     }
-    this.loading = true; this.errorMessage = "";
-    try {
-      await firstValueFrom(this.auth.signUp(this.email, this.password, this.fullName, this.carrera, this.semestre, "student").pipe(
-        timeout({ each: 20000 }),
-      ));
-      this.zone.run(() => { this.loading = false; this.showSuccess = true; });
-    } catch (err: unknown) {
-      const e = err as Record<string, unknown>;
-      this.zone.run(() => {
+
+    this.loading = true;
+    this.errorMessage = "";
+
+    this.registerSub?.unsubscribe();
+    this.registerSub = this.auth.signUp(
+      this.email.trim(),
+      this.password,
+      this.fullName.trim(),
+      this.carrera,
+      this.semestre,
+      "student",
+    ).subscribe({
+      next: (user) => {
         this.loading = false;
-        const m = String(e['message'] ?? e['msg'] ?? '');
+        this.auth.setCurrentUser(user);
+        this.router.navigate(["/tabs/dashboard"]);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.log("Register error:", err);
+        let m = "";
+        const e = err as Record<string, unknown>;
+        if (typeof e === 'object' && e !== null) {
+          m = String(e['msg'] ?? e['message'] ?? e['error_description'] ?? e['error'] ?? '');
+          if (!m && 'toString' in e) m = String(e.toString());
+        }
         if (m.includes("rate limit") || m.includes("over_email") || Number(e['status']) === 429) {
           this.showError("Demasiados intentos. Espera unos minutos y vuelve a intentarlo.");
-        } else if (m.includes("already registered") || m.includes("duplicate") || m.includes("already exists")) {
+        } else if (m.includes("already registered") || m.includes("already exists") || m.includes("duplicate")) {
           this.showError("Este correo ya esta registrado.");
-        } else if (String(e['name']) === "TimeoutError") {
+        } else if (m.includes("TimeoutError")) {
           this.showError("Tiempo de espera agotado. Verifica tu conexion.");
         } else {
           this.showError(m || "Error al registrar. Intenta nuevamente.");
         }
-      });
-    }
+      },
+    });
   }
 
-  onDismissSuccess(): void { this.router.navigate(["/login"]); }
   private showError(msg: string): void { this.errorMessage = msg; this.showToast = true; }
 }
 

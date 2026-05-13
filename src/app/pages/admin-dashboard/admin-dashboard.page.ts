@@ -40,7 +40,7 @@ export class AdminDashboardPage implements OnInit {
   ];
 
   ngOnInit(): void {
-    addIcons({ megaphone, notifications, checkbox, calendar, helpCircle, people, logOut, personCircle });
+    addIcons({ megaphone, notifications, checkbox, calendar, helpCircle, people, 'log-out': logOut, 'person-circle': personCircle });
     this.loadMetrics();
   }
 

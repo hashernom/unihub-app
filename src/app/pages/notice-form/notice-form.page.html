@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/notices"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Aviso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="stacked">Título *</ion-label>
+    <ion-input [(ngModel)]="title" placeholder="Título del aviso"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Contenido *</ion-label>
+    <ion-textarea [(ngModel)]="content" rows="5" placeholder="Contenido del aviso"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Prioridad</ion-label>
+    <ion-select [(ngModel)]="priority">
+      <ion-select-option value="low">Baja</ion-select-option>
+      <ion-select-option value="medium">Media</ion-select-option>
+      <ion-select-option value="high">Alta</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Activo</ion-label>
+    <ion-toggle [(ngModel)]="isActive" slot="end"></ion-toggle>
+  </ion-item>
+
+  <div class="form-actions">
+    <ion-button expand="block" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear') }}
+    </ion-button>
+  </div>
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>

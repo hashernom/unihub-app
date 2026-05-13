@@ -35,11 +35,17 @@ export class LoginPage implements OnDestroy {
 
   ngOnDestroy(): void { this.loginSub?.unsubscribe(); }
 
+  ionViewWillEnter(): void {
+    this.loading = false;
+    this.errorMessage = "";
+    this.showToast = false;
+  }
+
   async onLogin(): Promise<void> {
     if (!this.email || !this.password) { this.showError("Por favor completa todos los campos"); return; }
     this.loading = true;
     this.errorMessage = "";
-    this.loginSub = this.auth.signIn(this.email, this.password).subscribe({
+    this.loginSub = this.auth.signIn(this.email.trim(), this.password).subscribe({
       next: (user) => {
         this.loading = false;
         const dashboard = user.profile.role === "admin" ? "/admin/dashboard" : "/tabs/dashboard";
@@ -47,10 +53,17 @@ export class LoginPage implements OnDestroy {
       },
       error: (err) => {
         this.loading = false;
-        const message = err?.message ?? "";
-        if (message.includes("Email not confirmed")) this.showError("Email no verificado. Revisa tu bandeja de entrada.");
-        else if (message.includes("Invalid login credentials")) this.showError("Credenciales invalidas.");
-        else this.showError("Error de conexion. Intenta nuevamente.");
+        let message = "Error de conexion. Intenta nuevamente.";
+        console.log("Login error:", err);
+        try {
+          const errObj = typeof err === 'object' ? err : {};
+          const errMsg = String((errObj as Record<string,string>)['msg'] ?? (errObj as Record<string,string>)['message'] ?? (errObj as Record<string,string>)['error_description'] ?? (errObj as Record<string,string>)['error'] ?? '');
+          if (errMsg.includes("Email not confirmed")) message = "Email no verificado.";
+          else if (errMsg.includes("Invalid login credentials")) message = "Credenciales invalidas.";
+          else if (errMsg.includes("rate limit") || errMsg.includes("over_email")) message = "Demasiados intentos. Espera.";
+          else if (errMsg) message = errMsg;
+        } catch { /* default */ }
+        this.showError(message);
       },
     });
   }

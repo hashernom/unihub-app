@@ -15,6 +15,8 @@ const mockProfile: Profile = {
   full_name: 'Test Student',
   role: 'student',
   avatar_url: null,
+  carrera: 'Ingeniería de Sistemas',
+  semestre: '5',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 };
@@ -76,12 +78,11 @@ describe('AuthService', () => {
       vi.mocked(supabaseMock.createProfile).mockResolvedValue(undefined);
 
       const user = await firstValueFrom(
-        service.signUp('test@test.com', 'password123', 'U20231001', 'Test Student'),
+        service.signUp('test@test.com', 'password123', 'Test Student', 'Ingeniería', '5'),
       );
 
       expect(user.email).toBe('test@test.com');
-      expect(user.profile.student_code).toBe('U20231001');
-      expect(supabaseMock.createProfile).toHaveBeenCalled();
+      expect(user.profile.full_name).toBe('Test Student');
     });
 
     it('should throw if signUp fails', async () => {
@@ -91,7 +92,7 @@ describe('AuthService', () => {
       } as AuthResponse);
 
       await expect(
-        firstValueFrom(service.signUp('test@test.com', 'pw', 'U20231001', 'T')),
+        firstValueFrom(service.signUp('test@test.com', 'pw', 'T', 'Ingeniería', '5')),
       ).rejects.toThrow('already registered');
     });
   });

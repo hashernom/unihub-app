@@ -1,1 +1,149 @@
-<ion-header><ion-toolbar color="primary"><ion-title>Dashboard</ion-title><ion-buttons slot="end"><ion-button routerLink="/profile"><ion-icon slot="icon-only" name="person-circle"></ion-icon></ion-button></ion-buttons></ion-toolbar></ion-header><ion-content class="ion-padding"><h2>Bienvenido a UniHub</h2><p>Aqui apareceran los anuncios y avisos importantes.</p></ion-content>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/profile">
+        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <ion-card>
+          <ion-card-header>
+            <ion-skeleton-text animated style="width: 60%; height: 20px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 30%; height: 14px; margin-top: 8px"></ion-skeleton-text>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-skeleton-text animated style="width: 100%; height: 14px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%; height: 14px; margin-top: 6px"></ion-skeleton-text>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  } @else {
+    <!-- Announcements Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Anuncios</h2>
+        @if (announcements.length > 0) {
+          <span class="count-badge">{{ announcements.length }}</span>
+        }
+      </div>
+
+      <ion-searchbar
+        placeholder="Buscar anuncios..."
+        (ionInput)="onSearchInput($event)"
+        class="search-bar"
+      ></ion-searchbar>
+
+      <div class="filter-chips">
+        @for (cat of categories; track cat.label) {
+          <ion-chip
+            [outline]="activeCategory !== cat.key"
+            [color]="activeCategory === cat.key ? 'primary' : 'medium'"
+            (click)="filterByCategory(cat.key)"
+          >
+            <ion-label>{{ cat.label }}</ion-label>
+          </ion-chip>
+        }
+      </div>
+
+      @if (searchQuery || activeCategory) {
+        <p class="result-count">{{ filteredAnnouncements.length }} resultado{{ filteredAnnouncements.length === 1 ? '' : 's' }}</p>
+      }
+
+      @if (filteredAnnouncements.length === 0) {
+        <ion-card>
+          <ion-card-content class="empty-state">
+            <p>No hay anuncios disponibles{{ searchQuery ? ' para esta búsqueda' : ' en esta categoría' }}.</p>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        @for (announcement of filteredAnnouncements; track announcement.id) {
+          <app-announcement-card [announcement]="announcement"></app-announcement-card>
+        }
+      }
+    </section>
+
+    <!-- Notices Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Avisos</h2>
+        @if (notices.length > 0) {
+          <span class="count-badge">{{ notices.length }}</span>
+        }
+      </div>
+
+      @if (notices.length === 0) {
+        <ion-card>
+          <ion-card-content class="empty-state">
+            <p>No hay avisos importantes.</p>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        @for (notice of notices; track notice.id) {
+          <app-notice-card [notice]="notice"></app-notice-card>
+        }
+      }
+    </section>
+
+    <!-- Events Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Próximos Eventos</h2>
+        <ion-icon name="calendar" class="section-icon"></ion-icon>
+      </div>
+
+      @if (events.length === 0) {
+        <ion-card>
+          <ion-card-content class="empty-state">
+            <p>No hay eventos próximos.</p>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        @for (event of events; track event.id) {
+          <ion-card class="event-card">
+            <ion-card-header>
+              <ion-card-title>{{ event.title }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <span class="event-date">{{ event.start_time | date:'dd/MM/yyyy HH:mm' }}</span>
+            </ion-card-content>
+          </ion-card>
+        }
+      }
+    </section>
+
+    <!-- Surveys Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Encuestas Activas</h2>
+        <ion-badge color="tertiary" class="survey-badge">{{ surveyCount }}</ion-badge>
+      </div>
+
+      @if (surveyCount === 0) {
+        <ion-card>
+          <ion-card-content class="empty-state">
+            <p>No hay encuestas activas en este momento.</p>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        <ion-card button routerLink="/tabs/surveys" class="survey-card">
+          <ion-card-content class="survey-cta">
+            <ion-icon name="checkmark-circle" class="survey-icon"></ion-icon>
+            <span>{{ surveyCount }} encuesta{{ surveyCount === 1 ? '' : 's' }} disponible{{ surveyCount === 1 ? '' : 's' }}</span>
+          </ion-card-content>
+        </ion-card>
+      }
+    </section>
+  }
+</ion-content>

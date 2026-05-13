@@ -1,2 +1,73 @@
-﻿<ion-header><ion-toolbar color="primary"><ion-buttons slot="start"><ion-back-button defaultHref="/admin/dashboard"></ion-back-button></ion-buttons><ion-title>Anuncios</ion-title></ion-toolbar></ion-header>
-<ion-content class="ion-padding"><h2>Gestión de Anuncios</h2><p>Módulo en construcción</p></ion-content>
+﻿<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Anuncios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/admin/announcements/new">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading) {
+    <p class="loading-text">Cargando anuncios...</p>
+  } @else if (announcements.length === 0) {
+    <ion-card>
+      <ion-card-content class="empty-state">
+        <p>No hay anuncios. Crea el primero.</p>
+        <ion-button routerLink="/admin/announcements/new" color="primary">
+          <ion-icon slot="start" name="add"></ion-icon>
+          Crear anuncio
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  } @else {
+    @for (announcement of announcements; track announcement.id) {
+      <ion-card class="admin-card" [class.expired]="isExpired(announcement)">
+        <ion-card-header>
+          <ion-card-title>
+            @if (announcement.is_pinned) {
+              <ion-icon name="pin" class="pinned-icon"></ion-icon>
+            }
+            {{ announcement.title }}
+          </ion-card-title>
+          <div class="card-meta">
+            <ion-badge [color]="isExpired(announcement) ? 'medium' : 'primary'">
+              {{ announcement.category }}
+            </ion-badge>
+            @if (isExpired(announcement)) {
+              <ion-badge color="danger">Expirado</ion-badge>
+            }
+            <span class="card-date">{{ announcement.created_at | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="card-body">{{ announcement.body }}</p>
+          <div class="card-actions">
+            <ion-button size="small" fill="clear" (click)="togglePin(announcement)">
+              <ion-icon slot="icon-only" [name]="announcement.is_pinned ? 'pin' : 'pin-outline'"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="clear" [routerLink]="['/admin/announcements/edit', announcement.id]">
+              <ion-icon slot="icon-only" name="create"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(announcement)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+
+  <ion-alert
+    [isOpen]="showDeleteAlert"
+    header="Confirmar eliminación"
+    message="¿Estás seguro de eliminar este anuncio? Esta acción no se puede deshacer."
+    [buttons]="deleteAlertButtons"
+    (didDismiss)="showDeleteAlert = false"
+  ></ion-alert>
+</ion-content>
