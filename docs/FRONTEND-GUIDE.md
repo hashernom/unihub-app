@@ -1,4 +1,4 @@
-# Frontend Guide — Cómo modificar sin romper
+  # Frontend Guide — Cómo modificar sin romper
 
 ## Arquitectura de estilos
 
