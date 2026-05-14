@@ -13,7 +13,7 @@
 2. [Sistema de Design Tokens](#2-sistema-de-design-tokens)
 3. [Estrategia Tipográfica](#3-estrategia-tipográfica)
 4. [Paleta de Color Mejorada](#4-paleta-de-color-mejorada)
-5. [Arquitectura de Archivos](#5-arquitectura-de-archivos)
+5. [Arquitectura de Archivos] (#5-arquitectura-de-archivos)
 6. [Mixins y Partials SCSS](#6-mixins-y-partials-scss)
 7. [Plan de Consolidación de Componentes](#7-plan-de-consolidación-de-componentes)
 8. [Dark Mode](#8-dark-mode)

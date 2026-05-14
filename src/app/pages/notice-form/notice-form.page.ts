@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute  } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
@@ -14,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-notice-form',
   imports: [
-    FormsModule, RouterLink,
+    FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,

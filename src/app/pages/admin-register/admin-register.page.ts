@@ -3,7 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
-  IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption,
+  IonItem, IonLabel, IonInput, IonButton,
   IonToast, IonSpinner, IonButtons, IonBackButton,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
@@ -13,7 +13,7 @@ import { AuthService } from "../../core/services/auth.service";
   imports: [
     FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
-    IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption,
+    IonItem, IonLabel, IonInput, IonButton,
     IonToast, IonSpinner, IonButtons, IonBackButton,
   ],
   templateUrl: "./admin-register.page.html",

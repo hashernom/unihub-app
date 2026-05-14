@@ -1,7 +1,7 @@
-@import 'theme/variables.css';
-@import 'theme/tokens.css';
-@import 'theme/utilities.css';
-@import 'app/styles/index';
+@use 'theme/variables.css';
+@use 'theme/tokens.css';
+@use 'theme/utilities.css';
+@use 'app/styles/index';
 
 .ion-page.ion-page-hidden,
 app-login.ion-page-hidden,

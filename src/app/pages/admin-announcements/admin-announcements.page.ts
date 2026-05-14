@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
-  IonButtons, IonBackButton, IonList, IonItem,
-  IonLabel, IonButton, IonIcon, IonBadge,
+  IonButtons, IonBackButton,
+  IonButton, IonIcon, IonBadge,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonAlert,
 } from '@ionic/angular/standalone';
@@ -17,8 +17,8 @@ import { AnnouncementService, type Announcement } from '../../core/services/anno
   imports: [
     RouterLink, DatePipe,
     IonContent, IonHeader, IonTitle, IonToolbar,
-    IonButtons, IonBackButton, IonList, IonItem,
-    IonLabel, IonButton, IonIcon, IonBadge,
+    IonButtons, IonBackButton,
+    IonButton, IonIcon, IonBadge,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonAlert,
   ],
