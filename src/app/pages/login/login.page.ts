@@ -5,7 +5,7 @@ import { Subscription } from "rxjs";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
-  IonToast, IonSpinner,
+  IonToast, IonSpinner, IonIcon,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 
@@ -15,7 +15,7 @@ import { AuthService } from "../../core/services/auth.service";
     FormsModule, RouterLink,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonItem, IonLabel, IonInput, IonButton,
-    IonToast, IonSpinner,
+    IonToast, IonSpinner, IonIcon,
   ],
   templateUrl: "./login.page.html",
   styleUrl: "./login.page.scss",

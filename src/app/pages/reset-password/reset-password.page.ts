@@ -11,7 +11,7 @@ import {
   IonInput,
   IonButton,
   IonToast,
-  IonSpinner,
+  IonSpinner, IonIcon,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -28,7 +28,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonInput,
     IonButton,
     IonToast,
-    IonSpinner,
+    IonSpinner, IonIcon,
   ],
   templateUrl: './reset-password.page.html',
   styleUrl: './reset-password.page.scss',

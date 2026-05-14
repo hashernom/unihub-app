@@ -1,11 +1,26 @@
-.announcement-card {
-  margin: var(--space-2) 0;
+﻿.announcement-card {
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
+  background: var(--surface-gradient-card);
+  border: 1px solid rgba(255,255,255,0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-gold);
+  border-radius: 0 2px 2px 0;
 }
 
 .pinned-icon {
-  color: var(--ion-color-warning);
+  color: var(--color-gold);
   margin-right: var(--space-1);
   vertical-align: middle;
 }

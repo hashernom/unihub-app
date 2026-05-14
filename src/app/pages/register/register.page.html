@@ -1,30 +1,36 @@
-﻿<ion-header>
+﻿<ion-header class="ion-hide">
   <ion-toolbar color="primary">
     <ion-title>Crear cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
+<ion-content class="auth-content">
   <div class="auth-container">
-    <h1>Regístrate</h1>
-    <p class="subtitle">Ingresa tu correo institucional y tus datos</p>
-    <form (ngSubmit)="onRegister()">
-      <ion-item>
+    <div class="auth-brand-mark">
+      <div class="auth-brand-icon">
+        <ion-icon name="school"></ion-icon>
+      </div>
+      <h1>Crear cuenta</h1>
+      <p class="subtitle">Ingresa tu correo institucional y tus datos</p>
+    </div>
+    <div class="auth-card">
+      <form (ngSubmit)="onRegister()">
+      <ion-item class="auth-item">
         <ion-label position="floating">Correo institucional</ion-label>
         <ion-input type="email" [(ngModel)]="email" name="email" required autocomplete="email" placeholder="01240371032@mail.udes.edu.co"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item class="auth-item">
         <ion-label position="floating">Nombre completo</ion-label>
         <ion-input type="text" [(ngModel)]="fullName" name="fullName" required></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item class="auth-item">
         <ion-label position="floating">Contraseña</ion-label>
         <ion-input type="password" [(ngModel)]="password" name="password" required autocomplete="new-password"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item class="auth-item">
         <ion-label position="floating">Confirmar contraseña</ion-label>
         <ion-input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required autocomplete="new-password"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item class="auth-item">
         <ion-label position="stacked">Carrera</ion-label>
         <ion-select [(ngModel)]="carrera" name="carrera" required interface="popover" placeholder="Selecciona tu carrera">
           @for (c of carreras; track c) {
@@ -32,7 +38,7 @@
           }
         </ion-select>
       </ion-item>
-      <ion-item>
+      <ion-item class="auth-item">
         <ion-label position="stacked">Semestre</ion-label>
         <ion-select [(ngModel)]="semestre" name="semestre" required interface="popover" placeholder="Selecciona tu semestre">
           @for (s of semestres; track s) {
@@ -40,13 +46,14 @@
           }
         </ion-select>
       </ion-item>
-      <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top">
+      <ion-button expand="block" class="ion-margin-top auth-submit-btn" type="submit" [disabled]="loading">
         @if (loading) { <ion-spinner slot="start"></ion-spinner> }
         {{ loading ? "Registrando..." : "Crear cuenta" }}
       </ion-button>
     </form>
+    </div>
     <div class="auth-links">
-      <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+      <a routerLink="/login">¿Ya tienes cuenta? Inicia sesión</a>
     </div>
   </div>
   <ion-toast [isOpen]="showToast" [message]="errorMessage" [duration]="4000" color="danger" (didDismiss)="showToast = false"></ion-toast>

@@ -6,7 +6,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
   IonSelect, IonSelectOption,
-  IonToast, IonSpinner,
+  IonToast, IonSpinner, IonIcon,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 
@@ -21,7 +21,7 @@ function isValidInstitutionalEmail(email: string): boolean {
 @Component({
   selector: "app-register",
   imports: [FormsModule, RouterLink,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption, IonToast, IonSpinner],
+    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption, IonToast, IonSpinner, IonIcon],
   templateUrl: "./register.page.html",
   styleUrl: "./register.page.scss",
 })

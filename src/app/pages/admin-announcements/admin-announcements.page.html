@@ -14,17 +14,25 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <p class="loading-text">Cargando anuncios...</p>
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <div class="skeleton-card-wrapped">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      }
+    </div>
   } @else if (announcements.length === 0) {
-    <ion-card>
-      <ion-card-content class="empty-state">
-        <p>No hay anuncios. Crea el primero.</p>
-        <ion-button routerLink="/admin/announcements/new" color="primary">
-          <ion-icon slot="start" name="add"></ion-icon>
-          Crear anuncio
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+    <div class="empty-state">
+      <ion-icon name="newspaper" class="empty-state-icon"></ion-icon>
+      <p class="empty-state-text">No hay anuncios</p>
+      <p class="empty-state-subtext">Crea el primer anuncio para tu institución.</p>
+      <ion-button routerLink="/admin/announcements/new" color="primary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crear anuncio
+      </ion-button>
+    </div>
   } @else {
     @for (announcement of announcements; track announcement.id) {
       <ion-card class="admin-card" [class.expired]="isExpired(announcement)">

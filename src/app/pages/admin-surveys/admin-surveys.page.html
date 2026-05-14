@@ -14,17 +14,25 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <p class="loading-text">Cargando encuestas...</p>
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <div class="skeleton-card-wrapped">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      }
+    </div>
   } @else if (surveys.length === 0) {
-    <ion-card>
-      <ion-card-content class="empty-state">
-        <p>No hay encuestas. Crea la primera.</p>
-        <ion-button routerLink="/admin/surveys/new" color="primary">
-          <ion-icon slot="start" name="add"></ion-icon>
-          Crear encuesta
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+    <div class="empty-state">
+      <ion-icon name="checkbox" class="empty-state-icon"></ion-icon>
+      <p class="empty-state-text">No hay encuestas</p>
+      <p class="empty-state-subtext">Crea la primera encuesta para tus estudiantes.</p>
+      <ion-button routerLink="/admin/surveys/new" color="primary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crear encuesta
+      </ion-button>
+    </div>
   } @else {
     @for (survey of surveys; track survey.id) {
       <ion-card class="admin-card" [class.inactive]="!survey.is_active">

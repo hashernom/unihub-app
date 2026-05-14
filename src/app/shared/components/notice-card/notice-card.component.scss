@@ -1,14 +1,31 @@
-.notice-card {
-  margin: var(--space-2) 0;
+﻿.notice-card {
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
+  background: var(--surface-gradient-card);
+  border: 1px solid rgba(255,255,255,0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.notice-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--ion-color-secondary);
+  border-radius: 0 2px 2px 0;
 }
 
 .notice-high {
-  margin: var(--space-2) 0;
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
-  border-left: 4px solid var(--ion-color-danger);
+  background: var(--surface-gradient-card);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-left: 3px solid var(--ion-color-danger);
 }
 
 .alert-icon {

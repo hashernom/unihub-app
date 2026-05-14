@@ -7,27 +7,50 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <div class="metrics-row">
-    <div class="metric-card"><span class="metric-value">{{ userCount }}</span><span class="metric-label">Usuarios</span></div>
-    <div class="metric-card"><span class="metric-value">{{ surveyCount }}</span><span class="metric-label">Encuestas activas</span></div>
-    <div class="metric-card"><span class="metric-value">{{ eventCount }}</span><span class="metric-label">Pr�ximos eventos</span></div>
+<ion-content>
+  <div class="hero admin-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-admin-badge">Panel de Administración</div>
+      <h1 class="hero-greeting">Bienvenido</h1>
+      <p class="hero-sub">Gestiona los módulos de UniHub</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ userCount }}</span>
+          <span class="hero-stat-label">Usuarios</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ surveyCount }}</span>
+          <span class="hero-stat-label">Encuestas activas</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ eventCount }}</span>
+          <span class="hero-stat-label">Próximos eventos</span>
+        </div>
+      </div>
+    </div>
   </div>
-  <h1>Administraci&oacute;n</h1>
-  <p class="subtitle">Gestiona los m&oacute;dulos de UniHub</p>
-  <ion-grid>
-    <ion-row>
-      @for (card of adminCards; track card.title) {
-        <ion-col size="6" size-md="4">
-          <ion-card [routerLink]="card.route" class="dashboard-card" [style.--card-color]="'var(--ion-color-' + card.color + ')'">
-            <ion-card-header>
-              <ion-icon [name]="card.icon" class="card-icon"></ion-icon>
-              <ion-card-title>{{ card.title }}</ion-card-title>
-            </ion-card-header>
-          </ion-card>
-        </ion-col>
-      }
-    </ion-row>
-  </ion-grid>
+
+  <div class="admin-nav-section">
+    <div class="section-header">
+      <div class="section-header-accent"></div>
+      <ion-icon name="grid" class="section-icon"></ion-icon>
+      <h2>Módulos</h2>
+    </div>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        @for (card of adminCards; track card.title) {
+          <ion-col size="6" size-md="4">
+            <ion-card [routerLink]="card.route" class="dashboard-card" [style.--card-color]="'var(--ion-color-' + card.color + ')'">
+              <ion-card-header>
+                <ion-icon [name]="card.icon" class="card-icon"></ion-icon>
+                <ion-card-title>{{ card.title }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-content>
 

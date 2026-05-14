@@ -3,14 +3,14 @@ import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
-  IonItem, IonLabel, IonInput, IonButton, IonSpinner, IonToast,
+  IonItem, IonLabel, IonInput, IonButton, IonSpinner, IonIcon, IonToast,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 
 @Component({
   selector: "app-forgot-password",
   imports: [FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSpinner, IonToast],
+    IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSpinner, IonIcon, IonToast],
   templateUrl: "./forgot-password.page.html",
   styleUrl: "./forgot-password.page.scss",
 })

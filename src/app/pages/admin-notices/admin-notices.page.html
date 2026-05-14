@@ -14,17 +14,25 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <p class="loading-text">Cargando avisos...</p>
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <div class="skeleton-card-wrapped">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      }
+    </div>
   } @else if (notices.length === 0) {
-    <ion-card>
-      <ion-card-content class="empty-state">
-        <p>No hay avisos. Crea el primero.</p>
-        <ion-button routerLink="/admin/notices/new" color="primary">
-          <ion-icon slot="start" name="add"></ion-icon>
-          Crear aviso
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+    <div class="empty-state">
+      <ion-icon name="notifications" class="empty-state-icon"></ion-icon>
+      <p class="empty-state-text">No hay avisos</p>
+      <p class="empty-state-subtext">Crea el primer aviso importante.</p>
+      <ion-button routerLink="/admin/notices/new" color="primary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crear aviso
+      </ion-button>
+    </div>
   } @else {
     @for (notice of notices; track notice.id) {
       <ion-card class="admin-card" [class.inactive]="!notice.is_active">

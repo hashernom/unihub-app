@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonInput, IonButton,
-  IonToast, IonSpinner, IonButtons, IonBackButton,
+  IonToast, IonSpinner, IonButtons, IonBackButton, IonIcon,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 
@@ -14,7 +14,7 @@ import { AuthService } from "../../core/services/auth.service";
     FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonItem, IonLabel, IonInput, IonButton,
-    IonToast, IonSpinner, IonButtons, IonBackButton,
+    IonToast, IonSpinner, IonButtons, IonBackButton, IonIcon,
   ],
   templateUrl: "./admin-register.page.html",
   styleUrl: "./admin-register.page.scss",

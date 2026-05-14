@@ -30,9 +30,31 @@
       }
     </div>
   } @else {
-    <!-- Announcements Section -->
-    <section class="section">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <h1 class="hero-greeting">¡Bienvenido!</h1>
+        <p class="hero-sub">Mantente al día con tu plataforma universitaria</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value">{{ announcements.length }}</span>
+            <span class="hero-stat-label">Anuncios</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">{{ notices.length }}</span>
+            <span class="hero-stat-label">Avisos</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">{{ surveyCount }}</span>
+            <span class="hero-stat-label">Encuestas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="section section-announcements">
       <div class="section-header">
+        <div class="section-header-accent"></div>
+        <ion-icon name="megaphone" class="section-icon"></ion-icon>
         <h2>Anuncios</h2>
         @if (announcements.length > 0) {
           <span class="count-badge">{{ announcements.length }}</span>
@@ -62,11 +84,11 @@
       }
 
       @if (filteredAnnouncements.length === 0) {
-        <ion-card>
-          <ion-card-content class="empty-state">
-            <p>No hay anuncios disponibles{{ searchQuery ? ' para esta búsqueda' : ' en esta categoría' }}.</p>
-          </ion-card-content>
-        </ion-card>
+        <div class="empty-state">
+          <ion-icon name="newspaper" class="empty-state-icon"></ion-icon>
+          <p class="empty-state-text">No hay anuncios disponibles{{ searchQuery ? ' para esta búsqueda' : ' en esta categoría' }}.</p>
+          <p class="empty-state-subtext">Los anuncios aparecerán aquí cuando sean publicados.</p>
+        </div>
       } @else {
         @for (announcement of filteredAnnouncements; track announcement.id) {
           <app-announcement-card [announcement]="announcement"></app-announcement-card>
@@ -75,8 +97,10 @@
     </section>
 
     <!-- Notices Section -->
-    <section class="section">
+    <section class="section section-notices">
       <div class="section-header">
+        <div class="section-header-accent"></div>
+        <ion-icon name="warning" class="section-icon"></ion-icon>
         <h2>Avisos</h2>
         @if (notices.length > 0) {
           <span class="count-badge">{{ notices.length }}</span>
@@ -84,11 +108,11 @@
       </div>
 
       @if (notices.length === 0) {
-        <ion-card>
-          <ion-card-content class="empty-state">
-            <p>No hay avisos importantes.</p>
-          </ion-card-content>
-        </ion-card>
+        <div class="empty-state">
+          <ion-icon name="checkmark-circle" class="empty-state-icon"></ion-icon>
+          <p class="empty-state-text">No hay avisos importantes</p>
+          <p class="empty-state-subtext">Todo en orden por ahora.</p>
+        </div>
       } @else {
         @for (notice of notices; track notice.id) {
           <app-notice-card [notice]="notice"></app-notice-card>
@@ -97,18 +121,19 @@
     </section>
 
     <!-- Events Section -->
-    <section class="section">
+    <section class="section section-events">
       <div class="section-header">
-        <h2>Próximos Eventos</h2>
+        <div class="section-header-accent"></div>
         <ion-icon name="calendar" class="section-icon"></ion-icon>
+        <h2>Próximos Eventos</h2>
       </div>
 
       @if (events.length === 0) {
-        <ion-card>
-          <ion-card-content class="empty-state">
-            <p>No hay eventos próximos.</p>
-          </ion-card-content>
-        </ion-card>
+        <div class="empty-state">
+          <ion-icon name="calendar-outline" class="empty-state-icon"></ion-icon>
+          <p class="empty-state-text">No hay eventos próximos</p>
+          <p class="empty-state-subtext">Los eventos del calendario académico aparecerán aquí.</p>
+        </div>
       } @else {
         @for (event of events; track event.id) {
           <ion-card class="event-card">
@@ -124,23 +149,28 @@
     </section>
 
     <!-- Surveys Section -->
-    <section class="section">
+    <section class="section section-surveys">
       <div class="section-header">
+        <div class="section-header-accent"></div>
+        <ion-icon name="checkbox" class="section-icon"></ion-icon>
         <h2>Encuestas Activas</h2>
-        <ion-badge color="primary" class="survey-badge">{{ surveyCount }}</ion-badge>
       </div>
 
       @if (surveyCount === 0) {
-        <ion-card>
-          <ion-card-content class="empty-state">
-            <p>No hay encuestas activas en este momento.</p>
-          </ion-card-content>
-        </ion-card>
+        <div class="empty-state">
+          <ion-icon name="document-text" class="empty-state-icon"></ion-icon>
+          <p class="empty-state-text">No hay encuestas activas</p>
+          <p class="empty-state-subtext">Las encuestas disponibles aparecerán aquí.</p>
+        </div>
       } @else {
-        <ion-card button routerLink="/tabs/surveys" class="survey-card">
-          <ion-card-content class="survey-cta">
-            <ion-icon name="checkmark-circle" class="survey-icon"></ion-icon>
-            <span>{{ surveyCount }} encuesta{{ surveyCount === 1 ? '' : 's' }} disponible{{ surveyCount === 1 ? '' : 's' }}</span>
+        <ion-card button routerLink="/tabs/surveys" class="survey-cta-card">
+          <ion-card-content class="survey-cta-content">
+            <ion-icon name="checkmark-circle" class="survey-icon-pulse"></ion-icon>
+            <div class="survey-cta-text">
+              <strong>{{ surveyCount }} encuesta{{ surveyCount === 1 ? '' : 's' }} disponible{{ surveyCount === 1 ? '' : 's' }}</strong>
+              <span>Toca para responder</span>
+            </div>
+            <ion-icon name="chevron-forward" class="survey-chevron"></ion-icon>
           </ion-card-content>
         </ion-card>
       }

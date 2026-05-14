@@ -1,25 +1,42 @@
-%card-base {
+﻿%card-base {
   margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
   background: var(--surface-gradient-card);
   border: 1px solid rgba(255,255,255,0.6);
-  backdrop-filter: blur(2px);
+  position: relative;
+  overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--card-accent, var(--color-gold));
+    border-radius: 0 2px 2px 0;
+  }
 
   &:active {
     transform: scale(0.99);
   }
 }
 
-.card { @extend %card-base; }
-.card-admin { @extend %card-base; }
-.card-survey { @extend %card-base; }
-.card-event { @extend %card-base; }
+.card { @extend %card-base; --card-accent: var(--color-gold); }
+.card-admin { @extend %card-base; --card-accent: var(--color-gold); }
+.card-survey { @extend %card-base; --card-accent: var(--ion-color-success); }
+.card-event { @extend %card-base; --card-accent: var(--ion-color-tertiary); }
+
 .card-question {
   @extend %card-base;
   margin: var(--space-3) var(--space-4);
-  border-left: 3px solid var(--color-gold);
+
+  &::before {
+    width: 3px;
+    background: var(--color-gold);
+  }
 }
 
 .card-dashboard {
@@ -31,7 +48,9 @@
   position: relative;
   overflow: hidden;
 
-  &::before {
+  &::before { display: none; }
+
+  &::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -41,12 +60,12 @@
 }
 
 .card-high-priority {
-  border-left: 4px solid var(--ion-color-danger);
-  position: relative;
+  @extend %card-base;
+  --card-accent: var(--ion-color-danger);
 }
 
-.card-expired { opacity: 0.5; }
-.card-disabled { opacity: 0.5; pointer-events: none; }
+.card-expired { opacity: 0.4; }
+.card-disabled { opacity: 0.4; pointer-events: none; }
 
 .card-meta {
   display: flex;

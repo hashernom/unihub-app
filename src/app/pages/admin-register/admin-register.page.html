@@ -4,16 +4,25 @@
     <ion-title>Registrar Admin</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <h1>Nuevo administrador</h1>
-  <p class="subtitle">Crea una cuenta de administrador</p>
-  <form (ngSubmit)="register()">
-    <ion-item><ion-label position="floating">Nombre completo</ion-label><ion-input [(ngModel)]="fullName" name="fullName" required></ion-input></ion-item>
-    <ion-item><ion-label position="floating">Email</ion-label><ion-input type="email" [(ngModel)]="email" name="email" required></ion-input></ion-item>
-    <ion-item><ion-label position="floating">Contrase&ntilde;a</ion-label><ion-input type="password" [(ngModel)]="password" name="password" required></ion-input></ion-item>
-    <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top">
-      @if (loading) { <ion-spinner slot="start"></ion-spinner> } {{ loading ? "Registrando..." : "Registrar admin" }}
-    </ion-button>
-  </form>
+<ion-content class="auth-content">
+  <div class="auth-container">
+    <div class="auth-brand-mark">
+      <div class="auth-brand-icon">
+        <ion-icon name="shield-checkmark"></ion-icon>
+      </div>
+      <h1>Nuevo administrador</h1>
+      <p class="subtitle">Crea una cuenta de administrador</p>
+    </div>
+    <div class="auth-card">
+      <form (ngSubmit)="register()">
+        <ion-item class="auth-item"><ion-label position="floating">Nombre completo</ion-label><ion-input [(ngModel)]="fullName" name="fullName" required></ion-input></ion-item>
+        <ion-item class="auth-item"><ion-label position="floating">Email</ion-label><ion-input type="email" [(ngModel)]="email" name="email" required></ion-input></ion-item>
+        <ion-item class="auth-item"><ion-label position="floating">Contraseña</ion-label><ion-input type="password" [(ngModel)]="password" name="password" required></ion-input></ion-item>
+        <ion-button expand="block" type="submit" [disabled]="loading" class="ion-margin-top auth-submit-btn">
+          @if (loading) { <ion-spinner slot="start"></ion-spinner> } {{ loading ? "Registrando..." : "Registrar admin" }}
+        </ion-button>
+      </form>
+    </div>
+  </div>
   <ion-toast [isOpen]="showToast" [message]="toastMessage" [duration]="3000" (didDismiss)="showToast = false"></ion-toast>
 </ion-content>

@@ -1,16 +1,16 @@
-.metrics-row {
+﻿.metrics-row {
   display: flex;
   gap: var(--space-3);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   flex-wrap: wrap;
 }
 
 .metric-card {
   flex: 1;
-  min-width: 100px;
+  min-width: 80px;
   background: var(--surface-card-warm);
   border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-3);
   text-align: center;
   box-shadow: var(--shadow-sm);
   border: 1px solid rgba(212,168,67,0.1);
@@ -18,18 +18,19 @@
 
 .metric-value {
   display: block;
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--weight-bold);
   color: var(--ion-color-primary);
   line-height: 1;
+  margin-bottom: var(--space-1);
 }
 
 .metric-label {
   display: block;
   font-size: var(--text-xs);
   color: var(--text-secondary);
-  margin-top: var(--space-1);
   font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
 }
 
 .dashboard-section {
@@ -44,6 +45,7 @@
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
+  position: relative;
 }
 .dashboard-section-header h2 {
   font-size: var(--text-lg);
@@ -63,6 +65,5 @@
   overflow-x: auto;
   padding-bottom: var(--space-2);
   scrollbar-width: none;
-
   &::-webkit-scrollbar { display: none; }
 }

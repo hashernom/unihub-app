@@ -1,8 +1,8 @@
 ﻿import { Component } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-admin-users',
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon],
   templateUrl: './admin-users.page.html',
   styleUrl: './admin-users.page.scss',
 })
