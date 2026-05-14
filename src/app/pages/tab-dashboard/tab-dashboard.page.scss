@@ -86,7 +86,7 @@
 .survey-card {
   margin: 8px 0;
   border-radius: 12px;
-  --background: var(--ion-color-tertiary-tint, #e8f0fe);
+  --background: var(--ion-color-primary-tint, #e8f0fe);
 }
 
 .survey-cta {
@@ -94,12 +94,12 @@
   align-items: center;
   gap: 10px;
   font-weight: 500;
-  color: var(--ion-color-tertiary);
+  color: var(--ion-color-primary);
 }
 
 .survey-icon {
   font-size: 1.5rem;
-  color: var(--ion-color-tertiary);
+  color: var(--ion-color-primary);
 }
 
 @media (min-width: 768px) {

@@ -39,6 +39,17 @@ export class AuthService {
   }
 
   async initialize(): Promise<void> {
+    // Dev mode: clear persisted sessions on server restart (not on F5 refresh)
+    const clearKey = 'unihub_last_init';
+    const prev = localStorage.getItem(clearKey);
+    if (prev) {
+      const elapsed = Date.now() - parseInt(prev, 10);
+      if (elapsed > 3000) {
+        const authKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-'));
+        for (const key of authKeys) localStorage.removeItem(key);
+      }
+    }
+    localStorage.setItem(clearKey, Date.now().toString());
     await this.restoreSession();
   }
 

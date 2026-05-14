@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/surveys"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar' : 'Nueva' }} Encuesta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="previewMode = !previewMode">
+        <ion-icon slot="icon-only" [name]="previewMode ? 'eye-off' : 'eye'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (previewMode) {
+    <div class="preview-container">
+      <h2>{{ title || 'Vista previa' }}</h2>
+      @if (description) {
+        <p>{{ description }}</p>
+      }
+      @if (endDate) {
+        <p>Vence: {{ endDate | date:'dd/MM/yyyy' }}</p>
+      }
+      @for (q of questions; track q.tempId; let i = $index) {
+        <div class="preview-question">
+          <h4>{{ i + 1 }}. {{ q.question_text || '(sin título)' }}@if (q.is_required) {<span class="required-star">*</span>}</h4>
+          @switch (q.question_type) {
+            @case ('text') {
+              <ion-textarea placeholder="Escribe tu respuesta..." [autoGrow]="true" disabled></ion-textarea>
+            }
+            @case ('single_choice') {
+              <ion-radio-group [value]="undefined">
+                @for (opt of q.options; track opt) {
+                  <ion-item lines="none">
+                    <ion-radio [value]="opt" slot="start" [disabled]="true">{{ opt }}</ion-radio>
+                  </ion-item>
+                }
+              </ion-radio-group>
+            }
+            @case ('multiple_choice') {
+              @for (opt of q.options; track opt) {
+                <ion-item lines="none">
+                  <ion-checkbox slot="start" [disabled]="true">{{ opt }}</ion-checkbox>
+                </ion-item>
+              }
+            }
+            @case ('rating') {
+              <div class="preview-stars">★★★★★</div>
+            }
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <ion-item>
+    <ion-label position="stacked">Título *</ion-label>
+    <ion-input [(ngModel)]="title" placeholder="Título de la encuesta"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Descripción</ion-label>
+    <ion-textarea [(ngModel)]="description" rows="3" placeholder="Descripción de la encuesta (opcional)"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Fecha de inicio</ion-label>
+  </ion-item>
+  <ion-datetime presentation="date" [(ngModel)]="startDate" style="margin: 0 16px 16px;"></ion-datetime>
+
+  <ion-item>
+    <ion-label>Fecha de cierre</ion-label>
+  </ion-item>
+  <ion-datetime presentation="date" [(ngModel)]="endDate" style="margin: 0 16px 16px;"></ion-datetime>
+
+  <ion-item>
+    <ion-label>Activa</ion-label>
+    <ion-toggle [(ngModel)]="isActive" slot="end"></ion-toggle>
+  </ion-item>
+
+  <h3 class="section-title">Preguntas</h3>
+
+  @for (q of questions; track q.tempId; let i = $index) {
+    <ion-card class="question-card">
+      <ion-card-header>
+        <ion-card-title>
+          <span class="question-number">{{ i + 1 }}.</span>
+          {{ q.question_text || 'Nueva pregunta' }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Pregunta</ion-label>
+          <ion-input [(ngModel)]="q.question_text" placeholder="Escribe la pregunta"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Tipo</ion-label>
+          <ion-select [(ngModel)]="q.question_type">
+            @for (t of questionTypes; track t.value) {
+              <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        @if (q.question_type === 'single_choice' || q.question_type === 'multiple_choice') {
+          <ion-label class="section-title" style="font-size: 0.9rem; display: block; margin-top: 12px;">Opciones</ion-label>
+          @for (opt of q.options; track opt; let j = $index) {
+            <div class="option-row">
+              <ion-input [(ngModel)]="q.options[j]" placeholder="Opción {{ j + 1 }}"></ion-input>
+              <ion-button size="small" fill="clear" color="danger" (click)="removeOption(q, j)">
+                <ion-icon slot="icon-only" name="remove"></ion-icon>
+              </ion-button>
+            </div>
+          }
+          <ion-button size="small" fill="clear" class="add-option-btn" (click)="addOption(q)">
+            <ion-icon slot="start" name="add"></ion-icon>
+            Agregar opción
+          </ion-button>
+        }
+
+        <ion-item>
+          <ion-label>Obligatoria</ion-label>
+          <ion-toggle [(ngModel)]="q.is_required" slot="end"></ion-toggle>
+        </ion-item>
+
+        <div class="question-actions">
+          <ion-button size="small" fill="clear" (click)="moveUp(i)" [disabled]="i === 0">
+            <ion-icon slot="icon-only" name="arrow-up"></ion-icon>
+          </ion-button>
+          <ion-button size="small" fill="clear" (click)="moveDown(i)" [disabled]="i === questions.length - 1">
+            <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
+          </ion-button>
+          <ion-button size="small" fill="clear" color="danger" (click)="removeQuestion(i)">
+            <ion-icon slot="icon-only" name="remove"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <ion-button expand="block" fill="outline" (click)="addQuestion()">
+    <ion-icon slot="start" name="add"></ion-icon>
+    Agregar pregunta
+  </ion-button>
+
+  <div class="form-actions">
+    <ion-button expand="block" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar encuesta' : 'Crear encuesta') }}
+    </ion-button>
+  </div>
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>

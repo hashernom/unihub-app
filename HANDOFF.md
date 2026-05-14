@@ -109,7 +109,7 @@ src/app/
 - Configurar `FCM_SERVER_KEY` como secreto de la Edge Function (si se quiere notificaciones reales)
 
 ### Verificación final (cuando corras `ng serve`)
-1. **Registro** de nuevo estudiante → debe ir directo al dashboard sin pasar por login
+1. **Registro** de nuevo estudiante → debe ir directo al dashboard sin pasar por login  
 2. **Recargar página** → debe permanecer en dashboard (no redirigir al login)
 3. **Login con admin** → `admin@unihub.com` / `Admin123456!` → debe entrar al admin dashboard
 4. **Cerrar sesión** → debe ir al login sin `ExpressionChangedError`

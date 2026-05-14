@@ -16,6 +16,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', loadComponent: () => import('./pages/tab-dashboard/tab-dashboard.page').then(m => m.TabDashboardPage) },
       { path: 'surveys', loadComponent: () => import('./pages/tab-surveys/tab-surveys.page').then(m => m.TabSurveysPage) },
+      { path: 'surveys/:id', loadComponent: () => import('./pages/survey-response/survey-response.page').then(m => m.SurveyResponsePage) },
       { path: 'calendar', loadComponent: () => import('./pages/tab-calendar/tab-calendar.page').then(m => m.TabCalendarPage) },
       { path: 'help', loadComponent: () => import('./pages/tab-help/tab-help.page').then(m => m.TabHelpPage) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -35,6 +36,9 @@ export const routes: Routes = [
   { path: 'admin/notices/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/notice-form/notice-form.page').then(m => m.NoticeFormPage) },
   { path: 'admin/notices/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/notice-form/notice-form.page').then(m => m.NoticeFormPage) },
   { path: 'admin/surveys', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-surveys/admin-surveys.page').then(m => m.AdminSurveysPage) },
+  { path: 'admin/surveys/results/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/survey-results/survey-results.page').then(m => m.SurveyResultsPage) },
+  { path: 'admin/surveys/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/survey-form/survey-form.page').then(m => m.SurveyFormPage) },
+  { path: 'admin/surveys/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/survey-form/survey-form.page').then(m => m.SurveyFormPage) },
   { path: 'admin/events', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-events/admin-events.page').then(m => m.AdminEventsPage) },
   { path: 'admin/faq', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-faq/admin-faq.page').then(m => m.AdminFaqPage) },
   { path: 'admin/users', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-users/admin-users.page').then(m => m.AdminUsersPage) },

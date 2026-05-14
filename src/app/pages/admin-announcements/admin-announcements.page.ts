@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import {
@@ -36,6 +36,7 @@ import { AnnouncementService, type Announcement } from '../../core/services/anno
   `,
 })
 export class AdminAnnouncementsPage implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly announcementService = inject(AnnouncementService);
 
   announcements: Announcement[] = [];
@@ -61,6 +62,7 @@ export class AdminAnnouncementsPage implements OnInit {
       this.announcements = [];
     }
     this.loading = false;
+    this.cdr.detectChanges();
   }
 
   async togglePin(announcement: Announcement): Promise<void> {

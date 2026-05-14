@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/surveys"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Resultados</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else if (error) {
+    <div class="empty-state">
+      <p>Error al cargar resultados.</p>
+    </div>
+  } @else if (results) {
+    @if (results.total_responses === 0) {
+      <div class="empty-state">
+        <p>0 respuestas</p>
+        <p>Sin datos para exportar</p>
+      </div>
+    } @else {
+      <div class="results-header">
+        <h2>{{ results.survey_title }}</h2>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">{{ results.total_responses }}</div>
+            <div class="stat-label">Respuestas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ responseRate() }}%</div>
+            <div class="stat-label">Tasa de respuesta</div>
+          </div>
+        </div>
+        <div class="export-actions">
+          <ion-button fill="outline" size="small" (click)="exportCsv()" [disabled]="exporting">
+            <ion-icon slot="start" name="download"></ion-icon>
+            CSV
+          </ion-button>
+          <ion-button fill="outline" size="small" (click)="exportPdf()" [disabled]="exporting">
+            <ion-icon slot="start" name="download"></ion-icon>
+            PDF
+          </ion-button>
+        </div>
+      </div>
+
+      @for (q of results.questions; track q.question_id; let i = $index) {
+        <ion-card class="question-card">
+          <ion-card-header>
+            <ion-card-title>{{ i + 1 }}. {{ q.question_text }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            @switch (q.question_type) {
+              @case ('single_choice') {
+                @if (hasOptionData(q)) {
+                  <div class="chart-container">
+                    <canvas [id]="'chart-' + q.question_id"></canvas>
+                  </div>
+                } @else {
+                  <p class="empty-state" style="padding: 8px;">Sin datos</p>
+                }
+              }
+              @case ('multiple_choice') {
+                @if (hasOptionData(q)) {
+                  <div class="chart-container">
+                    <canvas [id]="'chart-' + q.question_id"></canvas>
+                  </div>
+                } @else {
+                  <p class="empty-state" style="padding: 8px;">Sin datos</p>
+                }
+              }
+              @case ('rating') {
+                <div class="rating-average">
+                  {{ q.average_rating ?? '—' }} / 5
+                </div>
+                <div class="chart-container">
+                  <canvas [id]="'chart-' + q.question_id"></canvas>
+                </div>
+              }
+              @case ('text') {
+                @if (hasTextResponses(q)) {
+                  <ion-list>
+                    @for (resp of q.text_responses; track resp) {
+                      <ion-item>
+                        <ion-label>{{ resp }}</ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                } @else {
+                  <p class="empty-state" style="padding: 8px;">Sin respuestas de texto</p>
+                }
+              }
+            }
+          </ion-card-content>
+        </ion-card>
+      }
+    }
+  }
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>

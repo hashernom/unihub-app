@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { DatePipe } from "@angular/common";
-import { Subject, Subscription } from "rxjs";
+import { Subject, Subscription, firstValueFrom } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
@@ -18,6 +18,7 @@ import { SupabaseService } from "../../core/services/supabase.service";
 import { AnnouncementService, type Announcement } from "../../core/services/announcement.service";
 import { NoticeService, type Notice } from "../../core/services/notice.service";
 import { RealtimeService } from "../../core/services/realtime.service";
+import { SurveyService } from "../../core/services/survey.service";
 import { AnnouncementCardComponent } from "../../shared/components/announcement-card/announcement-card.component";
 import { NoticeCardComponent } from "../../shared/components/notice-card/notice-card.component";
 
@@ -44,11 +45,13 @@ interface UpcomingEvent {
   styleUrl: "./tab-dashboard.page.scss",
 })
 export class TabDashboardPage implements OnInit, OnDestroy {
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService);
   private readonly announcementService = inject(AnnouncementService);
   private readonly noticeService = inject(NoticeService);
   private readonly realtime = inject(RealtimeService);
+  private readonly surveyService = inject(SurveyService);
 
   loading = true;
   announcements: Announcement[] = [];
@@ -72,9 +75,13 @@ export class TabDashboardPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     addIcons({ 'person-circle': personCircle, alertCircle, checkmarkCircle, calendar, search });
-    this.loadAll();
     this.setupRealtime();
     this.setupSearch();
+    this.loadAll();
+  }
+
+  ionViewWillEnter(): void {
+    this.loadAll();
   }
 
   ngOnDestroy(): void {
@@ -91,6 +98,7 @@ export class TabDashboardPage implements OnInit, OnDestroy {
       this.withTimeout(this.loadSurveyCount(), 5000),
     ]);
     this.loading = false;
+    this.cdr.detectChanges();
     console.log("[Dashboard] Load complete");
   }
 
@@ -198,13 +206,10 @@ export class TabDashboardPage implements OnInit, OnDestroy {
 
   private async loadSurveyCount(): Promise<void> {
     try {
-      const { count } = await this.supabase.client
-        .from("surveys")
-        .select("*", { count: "exact", head: true })
-        .eq("is_active", true)
-        .lte("start_date", new Date().toISOString())
-        .or(`end_date.gte.${new Date().toISOString()},end_date.is.null`);
-      this.surveyCount = count ?? 0;
+      const user = await firstValueFrom(this.auth.currentUser$);
+      if (user) {
+        this.surveyCount = await this.surveyService.getPendingSurveyCount(user.id);
+      }
     } catch {
       this.surveyCount = 0;
     }

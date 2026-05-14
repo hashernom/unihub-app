@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import {
@@ -35,6 +35,7 @@ import { NoticeService, type Notice } from '../../core/services/notice.service';
   `,
 })
 export class AdminNoticesPage implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly noticeService = inject(NoticeService);
 
   notices: Notice[] = [];
@@ -60,6 +61,7 @@ export class AdminNoticesPage implements OnInit {
       this.notices = [];
     }
     this.loading = false;
+    this.cdr.detectChanges();
   }
 
   async toggleActive(notice: Notice): Promise<void> {

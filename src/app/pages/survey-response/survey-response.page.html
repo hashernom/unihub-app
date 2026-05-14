@@ -1,0 +1,141 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/surveys"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ survey?.title ?? 'Encuesta' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else {
+    @if (survey) {
+      @if (surveyExpired) {
+        <div class="expired-message">
+          <h2>Esta encuesta ha finalizado</h2>
+          @if (survey.end_date) {
+            <p>La encuesta estuvo disponible hasta el {{ survey.end_date | date:'dd/MM/yyyy' }}.</p>
+          } @else {
+            <p>La encuesta ya no está disponible.</p>
+          }
+        </div>
+      } @else {
+        <div class="survey-info">
+          @if (survey.description) {
+            <p>{{ survey.description }}</p>
+          }
+          @if (survey.end_date) {
+            <p class="end-date">Vence: {{ survey.end_date | date:'dd/MM/yyyy' }}</p>
+          }
+        </div>
+
+        @for (question of questions; track question.id; let i = $index) {
+          <ion-card class="question-card">
+            <ion-card-header>
+              <ion-card-title>
+                {{ i + 1 }}. {{ question.question_text }}
+                @if (question.is_required) {
+                  <span class="required-star">*</span>
+                }
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              @if (errors[question.id]) {
+                <ion-text color="danger" class="error-text">
+                  <p>{{ errors[question.id] }}</p>
+                </ion-text>
+              }
+
+              @switch (question.question_type) {
+                @case ('text') {
+                  <ion-textarea
+                    [(ngModel)]="answers[question.id]"
+                    placeholder="Escribe tu respuesta..."
+                    [autoGrow]="true"
+                    [counter]="true"
+                    [maxlength]="1000"
+                    (ionChange)="clearError(question.id)"
+                  ></ion-textarea>
+                }
+
+                @case ('single_choice') {
+                  <ion-radio-group
+                    [(ngModel)]="answers[question.id]"
+                    (ionChange)="clearError(question.id)"
+                  >
+                    @for (option of question.options; track option) {
+                      <ion-item class="radio-item" lines="none">
+                        <ion-radio [value]="option" slot="start">
+                          {{ option }}
+                        </ion-radio>
+                      </ion-item>
+                    }
+                  </ion-radio-group>
+                }
+
+                @case ('multiple_choice') {
+                  <ion-list lines="none">
+                    @for (option of question.options; track option) {
+                      <ion-item class="checkbox-item">
+                        <ion-checkbox
+                          slot="start"
+                          [checked]="isSelected(question.id, option)"
+                          (ionChange)="toggleOption(question.id, option)"
+                        >
+                          {{ option }}
+                        </ion-checkbox>
+                      </ion-item>
+                    }
+                  </ion-list>
+                }
+
+                @case ('rating') {
+                  <div class="stars">
+                    @for (starVal of [1,2,3,4,5]; track starVal) {
+                      <ion-icon
+                        [name]="starVal <= asNumber(answers[question.id]) ? 'star' : 'star-outline'"
+                        (click)="setRating(question.id, starVal)"
+                      ></ion-icon>
+                    }
+                  </div>
+                }
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+
+        <div class="submit-container">
+          <ion-button
+            expand="block"
+            fill="solid"
+            color="primary"
+            style="--background: var(--ion-color-primary); --color: var(--ion-color-primary-contrast); font-weight: 600;"
+            [disabled]="submitting || submitSuccess"
+            (click)="submit()"
+          >
+            @if (submitting) {
+              <ion-spinner slot="start"></ion-spinner>
+              Enviando...
+            } @else {
+              Enviar encuesta
+            }
+          </ion-button>
+        </div>
+      }
+    } @else {
+      <p>Encuesta no encontrada.</p>
+    }
+  }
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [color]="toastColor"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>

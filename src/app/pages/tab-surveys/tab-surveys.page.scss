@@ -1,1 +1,47 @@
+.survey-list {
+  padding: 8px;
+}
 
+.survey-card {
+  margin: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  &[disabled] {
+    opacity: 0.7;
+  }
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.end-date {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+.description {
+  white-space: pre-line;
+  line-height: 1.5;
+  color: var(--ion-color-step-600, #666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--ion-color-medium);
+  font-size: 1.1rem;
+}

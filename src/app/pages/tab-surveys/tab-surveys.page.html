@@ -1,1 +1,59 @@
-<ion-header><ion-toolbar color="primary"><ion-title>Encuestas</ion-title></ion-toolbar></ion-header><ion-content class="ion-padding"><h2>Encuestas</h2><p>Aqui apareceran las encuestas disponibles.</p></ion-content>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Encuestas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <ion-card>
+          <ion-card-header>
+            <ion-skeleton-text animated style="width: 70%; height: 20px"></ion-skeleton-text>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-skeleton-text animated style="width: 100%; height: 14px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 14px; margin-top: 8px"></ion-skeleton-text>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  } @else {
+    @if (surveys.length === 0) {
+      <div class="empty-state">
+        <p>No hay encuestas activas en este momento.</p>
+      </div>
+    } @else {
+      <ion-list class="survey-list">
+        @for (survey of surveys; track survey.id) {
+          <ion-card
+            button
+            [disabled]="survey.responded"
+            (click)="openSurvey(survey)"
+            class="survey-card"
+          >
+            <ion-card-header>
+              <ion-card-title>{{ survey.title }}</ion-card-title>
+              <div class="card-meta">
+                <ion-badge [color]="survey.responded ? 'medium' : 'primary'">
+                  {{ survey.responded ? 'Respondida' : 'Pendiente' }}
+                </ion-badge>
+                @if (survey.end_date) {
+                  <span class="end-date">Vence: {{ survey.end_date | date:'dd/MM/yyyy' }}</span>
+                }
+              </div>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="description">{{ survey.description }}</p>
+            </ion-card-content>
+          </ion-card>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

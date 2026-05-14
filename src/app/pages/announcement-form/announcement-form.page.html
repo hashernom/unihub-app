@@ -35,7 +35,7 @@
 
   <ion-item>
     <ion-label position="stacked">Fecha de expiración</ion-label>
-    <ion-datetime [(ngModel)]="expiresAt" displayFormat="DD/MM/YYYY" placeholder="Sin expiración"></ion-datetime>
+    <ion-datetime presentation="date" [(ngModel)]="expiresAt"></ion-datetime>
   </ion-item>
 
   <div class="form-actions">
