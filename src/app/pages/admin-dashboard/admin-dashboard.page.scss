@@ -1,14 +1,42 @@
-h1 { font-size:1.5rem; font-weight:700; }
-.subtitle { color:var(--ion-color-medium); margin-bottom:1rem; }
 .dashboard-card {
-  text-align:center; cursor:pointer;
+  text-align: center;
+  cursor: pointer;
   --background: var(--card-color);
   --color: #fff;
-  ion-card-header { padding:1rem; }
-  .card-icon { font-size:2rem; margin-bottom:0.5rem; }
-  ion-card-title { font-size:0.9rem; }
 }
-.metrics-row { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
-.metric-card { flex:1; background:var(--ion-color-light); border-radius:12px; padding:1rem; text-align:center; }
-.metric-value { display:block; font-size:1.5rem; font-weight:700; color:var(--ion-color-primary); }
-.metric-label { display:block; font-size:0.75rem; color:var(--ion-color-medium); margin-top:0.25rem; }
+.dashboard-card ion-card-header {
+  padding: var(--space-4);
+}
+.dashboard-card .card-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-2);
+}
+.dashboard-card ion-card-title {
+  font-size: var(--text-sm);
+}
+
+.metrics-row {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.metric-card {
+  flex: 1;
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+}
+.metric-value {
+  display: block;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--ion-color-primary);
+}
+.metric-label {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}

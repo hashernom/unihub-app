@@ -1,6 +1,8 @@
-﻿@import 'theme/variables.css';
+@import 'theme/variables.css';
+@import 'theme/tokens.css';
+@import 'theme/utilities.css';
+@import 'app/styles/index';
 
-/* Force hide ion-page-hidden */
 .ion-page.ion-page-hidden,
 app-login.ion-page-hidden,
 app-register.ion-page-hidden {
@@ -20,9 +22,22 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body { margin: 0; padding: 0; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--surface-page);
+}
 
 ion-content {
   --padding-top: var(--ion-safe-area-top, 0);
   --padding-bottom: var(--ion-safe-area-bottom, 0);
+}
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.safe-area-bottom {
+  padding-bottom: var(--ion-safe-area-bottom, var(--space-4));
 }

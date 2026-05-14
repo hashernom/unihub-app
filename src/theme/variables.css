@@ -76,11 +76,29 @@
 
   /** border radius **/
   --ion-border-radius: 12px;
-}
 
-html {
-  /* 
-   * Material Design uses 4dp shadow for cards, 8dp for modals
-   * These are Ionic defaults – no override needed unless customizing
-   */
+  /* -- Primary step colors -- */
+  --ion-color-primary-step-50: #e8ecf1;
+  --ion-color-primary-step-100: #d1d9e3;
+  --ion-color-primary-step-200: #a3b3c8;
+  --ion-color-primary-step-300: #768dac;
+  --ion-color-primary-step-400: #486791;
+  --ion-color-primary-step-500: #1E3A5F;
+  --ion-color-primary-step-600: #1a3354;
+  --ion-color-primary-step-700: #162b49;
+  --ion-color-primary-step-800: #12243e;
+  --ion-color-primary-step-900: #0e1c33;
+
+  /* -- Neutral step colors -- */
+  --ion-color-step-50: #fafafa;
+  --ion-color-step-100: #f5f5f5;
+  --ion-color-step-150: #eeeeee;
+  --ion-color-step-200: #e0e0e0;
+  --ion-color-step-300: #c0c0c0;
+  --ion-color-step-400: #b0b0b0;
+  --ion-color-step-500: #888888;
+  --ion-color-step-600: #666666;
+  --ion-color-step-700: #444444;
+  --ion-color-step-800: #333333;
+  --ion-color-step-900: #1a1a1a;
 }

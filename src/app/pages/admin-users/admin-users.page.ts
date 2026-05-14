@@ -4,5 +4,6 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton 
   selector: 'app-admin-users',
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton],
   templateUrl: './admin-users.page.html',
+  styleUrl: './admin-users.page.scss',
 })
 export class AdminUsersPage {}

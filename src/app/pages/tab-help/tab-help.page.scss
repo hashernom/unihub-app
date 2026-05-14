@@ -1,1 +1,25 @@
-
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--text-secondary);
+  min-height: 200px;
+}
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  color: var(--ion-color-step-300, #c0c0c0);
+}
+.empty-state-text {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+.empty-state-subtext {
+  font-size: var(--text-sm);
+  color: var(--ion-color-step-500, #888);
+}

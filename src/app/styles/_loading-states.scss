@@ -1,0 +1,46 @@
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: var(--space-12) 0;
+}
+
+.skeleton {
+  background: var(--surface-skeleton);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+.skeleton-text {
+  height: var(--text-base);
+  margin-bottom: var(--space-2);
+  width: 100%;
+}
+.skeleton-text-sm {
+  height: var(--text-sm);
+  width: 60%;
+  margin-bottom: var(--space-2);
+}
+.skeleton-title {
+  height: var(--text-lg);
+  width: 80%;
+  margin-bottom: var(--space-3);
+}
+.skeleton-card {
+  height: 120px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-md);
+}
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-card {
+  margin: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--surface-card);
+  box-shadow: var(--card-shadow);
+}

@@ -24,21 +24,7 @@ import { environment } from "../../../environments/environment";
     IonButton, IonIcon, IonToast,
   ],
   templateUrl: "./survey-results.page.html",
-  styles: [`
-    .loading-container { display: flex; justify-content: center; align-items: center; height: 200px; }
-    .results-header { padding: 0 4px 16px; }
-    .results-header h2 { margin: 0 0 4px; font-size: 1.3rem; }
-    .stats-row { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-    .stat-card { background: var(--ion-color-light); border-radius: 12px; padding: 12px 16px; text-align: center; flex: 1; min-width: 100px; }
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--ion-color-primary); }
-    .stat-label { font-size: 0.8rem; color: var(--ion-color-medium); margin-top: 2px; }
-    .question-card { margin: 12px 0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    .chart-container { height: 200px; margin: 8px 0; }
-    .rating-average { font-size: 1.2rem; font-weight: 600; color: var(--ion-color-primary); text-align: center; padding: 8px; }
-    .empty-state { text-align: center; padding: 32px 16px; color: var(--ion-color-medium); }
-    .empty-state p { font-size: 1.1rem; }
-    .export-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  `],
+  styleUrl: './survey-results.page.scss',
 })
 export class SurveyResultsPage implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);

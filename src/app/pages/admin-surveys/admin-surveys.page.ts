@@ -21,18 +21,7 @@ import { SurveyService, type Survey } from '../../core/services/survey.service';
     IonAlert, IonToggle, IonToast,
   ],
   templateUrl: './admin-surveys.page.html',
-  styles: `
-    .admin-card { margin: 8px 0; border-radius: 12px; }
-    .admin-card.inactive { opacity: 0.6; }
-    .card-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-    .card-date { font-size: 0.8rem; color: var(--ion-color-medium); }
-    .card-body { white-space: pre-line; color: var(--ion-color-step-600); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .card-actions { display: flex; justify-content: flex-end; gap: 4px; margin-top: 8px; align-items: center; }
-    .toggle-label { font-size: 0.8rem; margin-right: 4px; }
-    .loading-text { text-align: center; color: var(--ion-color-medium); padding: 32px; }
-    .empty-state { text-align: center; padding: 24px; color: var(--ion-color-medium); display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .response-count { font-size: 0.8rem; color: var(--ion-color-medium); }
-  `,
+  styleUrl: './admin-surveys.page.scss',
 })
 export class AdminSurveysPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);

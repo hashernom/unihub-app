@@ -36,24 +36,7 @@ interface QuestionFormItem {
   IonRadioGroup, IonRadio, IonCheckbox,
   ],
   templateUrl: './survey-form.page.html',
-  styles: [`
-    .section-title { font-size: 1.1rem; font-weight: 600; margin: 16px 0 8px; color: var(--ion-color-primary); }
-    .question-card { margin: 12px 0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    .question-header { display: flex; align-items: center; gap: 8px; }
-    .question-number { font-weight: 600; color: var(--ion-color-primary); min-width: 24px; }
-    .drag-handle { cursor: move; color: var(--ion-color-medium); font-size: 1.2rem; }
-    .question-actions { display: flex; justify-content: flex-end; gap: 4px; margin-top: 8px; }
-    .option-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-    .option-row ion-input { flex: 1; }
-    .add-option-btn { margin-top: 8px; }
-    .form-actions { padding: 16px 0; display: flex; gap: 8px; }
-    .preview-container { background: var(--ion-color-light); border-radius: 12px; padding: 16px; margin: 12px 0; }
-    .preview-question { margin: 12px 0; }
-    .preview-question h4 { font-size: 1rem; font-weight: 500; margin-bottom: 8px; }
-    .preview-stars { font-size: 1.5rem; color: var(--ion-color-warning); display: flex; gap: 4px; }
-    .form-header-actions { display: flex; gap: 4px; }
-    .required-star { color: var(--ion-color-danger); margin-left: 2px; }
-  `],
+  styleUrl: './survey-form.page.scss',
 })
 export class SurveyFormPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);

@@ -16,6 +16,7 @@ import type { Announcement } from '../../../core/services/announcement.service';
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonBadge, IonIcon,
   ],
+  styleUrl: './announcement-card.component.scss',
   template: `
     <ion-card class="announcement-card">
       <ion-card-header>
@@ -37,38 +38,6 @@ import type { Announcement } from '../../../core/services/announcement.service';
       </ion-card-content>
     </ion-card>
   `,
-  styles: `
-    .announcement-card {
-      margin: 8px 0;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .pinned-icon {
-      color: var(--ion-color-warning);
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .category-badge {
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
-    .card-date {
-      font-size: 0.8rem;
-      color: var(--ion-color-medium);
-    }
-    .card-body {
-      white-space: pre-line;
-      line-height: 1.5;
-      color: var(--ion-color-step-600, #666);
-    }
-  `,
 })
 export class AnnouncementCardComponent {
   @Input({ required: true }) announcement!: Announcement;
@@ -80,7 +49,7 @@ export class AnnouncementCardComponent {
   get categoryLabel(): string {
     const labels: Record<string, string> = {
       general: 'General',
-      academic: 'Académico',
+      academic: 'Acad?mico',
       event: 'Evento',
       urgent: 'Urgente',
     };

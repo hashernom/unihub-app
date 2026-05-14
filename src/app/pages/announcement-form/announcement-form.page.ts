@@ -21,7 +21,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonButton, IonToggle, IonDatetime, IonToast,
   ],
   templateUrl: './announcement-form.page.html',
-  styles: `.form-actions { padding: 16px 0; }`,
+  styleUrl: './announcement-form.page.scss',
 })
 export class AnnouncementFormPage implements OnInit {
   private readonly announcementService = inject(AnnouncementService);

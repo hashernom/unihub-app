@@ -1,0 +1,11 @@
+.announcement-card {
+  margin: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--card-shadow);
+}
+
+.pinned-icon {
+  color: var(--ion-color-warning);
+  margin-right: var(--space-1);
+  vertical-align: middle;
+}

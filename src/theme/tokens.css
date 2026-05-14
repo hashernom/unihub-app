@@ -1,0 +1,118 @@
+/* ============================================
+   UniHub Design Tokens v1.0
+   ============================================ */
+
+:root {
+  /* -- Spacing (8px grid) -- */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+
+  /* -- Typography -- */
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:  'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --text-xs:    0.75rem;
+  --text-sm:    0.8125rem;
+  --text-base:  0.9375rem;
+  --text-md:    1rem;
+  --text-lg:    1.125rem;
+  --text-xl:    1.25rem;
+  --text-2xl:   1.5rem;
+  --text-3xl:   2rem;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  /* -- Border Radius -- */
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-full:  9999px;
+
+  /* -- Shadows -- */
+  --shadow-none:  0 0 0 rgba(0,0,0,0);
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:    0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
+  --shadow-xl:    0 20px 25px rgba(0,0,0,0.08), 0 8px 10px rgba(0,0,0,0.05);
+  --card-shadow:       var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+
+  /* -- Transitions -- */
+  --transition-fast:    150ms ease;
+  --transition-base:    250ms ease;
+  --transition-slow:    350ms ease;
+  --transition-page:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* -- Z-Index -- */
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /* -- Semantic Surfaces -- */
+  --surface-page:       var(--ion-color-light);
+  --surface-card:       #ffffff;
+  --surface-card-hover: #fafbfc;
+  --surface-input:      #f5f6f8;
+  --surface-skeleton:   #e8ebef;
+  --surface-overlay:    rgba(44, 62, 80, 0.4);
+
+  /* -- Semantic Borders -- */
+  --border-subtle:  var(--ion-color-light-shade);
+  --border-default: var(--ion-color-step-200, #e0e0e0);
+  --border-strong:  var(--ion-color-step-400, #b0b0b0);
+  --border-focus:   var(--ion-color-primary, #1E3A5F);
+
+  /* -- Semantic Text -- */
+  --text-primary:    var(--ion-color-dark);
+  --text-secondary:  var(--ion-color-medium);
+  --text-tertiary:   var(--ion-color-step-500, #888);
+  --text-on-primary: var(--ion-color-primary-contrast);
+  --text-link:       var(--ion-color-secondary);
+
+  /* -- Semantic Feedback -- */
+  --color-success-light: #edf7f1;
+  --color-success-border: #a3d9b1;
+  --color-warning-light: #fef8e7;
+  --color-warning-border: #f9d77e;
+  --color-danger-light: #fdedeb;
+  --color-danger-border: #f5b7b1;
+  --color-info-light: #edf2f9;
+  --color-info-border: #b3cbe8;
+
+  /* -- Layout -- */
+  --content-max-width: 480px;
+  --content-padding:   var(--space-4);
+  --header-height:     56px;
+  --bottom-tab-height: 56px;
+
+  /* -- Ionic Component Overrides -- */
+  --ion-card-border-radius: var(--radius-md);
+  --ion-card-box-shadow:    var(--card-shadow);
+  --ion-card-margin:        var(--space-2) var(--space-4);
+  --ion-button-border-radius: var(--radius-md);
+  --ion-button-font-weight:   var(--weight-semibold);
+  --ion-button-font-size:     var(--text-base);
+  --ion-badge-border-radius: var(--radius-full);
+  --ion-badge-font-size:     var(--text-xs);
+  --ion-input-border-radius: var(--radius-sm);
+  --ion-input-background:    var(--surface-input);
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color:      var(--text-on-primary);
+  --ion-tab-bar-background: #ffffff;
+  --ion-tab-bar-border-color: var(--border-subtle);
+}

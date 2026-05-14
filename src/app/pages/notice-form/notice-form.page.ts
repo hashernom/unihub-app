@@ -21,7 +21,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonButton, IonToggle, IonToast,
   ],
   templateUrl: './notice-form.page.html',
-  styles: `.form-actions { padding: 16px 0; }`,
+  styleUrl: './notice-form.page.scss',
 })
 export class NoticeFormPage implements OnInit {
   private readonly noticeService = inject(NoticeService);

@@ -1,0 +1,13 @@
+.loading-container { display: flex; justify-content: center; align-items: center; height: 200px; }
+.survey-info { padding: 0 var(--space-1) var(--space-2); }
+.end-date { font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-1); }
+.question-card { margin: var(--space-3) 0; border-radius: var(--radius-md); box-shadow: var(--card-shadow); }
+.required-star { color: var(--ion-color-danger); margin-left: 2px; }
+.error-text { font-size: var(--text-sm); margin-bottom: var(--space-2); }
+.stars { display: flex; gap: var(--space-2); justify-content: center; font-size: 2rem; padding: var(--space-2) 0; }
+.stars ion-icon { cursor: pointer; color: var(--ion-color-warning); transition: transform var(--transition-fast); }
+.stars ion-icon:hover { transform: scale(1.2); }
+.expired-message { text-align: center; padding: var(--space-12) var(--space-4); color: var(--text-secondary); }
+.submit-container { padding: var(--space-4) 0; }
+.checkbox-item { --border-style: none; --padding-start: 0; }
+.radio-item { --border-style: none; --padding-start: 0; }

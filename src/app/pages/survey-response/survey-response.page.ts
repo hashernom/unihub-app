@@ -28,75 +28,7 @@ import { AuthService } from "../../core/services/auth.service";
     IonButton, IonToast, IonText, IonList,
   ],
   templateUrl: "./survey-response.page.html",
-  styles: [`
-    .loading-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 200px;
-    }
-    .survey-info {
-      padding: 0 4px 8px;
-    }
-    .end-date {
-      font-size: 0.85rem;
-      color: var(--ion-color-medium);
-      margin-top: 4px;
-    }
-    .question-card {
-      margin: 12px 0;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .required-star {
-      color: var(--ion-color-danger);
-      margin-left: 2px;
-    }
-    .error-text {
-      font-size: 0.8rem;
-      margin-bottom: 8px;
-    }
-    .stars {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      font-size: 2rem;
-      padding: 8px 0;
-    }
-    .stars ion-icon {
-      cursor: pointer;
-      color: var(--ion-color-warning);
-      transition: transform 0.15s ease;
-    }
-    .stars ion-icon:hover {
-      transform: scale(1.2);
-    }
-    .stars ion-icon.selected {
-      color: var(--ion-color-warning-shade);
-    }
-    .expired-message {
-      text-align: center;
-      padding: 48px 16px;
-      color: var(--ion-color-medium);
-    }
-    .expired-message h2 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--ion-color-danger);
-      margin-bottom: 8px;
-    }
-    .submit-container {
-      padding: 16px 0 32px;
-    }
-    .checkbox-item {
-      --border-style: none;
-      --padding-start: 0;
-    }
-    .radio-item {
-      --border-style: none;
-      --padding-start: 0;
-    }
-  `],
+  styleUrl: './survey-response.page.scss',
 })
 export class SurveyResponsePage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);

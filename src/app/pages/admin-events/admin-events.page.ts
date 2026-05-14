@@ -4,5 +4,6 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton 
   selector: 'app-admin-events',
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton],
   templateUrl: './admin-events.page.html',
+  styleUrl: './admin-events.page.scss',
 })
 export class AdminEventsPage {}

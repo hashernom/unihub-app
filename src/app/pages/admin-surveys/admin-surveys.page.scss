@@ -1,0 +1,10 @@
+.admin-card { margin: var(--space-2) 0; border-radius: var(--radius-md); }
+.admin-card.inactive { opacity: 0.6; }
+.card-meta { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-1); flex-wrap: wrap; }
+.card-date { font-size: var(--text-sm); color: var(--text-secondary); }
+.card-body { white-space: pre-line; color: var(--ion-color-step-600); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.card-actions { display: flex; justify-content: flex-end; gap: var(--space-1); margin-top: var(--space-2); align-items: center; }
+.toggle-label { font-size: var(--text-sm); margin-right: var(--space-1); }
+.loading-text { text-align: center; color: var(--text-secondary); padding: var(--space-8); }
+.empty-state { text-align: center; padding: var(--space-6); color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.response-count { font-size: var(--text-sm); color: var(--text-secondary); }
