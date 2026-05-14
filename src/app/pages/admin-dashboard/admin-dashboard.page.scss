@@ -3,6 +3,16 @@
   cursor: pointer;
   --background: var(--card-color);
   --color: #fff;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+  pointer-events: none;
 }
 .dashboard-card ion-card-header {
   padding: var(--space-4);
@@ -13,30 +23,36 @@
 }
 .dashboard-card ion-card-title {
   font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
 }
 
 .metrics-row {
   display: flex;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
+  flex-wrap: wrap;
 }
 .metric-card {
   flex: 1;
-  background: var(--surface-card);
+  min-width: 100px;
+  background: var(--surface-card-warm);
   border-radius: var(--radius-md);
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-3);
   text-align: center;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(212,168,67,0.1);
 }
 .metric-value {
   display: block;
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: var(--weight-bold);
   color: var(--ion-color-primary);
+  line-height: 1;
 }
 .metric-label {
   display: block;
   font-size: var(--text-xs);
   color: var(--text-secondary);
   margin-top: var(--space-1);
+  font-weight: var(--weight-medium);
 }

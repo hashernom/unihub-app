@@ -9,6 +9,24 @@ app-register.ion-page-hidden {
   display: none !important;
 }
 
+ion-header {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
+}
+
+ion-header ion-toolbar.ion-color-primary {
+  --background: var(--surface-gradient-header);
+}
+
 app-root {
   display: block;
   position: absolute;
@@ -33,6 +51,30 @@ body {
 ion-content {
   --padding-top: var(--ion-safe-area-top, 0);
   --padding-bottom: var(--ion-safe-area-bottom, 0);
+  --background: var(--surface-page);
+}
+
+ion-card {
+  border: 1px solid rgba(212, 168, 67, 0.08);
+}
+
+ion-button {
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+ion-button.button-solid {
+  --box-shadow: 0 2px 8px rgba(30,58,95,0.2);
+}
+
+ion-button.button-solid:active {
+  --box-shadow: 0 1px 3px rgba(30,58,95,0.15);
+  transform: scale(0.98);
+}
+
+ion-toast {
+  --border-radius: var(--radius-md);
+  --box-shadow: var(--shadow-lg);
 }
 
 .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -40,4 +82,9 @@ ion-content {
 
 .safe-area-bottom {
   padding-bottom: var(--ion-safe-area-bottom, var(--space-4));
+}
+
+::selection {
+  background: rgba(212, 168, 67, 0.3);
+  color: var(--text-primary);
 }

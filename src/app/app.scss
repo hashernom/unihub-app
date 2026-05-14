@@ -1,20 +1,24 @@
-h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); line-height: var(--leading-tight); }
-h2 { font-size: var(--text-lg); font-weight: var(--weight-semibold); }
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); line-height: var(--leading-snug); letter-spacing: -0.02em; }
+h2 { font-size: var(--text-lg); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
 h3 { font-size: var(--text-md); font-weight: var(--weight-semibold); }
 h4 { font-size: var(--text-base); font-weight: var(--weight-medium); }
+
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+}
 
 a {
   color: var(--text-link);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
-a:hover { text-decoration: underline; }
+a:hover { color: var(--ion-color-secondary-shade); }
 
 :focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--ion-color-primary);
-  color: var(--text-on-primary);
+  background: rgba(212, 168, 67, 0.3);
 }

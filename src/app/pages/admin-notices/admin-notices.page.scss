@@ -1,8 +1,8 @@
-.admin-card { margin: var(--space-2) 0; border-radius: var(--radius-md); }
+.admin-card { margin: var(--space-2) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid rgba(255,255,255,0.6); }
 .card-meta { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-1); }
-.card-date { font-size: var(--text-sm); color: var(--text-secondary); }
-.card-content { white-space: pre-line; color: var(--ion-color-step-600); }
+.card-date { font-size: var(--text-sm); color: var(--text-tertiary); }
+.card-content { white-space: pre-line; line-height: var(--leading-relaxed); color: var(--text-secondary); }
 .card-actions { display: flex; justify-content: flex-end; gap: var(--space-1); margin-top: var(--space-2); }
 .inactive { opacity: 0.5; }
-.loading-text { text-align: center; color: var(--text-secondary); padding: var(--space-8); }
-.empty-state { text-align: center; padding: var(--space-6); color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.loading-text { text-align: center; color: var(--text-tertiary); padding: var(--space-8); }
+.empty-state { text-align: center; padding: var(--space-8); color: var(--text-tertiary); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }

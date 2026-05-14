@@ -1,37 +1,47 @@
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-10px); }
 }
 
 @keyframes skeleton-pulse {
-  0%   { opacity: 0.6; }
+  0%   { opacity: 0.5; background-position: 200% 0; }
   50%  { opacity: 1; }
-  100% { opacity: 0.6; }
+  100% { opacity: 0.5; background-position: -200% 0; }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.92); }
   to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideInUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideInDown {
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(0); }
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-glow-gold); }
+  50% { box-shadow: 0 0 0 8px transparent; }
 }
 
 .animate-fade-in {
@@ -42,25 +52,26 @@
   animation: fadeInUp var(--transition-slow) ease forwards;
 }
 
-.animate-stagger > * {
+.animate-fade-in > *, .animate-stagger > * {
   opacity: 0;
   animation: fadeIn var(--transition-base) ease forwards;
 }
-.animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
-.animate-stagger > *:nth-child(2) { animation-delay: 50ms; }
-.animate-stagger > *:nth-child(3) { animation-delay: 100ms; }
-.animate-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.animate-stagger > *:nth-child(1) { animation-delay: 40ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 80ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 160ms; }
 .animate-stagger > *:nth-child(5) { animation-delay: 200ms; }
-.animate-stagger > *:nth-child(6) { animation-delay: 250ms; }
-.animate-stagger > *:nth-child(7) { animation-delay: 300ms; }
-.animate-stagger > *:nth-child(8) { animation-delay: 350ms; }
+.animate-stagger > *:nth-child(6) { animation-delay: 240ms; }
+.animate-stagger > *:nth-child(7) { animation-delay: 280ms; }
+.animate-stagger > *:nth-child(8) { animation-delay: 320ms; }
 
 @media (hover: hover) {
   .card-pressable {
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    cursor: pointer;
   }
   .card-pressable:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: var(--card-shadow-hover);
   }
   .card-pressable:active {

@@ -16,20 +16,23 @@
   font-weight: var(--weight-semibold);
   margin: 0;
   flex: 1;
+  color: var(--text-primary);
 }
 
 .section-icon {
   font-size: var(--text-lg);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .count-badge {
-  background: var(--ion-color-primary);
+  background: var(--color-gold);
   color: #fff;
   font-size: var(--text-xs);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
   font-weight: var(--weight-semibold);
+  min-width: 20px;
+  text-align: center;
 }
 
 .search-bar {
@@ -38,7 +41,7 @@
 
 .result-count {
   font-size: var(--text-sm);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   margin: var(--space-1) 0 var(--space-2);
 }
 
@@ -47,27 +50,30 @@
   gap: var(--space-1);
   overflow-x: auto;
   padding-bottom: var(--space-2);
-  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 .filter-chips::-webkit-scrollbar { display: none; }
 
 .empty-state {
   text-align: center;
-  padding: var(--space-6) var(--space-4);
-  color: var(--text-secondary);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-tertiary);
 }
 
 .event-card {
-  margin: var(--space-2) 0;
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
+  box-shadow: var(--card-shadow);
+  background: var(--surface-gradient-card);
 }
 .event-card ion-card-title {
   font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
 }
 
 .event-date {
   font-size: var(--text-sm);
-  color: var(--ion-color-primary);
+  color: var(--color-gold);
   font-weight: var(--weight-medium);
 }
 
@@ -78,9 +84,11 @@
 }
 
 .survey-card {
-  margin: var(--space-2) 0;
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
-  --background: var(--ion-color-primary-tint, #e8f0fe);
+  box-shadow: var(--card-shadow);
+  --background: linear-gradient(135deg, rgba(30,58,95,0.04) 0%, rgba(212,168,67,0.04) 100%);
+  border: 1px solid rgba(212,168,67,0.12);
 }
 
 .survey-cta {
@@ -93,7 +101,7 @@
 
 .survey-icon {
   font-size: 1.5rem;
-  color: var(--ion-color-primary);
+  color: var(--color-gold);
 }
 
 @media (min-width: 768px) {

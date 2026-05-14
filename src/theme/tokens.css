@@ -1,7 +1,3 @@
-/* ============================================
-   UniHub Design Tokens v1.0
-   ============================================ */
-
 :root {
   /* -- Spacing (8px grid) -- */
   --space-0:   0;
@@ -16,8 +12,9 @@
   --space-12:  48px;
 
   /* -- Typography -- */
-  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono:  'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-sans:  'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-mono:  'SF Mono', 'Fira Code', monospace;
   --text-xs:    0.75rem;
   --text-sm:    0.8125rem;
   --text-base:  0.9375rem;
@@ -26,35 +23,37 @@
   --text-xl:    1.25rem;
   --text-2xl:   1.5rem;
   --text-3xl:   2rem;
+  --weight-light: 300;
   --weight-normal: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
+  --leading-snug:   1.3;
   --leading-tight:   1.2;
   --leading-normal:  1.5;
   --leading-relaxed: 1.65;
 
   /* -- Border Radius -- */
   --radius-sm:    8px;
-  --radius-md:    12px;
-  --radius-lg:    16px;
+  --radius-md:    14px;
+  --radius-lg:    20px;
+  --radius-xl:    28px;
   --radius-full:  9999px;
 
   /* -- Shadows -- */
-  --shadow-none:  0 0 0 rgba(0,0,0,0);
-  --shadow-xs:    0 1px 2px rgba(0,0,0,0.05);
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md:    0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-  --shadow-lg:    0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.05);
-  --shadow-xl:    0 20px 25px rgba(0,0,0,0.08), 0 8px 10px rgba(0,0,0,0.05);
-  --card-shadow:       var(--shadow-sm);
-  --card-shadow-hover: var(--shadow-md);
+  --shadow-sm:    0 1px 3px rgba(30,58,95,0.06), 0 1px 2px rgba(30,58,95,0.04);
+  --shadow-md:    0 4px 12px rgba(30,58,95,0.08), 0 2px 4px rgba(30,58,95,0.04);
+  --shadow-lg:    0 10px 25px rgba(30,58,95,0.08), 0 4px 10px rgba(30,58,95,0.04);
+  --shadow-xl:    0 20px 40px rgba(30,58,95,0.10), 0 8px 20px rgba(30,58,95,0.06);
+  --shadow-gold:  0 4px 14px rgba(212,168,67,0.25);
+  --card-shadow:       var(--shadow-md);
+  --card-shadow-hover: var(--shadow-lg);
 
   /* -- Transitions -- */
-  --transition-fast:    150ms ease;
-  --transition-base:    250ms ease;
-  --transition-slow:    350ms ease;
-  --transition-page:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:    180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:    450ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce:  400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* -- Z-Index -- */
   --z-dropdown: 100;
@@ -63,56 +62,73 @@
   --z-modal:    400;
   --z-toast:    500;
 
+  /* -- Brand Accent (Gold) -- */
+  --color-gold:         #D4A843;
+  --color-gold-rgb:     212, 168, 67;
+  --color-gold-light:   #F5E8C8;
+  --color-gold-dark:    #B8912E;
+  --color-glow-gold:    rgba(212, 168, 67, 0.15);
+
   /* -- Semantic Surfaces -- */
-  --surface-page:       var(--ion-color-light);
+  --surface-page:       #F4F2EE;
   --surface-card:       #ffffff;
-  --surface-card-hover: #fafbfc;
-  --surface-input:      #f5f6f8;
-  --surface-skeleton:   #e8ebef;
-  --surface-overlay:    rgba(44, 62, 80, 0.4);
+  --surface-card-warm:  #FFFCF7;
+  --surface-card-hover: #FAF8F4;
+  --surface-input:      #F0EEEA;
+  --surface-skeleton:   #E5E2DC;
+  --surface-overlay:    rgba(30, 58, 95, 0.5);
+  --surface-gradient-card: linear-gradient(135deg, #ffffff 0%, #FFFBFA 50%, #FFFDF5 100%);
+  --surface-gradient-header: linear-gradient(135deg, #1E3A5F 0%, #2C5282 100%);
+  --surface-gradient-warm: linear-gradient(135deg, #F4F2EE 0%, #FFFCF7 100%);
 
   /* -- Semantic Borders -- */
-  --border-subtle:  var(--ion-color-light-shade);
-  --border-default: var(--ion-color-step-200, #e0e0e0);
-  --border-strong:  var(--ion-color-step-400, #b0b0b0);
-  --border-focus:   var(--ion-color-primary, #1E3A5F);
+  --border-subtle:  #E8E4DE;
+  --border-default: #D4CFC8;
+  --border-strong:  #B0ABA4;
+  --border-focus:   var(--color-gold);
 
   /* -- Semantic Text -- */
-  --text-primary:    var(--ion-color-dark);
-  --text-secondary:  var(--ion-color-medium);
-  --text-tertiary:   var(--ion-color-step-500, #888);
-  --text-on-primary: var(--ion-color-primary-contrast);
+  --text-primary:    #1E293B;
+  --text-secondary:  #6B7280;
+  --text-tertiary:   #9CA3AF;
+  --text-on-primary: #ffffff;
   --text-link:       var(--ion-color-secondary);
+  --text-gold:       var(--color-gold);
 
   /* -- Semantic Feedback -- */
-  --color-success-light: #edf7f1;
-  --color-success-border: #a3d9b1;
-  --color-warning-light: #fef8e7;
-  --color-warning-border: #f9d77e;
-  --color-danger-light: #fdedeb;
-  --color-danger-border: #f5b7b1;
-  --color-info-light: #edf2f9;
-  --color-info-border: #b3cbe8;
+  --color-success-light: #ECFDF5;
+  --color-success-border: #6EE7B7;
+  --color-warning-light: #FFFBEB;
+  --color-warning-border: #FCD34D;
+  --color-danger-light: #FEF2F2;
+  --color-danger-border: #FCA5A5;
+  --color-info-light: #EFF6FF;
+  --color-info-border: #93C5FD;
 
   /* -- Layout -- */
   --content-max-width: 480px;
   --content-padding:   var(--space-4);
   --header-height:     56px;
-  --bottom-tab-height: 56px;
+  --bottom-tab-height: 64px;
 
   /* -- Ionic Component Overrides -- */
   --ion-card-border-radius: var(--radius-md);
   --ion-card-box-shadow:    var(--card-shadow);
   --ion-card-margin:        var(--space-2) var(--space-4);
-  --ion-button-border-radius: var(--radius-md);
+  --ion-card-background:    var(--surface-card-warm);
+  --ion-button-border-radius: var(--radius-lg);
   --ion-button-font-weight:   var(--weight-semibold);
   --ion-button-font-size:     var(--text-base);
+  --ion-button-letter-spacing: 0.01em;
   --ion-badge-border-radius: var(--radius-full);
   --ion-badge-font-size:     var(--text-xs);
+  --ion-badge-font-weight:   var(--weight-medium);
   --ion-input-border-radius: var(--radius-sm);
   --ion-input-background:    var(--surface-input);
-  --ion-toolbar-background: var(--ion-color-primary);
-  --ion-toolbar-color:      var(--text-on-primary);
+  --ion-toolbar-background: transparent;
+  --ion-toolbar-color:      #ffffff;
   --ion-tab-bar-background: #ffffff;
   --ion-tab-bar-border-color: var(--border-subtle);
+  --ion-item-background:    transparent;
+  --ion-item-border-color:  var(--border-subtle);
 }

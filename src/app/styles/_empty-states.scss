@@ -1,37 +1,40 @@
-.empty-state {
+.empty-state,
+.empty-state-compact {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-8) var(--space-6);
+  padding: var(--space-10) var(--space-6);
   color: var(--text-secondary);
   min-height: 200px;
 }
 
+.empty-state-compact {
+  min-height: auto;
+  padding: var(--space-8) var(--space-4);
+}
+
 .empty-state-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: var(--space-4);
-  color: var(--ion-color-step-300, #c0c0c0);
+  color: var(--text-tertiary);
+  opacity: 0.6;
 }
 
 .empty-state-text {
   font-size: var(--text-lg);
   font-weight: var(--weight-medium);
   color: var(--text-secondary);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
 }
 
 .empty-state-subtext {
   font-size: var(--text-sm);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   margin-bottom: var(--space-4);
-}
-
-.empty-state-compact {
-  @extend .empty-state;
-  min-height: auto;
-  padding: var(--space-6) var(--space-4);
+  max-width: 280px;
+  line-height: var(--leading-relaxed);
 }
 
 .empty-state-error {
@@ -40,4 +43,5 @@
 }
 .empty-state-error .empty-state-icon {
   color: var(--ion-color-danger);
+  opacity: 0.8;
 }

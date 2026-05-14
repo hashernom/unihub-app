@@ -1,49 +1,75 @@
 %card-base {
-  margin: var(--space-2) 0;
+  margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
+  background: var(--surface-gradient-card);
+  border: 1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(2px);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &:active {
+    transform: scale(0.99);
+  }
 }
 
 .card { @extend %card-base; }
 .card-admin { @extend %card-base; }
 .card-survey { @extend %card-base; }
 .card-event { @extend %card-base; }
-.card-question { @extend %card-base; margin: var(--space-3) 0; }
-.card-dashboard {
+.card-question {
   @extend %card-base;
+  margin: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-gold);
+}
+
+.card-dashboard {
   text-align: center;
   cursor: pointer;
   --background: var(--card-color);
   --color: #fff;
+  border: none;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
 }
+
 .card-high-priority {
-  @extend %card-base;
   border-left: 4px solid var(--ion-color-danger);
+  position: relative;
 }
-.card-expired { opacity: 0.6; }
-.card-disabled { opacity: 0.7; pointer-events: none; }
+
+.card-expired { opacity: 0.5; }
+.card-disabled { opacity: 0.5; pointer-events: none; }
 
 .card-meta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   margin-top: var(--space-1);
+  flex-wrap: wrap;
 }
 
 .card-date {
   font-size: var(--text-sm);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-normal);
 }
 
 .card-body {
   white-space: pre-line;
-  line-height: var(--leading-normal);
-  color: var(--ion-color-step-600, #666);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
 }
 .card-body-clamped {
   @extend .card-body;
   overflow: hidden;
-  text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -57,7 +83,7 @@
 }
 
 .card-icon-pinned {
-  color: var(--ion-color-warning);
+  color: var(--color-gold);
   margin-right: var(--space-1);
   vertical-align: middle;
 }
@@ -74,4 +100,5 @@
 .card-title-sm {
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
+  color: var(--text-primary);
 }

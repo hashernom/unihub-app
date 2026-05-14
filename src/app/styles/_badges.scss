@@ -1,11 +1,12 @@
 .badge-pill {
   font-size: var(--text-xs);
-  padding: var(--space-1) 10px;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
   font-weight: var(--weight-medium);
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  letter-spacing: 0.01em;
 }
 
 .badge-count {
@@ -16,6 +17,8 @@
   border-radius: var(--radius-full);
   font-weight: var(--weight-semibold);
   display: inline-block;
+  min-width: 20px;
+  text-align: center;
 }
 
 .badge-status {
@@ -23,4 +26,4 @@
 }
 .badge-status--active   { background: var(--color-success-light); color: var(--ion-color-success); }
 .badge-status--expired  { background: var(--color-danger-light);  color: var(--ion-color-danger); }
-.badge-status--draft    { background: var(--color-warning-light);  color: var(--ion-color-warning); }
+.badge-status--draft    { background: var(--color-warning-light); color: #92400E; }
