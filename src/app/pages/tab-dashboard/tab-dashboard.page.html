@@ -32,10 +32,12 @@
   } @else {
     <div class="hero">
       <div class="hero-bg"></div>
+      <div class="hero-decoration hero-decoration--diamond"></div>
+      <div class="hero-decoration hero-decoration--circle"></div>
       <div class="hero-content">
-        <h1 class="hero-greeting">¡Bienvenido!</h1>
+        <h1 class="hero-greeting"><span class="animate-accent-shimmer">¡Bienvenido!</span></h1>
         <p class="hero-sub">Mantente al día con tu plataforma universitaria</p>
-        <div class="hero-stats">
+        <div class="hero-stats animate-stagger">
           <div class="hero-stat">
             <span class="hero-stat-value">{{ announcements.length }}</span>
             <span class="hero-stat-label">Anuncios</span>
@@ -163,7 +165,7 @@
           <p class="empty-state-subtext">Las encuestas disponibles aparecerán aquí.</p>
         </div>
       } @else {
-        <ion-card button routerLink="/tabs/surveys" class="survey-cta-card">
+        <ion-card button routerLink="/tabs/surveys" class="survey-cta-card card-tilt">
           <ion-card-content class="survey-cta-content">
             <ion-icon name="checkmark-circle" class="survey-icon-pulse"></ion-icon>
             <div class="survey-cta-text">

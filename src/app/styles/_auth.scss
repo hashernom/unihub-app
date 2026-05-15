@@ -1,5 +1,5 @@
 ﻿.auth-content {
-  --background: linear-gradient(180deg, #1E3A5F 0%, #243B5E 25%, #2C5282 50%, #1E3A5F 100%);
+  --background: linear-gradient(180deg, #1E3A5F 0%, #1A2F4F 30%, #2C5282 55%, #1E3A5F 100%);
 
   &::part(scroll) {
     display: flex;
@@ -12,11 +12,24 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    bottom: 0;
     background:
-      radial-gradient(ellipse at 30% 0%, rgba(212,168,67,0.12) 0%, transparent 50%),
-      radial-gradient(ellipse at 70% 100%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      radial-gradient(ellipse at 15% 10%, rgba(107,163,199,0.10) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 20%, rgba(107,163,199,0.06) 0%, transparent 35%),
+      radial-gradient(ellipse at 40% 75%, rgba(255,255,255,0.04) 0%, transparent 30%),
+      radial-gradient(ellipse at 70% 60%, rgba(30,58,95,0.2) 0%, transparent 40%);
     pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--surface-noise);
+    background-size: 128px 128px;
+    opacity: var(--noise-opacity);
+    pointer-events: none;
+    z-index: 0;
   }
 }
 
@@ -27,6 +40,55 @@
   text-align: center;
   position: relative;
   z-index: 1;
+
+  /* ── Decorative floating shapes ── */
+  .auth-decoration {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .auth-decoration--diamond {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba(107,163,199,0.2);
+    border-radius: 3px;
+    transform: rotate(45deg);
+  }
+  .auth-decoration--diamond-1 {
+    top: 8%;
+    right: -5%;
+    animation: float 7s ease-in-out infinite;
+  }
+  .auth-decoration--diamond-2 {
+    bottom: 20%;
+    left: -8%;
+    width: 14px;
+    height: 14px;
+    animation: float-reverse 8s ease-in-out infinite;
+    border-color: rgba(255,255,255,0.12);
+  }
+  .auth-decoration--circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .auth-decoration--circle-1 {
+    top: 3%;
+    left: 10%;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(107,163,199,0.06) 0%, transparent 70%);
+    animation: float 9s ease-in-out infinite;
+  }
+  .auth-decoration--circle-2 {
+    bottom: 5%;
+    right: 5%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    animation: float-reverse 10s ease-in-out infinite;
+  }
 
   .auth-brand-mark {
     margin-bottom: var(--space-6);
@@ -75,7 +137,7 @@
 
     .auth-item {
       --border-color: var(--border-subtle);
-      --highlight-color-focused: var(--color-gold);
+      --highlight-color-focused: var(--color-accent);
       --highlight-height: 2px;
       margin-bottom: var(--space-3);
       --background: var(--surface-input);

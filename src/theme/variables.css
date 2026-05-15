@@ -16,12 +16,12 @@
   --ion-color-secondary-tint: #5C9Bdd;
 
   /** tertiary **/
-  --ion-color-tertiary: #D4A843;
-  --ion-color-tertiary-rgb: 212, 168, 67;
+  --ion-color-tertiary: #6BA3C7;
+  --ion-color-tertiary-rgb: 107, 163, 199;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #B8912E;
-  --ion-color-tertiary-tint: #E0B85A;
+  --ion-color-tertiary-shade: #5A8DB0;
+  --ion-color-tertiary-tint: #7AADCF;
 
   /** success **/
   --ion-color-success: #27AE60;

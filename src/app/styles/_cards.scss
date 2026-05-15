@@ -6,7 +6,7 @@
   border: 1px solid rgba(255,255,255,0.6);
   position: relative;
   overflow: hidden;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
 
   &::before {
     content: '';
@@ -19,13 +19,35 @@
     border-radius: 0 2px 2px 0;
   }
 
+  &::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, transparent 50%, var(--card-accent, var(--color-gold)) 50%);
+    border-radius: 0 var(--radius-md) 0 0;
+    opacity: 0.15;
+    transition: opacity var(--transition-base);
+    pointer-events: none;
+  }
+
   &:active {
     transform: scale(0.99);
   }
 }
 
-.card { @extend %card-base; --card-accent: var(--color-gold); }
-.card-admin { @extend %card-base; --card-accent: var(--color-gold); }
+@media (hover: hover) {
+  %card-base:hover {
+    &::after {
+      opacity: 0.35;
+    }
+  }
+}
+
+.card { @extend %card-base; --card-accent: var(--color-accent); }
+.card-admin { @extend %card-base; --card-accent: var(--color-accent); }
 .card-survey { @extend %card-base; --card-accent: var(--ion-color-success); }
 .card-event { @extend %card-base; --card-accent: var(--ion-color-tertiary); }
 
@@ -35,7 +57,7 @@
 
   &::before {
     width: 3px;
-    background: var(--color-gold);
+    background: var(--color-accent);
   }
 }
 
@@ -102,7 +124,7 @@
 }
 
 .card-icon-pinned {
-  color: var(--color-gold);
+  color: var(--color-accent);
   margin-right: var(--space-1);
   vertical-align: middle;
 }

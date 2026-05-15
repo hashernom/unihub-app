@@ -1,11 +1,11 @@
 ion-tab-bar {
-  --background: rgba(255, 255, 255, 0.85);
+  --background: rgba(255, 255, 255, 0.82);
   --border: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   height: var(--bottom-tab-height);
   padding: var(--space-1) 0 var(--space-2);
-  box-shadow: 0 -1px 12px rgba(30, 58, 95, 0.06);
+  box-shadow: 0 -2px 20px rgba(30, 58, 95, 0.08);
 
   &::before {
     content: '';
@@ -32,14 +32,16 @@ ion-tab-button {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
-    height: 2px;
-    border-radius: 1px;
+    width: 24px;
+    height: 2.5px;
+    border-radius: 2px;
     background: transparent;
-    transition: background var(--transition-fast);
+    transition: background var(--transition-fast), width var(--transition-bounce);
   }
 
   &.tab-selected::after {
-    background: var(--color-gold);
+    background: var(--color-accent);
+    width: 28px;
+    animation: slide-indicator 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 }

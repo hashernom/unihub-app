@@ -45,7 +45,7 @@
   --shadow-md:    0 4px 12px rgba(30,58,95,0.08), 0 2px 4px rgba(30,58,95,0.04);
   --shadow-lg:    0 10px 25px rgba(30,58,95,0.08), 0 4px 10px rgba(30,58,95,0.04);
   --shadow-xl:    0 20px 40px rgba(30,58,95,0.10), 0 8px 20px rgba(30,58,95,0.06);
-  --shadow-gold:  0 4px 14px rgba(212,168,67,0.25);
+  --shadow-accent:  0 4px 14px rgba(107,163,199,0.25);
   --card-shadow:       var(--shadow-md);
   --card-shadow-hover: var(--shadow-lg);
 
@@ -62,12 +62,12 @@
   --z-modal:    400;
   --z-toast:    500;
 
-  /* -- Brand Accent (Gold) -- */
-  --color-gold:         #D4A843;
-  --color-gold-rgb:     212, 168, 67;
-  --color-gold-light:   #F5E8C8;
-  --color-gold-dark:    #B8912E;
-  --color-glow-gold:    rgba(212, 168, 67, 0.15);
+  /* -- Brand Accent (Steel Blue) -- */
+  --color-accent:         #6BA3C7;
+  --color-accent-rgb:     107, 163, 199;
+  --color-accent-light:   #D6E8F5;
+  --color-accent-dark:    #4A7FB5;
+  --color-glow-accent:    rgba(107, 163, 199, 0.15);
 
   /* -- Semantic Surfaces -- */
   --surface-page:       #F4F2EE;
@@ -77,7 +77,7 @@
   --surface-input:      #F0EEEA;
   --surface-skeleton:   #E5E2DC;
   --surface-overlay:    rgba(30, 58, 95, 0.5);
-  --surface-gradient-card: linear-gradient(135deg, #ffffff 0%, #FFFBFA 50%, #FFFDF5 100%);
+  --surface-gradient-card: linear-gradient(135deg, #ffffff 0%, #F8FAFB 50%, #F5F9FC 100%);
   --surface-gradient-header: linear-gradient(135deg, #1E3A5F 0%, #2C5282 100%);
   --surface-gradient-warm: linear-gradient(135deg, #F4F2EE 0%, #FFFCF7 100%);
 
@@ -85,7 +85,7 @@
   --border-subtle:  #E8E4DE;
   --border-default: #D4CFC8;
   --border-strong:  #B0ABA4;
-  --border-focus:   var(--color-gold);
+  --border-focus:   var(--color-accent);
 
   /* -- Semantic Text -- */
   --text-primary:    #1E293B;
@@ -93,7 +93,36 @@
   --text-tertiary:   #9CA3AF;
   --text-on-primary: #ffffff;
   --text-link:       var(--ion-color-secondary);
-  --text-gold:       var(--color-gold);
+  --text-accent:     var(--color-accent);
+
+  /* -- Decorative / Atmospheric -- */
+  --color-accent-deep:   #4A7FB5;
+  --color-accent-rgb:    107, 163, 199;
+  --hero-decoration-opacity: 0.07;
+  --noise-opacity:     0.025;
+  --scrollbar-width:   6px;
+  --scrollbar-radius:  3px;
+
+  /* -- Surface Noise SVG (subtle grain texture) -- */
+  --surface-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* -- Decorative SVG Patterns -- */
+  --pattern-dots: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%236BA3C7' opacity='0.12'/%3E%3C/svg%3E");
+  --pattern-diagonal: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-10,-10 L50,50 M-10,20 L20,50 M-20,40 L40,70' stroke='%236BA3C7' stroke-width='0.5' opacity='0.06'/%3E%3C/svg%3E");
+
+  /* -- Golden Decorative Gradients -- */
+  --gradient-accent-shimmer: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    var(--color-accent-light) 20%,
+    var(--color-accent) 40%,
+    #ffffff 55%,
+    var(--color-accent) 70%,
+    var(--color-accent-light) 85%,
+    #ffffff 100%
+  );
+  --gradient-hero-mesh: radial-gradient(ellipse 120% 80% at 0% 20%, rgba(107,163,199,0.10) 0%, transparent 60%),
+                         radial-gradient(ellipse 80% 120% at 100% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
 
   /* -- Semantic Feedback -- */
   --color-success-light: #ECFDF5;
@@ -115,7 +144,7 @@
   --ion-card-border-radius: var(--radius-md);
   --ion-card-box-shadow:    var(--card-shadow);
   --ion-card-margin:        var(--space-2) var(--space-4);
-  --ion-card-background:    var(--surface-card-warm);
+  --ion-card-background:    var(--surface-card);
   --ion-button-border-radius: var(--radius-lg);
   --ion-button-font-weight:   var(--weight-semibold);
   --ion-button-font-size:     var(--text-base);

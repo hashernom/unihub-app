@@ -10,11 +10,13 @@
 <ion-content>
   <div class="hero admin-hero">
     <div class="hero-bg"></div>
+    <div class="hero-decoration hero-decoration--diamond"></div>
+    <div class="hero-decoration hero-decoration--circle"></div>
     <div class="hero-content">
       <div class="hero-admin-badge">Panel de Administración</div>
-      <h1 class="hero-greeting">Bienvenido</h1>
+      <h1 class="hero-greeting"><span class="animate-accent-shimmer">Bienvenido</span></h1>
       <p class="hero-sub">Gestiona los módulos de UniHub</p>
-      <div class="hero-stats">
+      <div class="hero-stats animate-stagger">
         <div class="hero-stat">
           <span class="hero-stat-value">{{ userCount }}</span>
           <span class="hero-stat-label">Usuarios</span>
@@ -41,7 +43,7 @@
       <ion-row>
         @for (card of adminCards; track card.title) {
           <ion-col size="6" size-md="4">
-            <ion-card [routerLink]="card.route" class="dashboard-card" [style.--card-color]="'var(--ion-color-' + card.color + ')'">
+            <ion-card [routerLink]="card.route" class="dashboard-card card-tilt" [style.--card-color]="'var(--ion-color-' + card.color + ')'">
               <ion-card-header>
                 <ion-icon [name]="card.icon" class="card-icon"></ion-icon>
                 <ion-card-title>{{ card.title }}</ion-card-title>

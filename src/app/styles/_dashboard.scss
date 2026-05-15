@@ -13,7 +13,25 @@
   padding: var(--space-3);
   text-align: center;
   box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(212,168,67,0.1);
+  border: 1px solid rgba(107,163,199,0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(107,163,199,0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
+@media (hover: hover) {
+  .metric-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .metric-value {
@@ -52,6 +70,20 @@
   font-weight: var(--weight-semibold);
   margin: 0;
   flex: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.dashboard-section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 1px;
+  opacity: 0.5;
 }
 
 .dashboard-section-icon {

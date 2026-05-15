@@ -55,7 +55,7 @@ ion-content {
 }
 
 ion-card {
-  border: 1px solid rgba(212, 168, 67, 0.08);
+  border: 1px solid rgba(107, 163, 199, 0.08);
 }
 
 ion-button {
@@ -77,6 +77,39 @@ ion-toast {
   --box-shadow: var(--shadow-lg);
 }
 
+/* ── Subtle noise texture ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--surface-noise);
+  background-size: 128px 128px;
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(107, 163, 199, 0.25);
+  border-radius: var(--scrollbar-radius);
+  transition: background var(--transition-fast);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 163, 199, 0.45);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 163, 199, 0.25) transparent;
+}
+
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -85,6 +118,6 @@ ion-toast {
 }
 
 ::selection {
-  background: rgba(212, 168, 67, 0.3);
+  background: rgba(107, 163, 199, 0.3);
   color: var(--text-primary);
 }
