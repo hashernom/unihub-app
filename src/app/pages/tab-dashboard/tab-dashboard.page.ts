@@ -36,7 +36,7 @@ interface UpcomingEvent {
     AnnouncementCardComponent, NoticeCardComponent,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonButton, IonIcon, IonRefresher,
-    IonRefresherContent, IonSkeletonText, IonBadge,
+  IonRefresherContent, IonSkeletonText,
   IonCard, IonCardHeader,
     IonCardTitle, IonCardContent, IonChip, IonLabel,
     IonSearchbar,

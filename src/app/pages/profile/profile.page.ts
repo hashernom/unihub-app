@@ -1,10 +1,13 @@
 ﻿import { Component, inject, OnDestroy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonAvatar, IonButton, IonInput,
-  IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton,
+  IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton, IonIcon,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { notifications } from "ionicons/icons";
 import { Subscription } from "rxjs";
 import { AuthService, type AuthUser } from "../../core/services/auth.service";
 import { SupabaseService } from "../../core/services/supabase.service";
@@ -12,10 +15,10 @@ import { SupabaseService } from "../../core/services/supabase.service";
 @Component({
   selector: "app-profile",
   imports: [
-    FormsModule,
+    FormsModule, RouterLink,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonItem, IonLabel, IonAvatar, IonButton, IonInput,
-    IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton,
+    IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton, IonIcon,
   ],
   templateUrl: "./profile.page.html",
   styleUrl: "./profile.page.scss",
@@ -33,6 +36,7 @@ export class ProfilePage implements OnDestroy {
   toastMessage = "";
 
   constructor() {
+    addIcons({ notifications });
     this.sub.add(this.auth.currentUser$.subscribe((u) => {
       this.user = u;
       if (u) this.editName = u.profile.full_name;

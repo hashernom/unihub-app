@@ -1,0 +1,151 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Aulas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/admin/classrooms/new">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading) {
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <div class="skeleton-card-wrapped">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="filter-chips">
+      <ion-chip
+        [outline]="activeBuildingFilter !== null"
+        [style.--background]="activeBuildingFilter === null ? 'var(--ion-color-primary)' : 'transparent'"
+        [style.--color]="activeBuildingFilter === null ? '#fff' : 'var(--text-secondary)'"
+        (click)="filterByBuilding(null)"
+      >
+        <ion-label>Todas ({{ classrooms.length }})</ion-label>
+      </ion-chip>
+      @for (b of buildingsWithCount; track b.name) {
+        <ion-chip
+          [outline]="activeBuildingFilter !== b.name"
+          [style.--background]="activeBuildingFilter === b.name ? 'var(--ion-color-primary)' : 'transparent'"
+          [style.--color]="activeBuildingFilter === b.name ? '#fff' : 'var(--text-secondary)'"
+          (click)="filterByBuilding(b.name)"
+        >
+          <ion-label>{{ b.name }} ({{ b.count }})</ion-label>
+        </ion-chip>
+      }
+    </div>
+
+    @if (filteredClassrooms.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="business" class="empty-state-icon"></ion-icon>
+        <p class="empty-state-text">No hay aulas</p>
+        <p class="empty-state-subtext">
+          @if (activeBuildingFilter) {
+            No hay aulas en este edificio.
+          } @else {
+            Crea la primera aula para gestionar eventos.
+          }
+        </p>
+        <ion-button routerLink="/admin/classrooms/new" color="primary">
+          <ion-icon slot="start" name="add"></ion-icon>
+          Crear aula
+        </ion-button>
+      </div>
+    }
+
+    @for (classroom of filteredClassrooms; track classroom.id) {
+      <ion-card class="admin-card" [class.inactive]="!classroom.is_active">
+        <ion-card-header>
+          <ion-card-title>
+            {{ classroom.name }}
+            @if (classroom.building) {
+              <span class="building-tag">{{ classroom.building }}</span>
+            }
+          </ion-card-title>
+          <div class="card-meta">
+            <ion-badge [color]="classroom.is_active ? 'success' : 'medium'">
+              {{ classroom.is_active ? 'Activa' : 'Inactiva' }}
+            </ion-badge>
+            @if (classroom.capacity) {
+              <span class="capacity-badge">
+                <ion-icon name="school"></ion-icon>
+                Cap. {{ classroom.capacity }}
+              </span>
+            }
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="card-actions">
+            <ion-button size="small" fill="clear" (click)="openAvailability(classroom)">
+              <ion-icon slot="start" name="time"></ion-icon>
+              Disponibilidad
+            </ion-button>
+            <ion-toggle
+              [checked]="classroom.is_active"
+              (ionChange)="toggleActive(classroom)"
+            ></ion-toggle>
+            <ion-button size="small" fill="clear" [routerLink]="['/admin/classrooms/edit', classroom.id]">
+              <ion-icon slot="icon-only" name="create"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+
+  <ion-modal [isOpen]="showAvailability" (didDismiss)="closeAvailability()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>{{ selectedClassroom?.name }} — Disponibilidad</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeAvailability()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        @if (availabilityLoading) {
+          <div class="loading-container">
+            <p class="loading-text">Cargando disponibilidad...</p>
+          </div>
+        } @else {
+          <div class="week-grid">
+            @for (day of weekDays; track day.date) {
+              <div class="day-column">
+                <div class="day-header">{{ day.label }}</div>
+                <div class="day-events">
+                  @if (getEventsForDay(day.date).length === 0) {
+                    <div class="slot-free">Libre</div>
+                  }
+                  @for (ev of getEventsForDay(day.date); track ev.id) {
+                    <div class="slot-occupied" [style.--ev-color]="ev.color || eventService.getEventColor(ev.event_type)">
+                      <span class="slot-time">{{ formatHour(ev.start_time) }}</span>
+                      <span class="slot-title">{{ ev.title }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    color="primary"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>
