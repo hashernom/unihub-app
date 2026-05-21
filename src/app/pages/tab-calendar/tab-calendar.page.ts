@@ -1,13 +1,12 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
 import { DatePipe } from "@angular/common";
-import { RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButton, IonIcon, IonRefresher,
   IonRefresherContent, IonChip, IonLabel, IonSegment,
   IonSegmentButton, IonModal,
   IonButtons, IonSpinner, IonSelect, IonSelectOption,
-  IonItem, IonText,
+  IonItem,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { calendar, today, arrowBack, arrowForward, time, location, person, alertCircle, business, school, repeat, funnel } from "ionicons/icons";
@@ -21,14 +20,14 @@ import type { CalendarOptions, EventClickArg } from "@fullcalendar/core/index.js
 @Component({
   selector: "app-tab-calendar",
   imports: [
-    DatePipe, RouterLink,
+    DatePipe,
     FullCalendarModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButton, IonIcon, IonRefresher,
     IonRefresherContent, IonChip, IonLabel, IonSegment,
     IonSegmentButton, IonModal,
     IonButtons, IonSpinner, IonSelect, IonSelectOption,
-    IonItem, IonText,
+    IonItem,
   ],
   templateUrl: "./tab-calendar.page.html",
   styleUrl: "./tab-calendar.page.scss",
@@ -55,7 +54,7 @@ export class TabCalendarPage implements OnInit {
     height: "auto",
     headerToolbar: false,
     events: [],
-    eventClick: (arg) => this.onEventClick(arg),
+    eventClick: (arg: EventClickArg) => this.onEventClick(arg),
     dayMaxEventRows: 3,
     eventTimeFormat: {
       hour: "2-digit",

@@ -1,11 +1,10 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonButton, IonIcon, IonBadge,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-  IonChip, IonLabel, IonSegment, IonSegmentButton,
+  IonChip, IonLabel,
   IonModal, IonToggle, IonToast,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -15,11 +14,11 @@ import { EventService, type Classroom, type CalendarEvent } from '../../core/ser
 @Component({
   selector: 'app-admin-classrooms',
   imports: [
-    RouterLink, DatePipe,
+    RouterLink,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonButton, IonIcon, IonBadge,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-    IonChip, IonLabel, IonSegment, IonSegmentButton,
+    IonChip, IonLabel,
     IonModal, IonToggle, IonToast,
   ],
   templateUrl: './admin-classrooms.page.html',
