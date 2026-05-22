@@ -81,24 +81,44 @@
   <ion-list>
     <ion-list-header>Fecha y hora</ion-list-header>
 
-    <ion-item>
-      <ion-label position="stacked">Fecha de inicio <span class="required">*</span></ion-label>
-      <ion-datetime [(ngModel)]="startDate" displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" (ionChange)="checkAvailabilityInline()"></ion-datetime>
+    <ion-item class="datetime-pair">
+      <ion-label position="stacked">Inicio</ion-label>
+      <div class="datetime-inline">
+        <ion-input type="date" [(ngModel)]="startDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <div class="time-selector">
+          <select [(ngModel)]="startHour" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+            @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
+          </select>
+          <span class="time-colon">:</span>
+          <select [(ngModel)]="startMinute" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+            @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
+          </select>
+          <ion-segment [value]="startPeriod" (ionChange)="onSegmentChange('start', $event.detail.value)">
+            <ion-segment-button value="AM">AM</ion-segment-button>
+            <ion-segment-button value="PM">PM</ion-segment-button>
+          </ion-segment>
+        </div>
+      </div>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Hora de inicio</ion-label>
-      <ion-datetime [(ngModel)]="startTime" displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="0,15,30,45" (ionChange)="checkAvailabilityInline()"></ion-datetime>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Fecha de fin <span class="required">*</span></ion-label>
-      <ion-datetime [(ngModel)]="endDate" displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" (ionChange)="checkAvailabilityInline()"></ion-datetime>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Hora de fin</ion-label>
-      <ion-datetime [(ngModel)]="endTime" displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="0,15,30,45" (ionChange)="checkAvailabilityInline()"></ion-datetime>
+    <ion-item class="datetime-pair">
+      <ion-label position="stacked">Fin</ion-label>
+      <div class="datetime-inline">
+        <ion-input type="date" [(ngModel)]="endDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <div class="time-selector">
+          <select [(ngModel)]="endHour" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+            @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
+          </select>
+          <span class="time-colon">:</span>
+          <select [(ngModel)]="endMinute" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+            @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
+          </select>
+          <ion-segment [value]="endPeriod" (ionChange)="onSegmentChange('end', $event.detail.value)">
+            <ion-segment-button value="AM">AM</ion-segment-button>
+            <ion-segment-button value="PM">PM</ion-segment-button>
+          </ion-segment>
+        </div>
+      </div>
     </ion-item>
   </ion-list>
 

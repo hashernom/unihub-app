@@ -173,3 +173,210 @@ INSERT INTO student_code_blacklist (id, student_code, reason) VALUES
 ('e0000000-0000-0000-0000-000000000001', 'U00000000', 'Código de prueba - no válido para estudiantes reales'),
 ('e0000000-0000-0000-0000-000000000002', 'U99999999', 'Código de prueba - no válido para estudiantes reales')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- EVENTS
+-- Nota: created_by y professor_id se dejan NULL porque dependen
+-- de profiles vinculados a auth.users.
+-- ============================================================
+
+-- 1. Álgebra Lineal — Lun/Mie/Vie 08:00-10:00, Aula 101
+--    Recurre semanal desde el 20 de abril
+INSERT INTO events (id, title, description, event_type, classroom_id, professor_id, start_time, end_time, recurring_rule, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000001',
+  'Álgebra Lineal',
+  'Curso de álgebra lineal: matrices, determinantes, espacios vectoriales y transformaciones lineales.',
+  'class',
+  'a0000000-0000-0000-0000-000000000001',
+  NULL,
+  '2026-04-20T08:00:00-05:00',
+  '2026-04-20T10:00:00-05:00',
+  'FREQ=WEEKLY;BYDAY=MO,WE,FR',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 2. Programación I — Lun/Mie 10:00-12:00, Laboratorio 1
+--    Recurre semanal desde el 27 de abril
+INSERT INTO events (id, title, description, event_type, classroom_id, professor_id, start_time, end_time, recurring_rule, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000002',
+  'Programación I',
+  'Fundamentos de programación en Python: variables, ciclos, funciones, estructuras de datos y algoritmos básicos.',
+  'class',
+  'a0000000-0000-0000-0000-000000000003',
+  NULL,
+  '2026-04-27T10:00:00-05:00',
+  '2026-04-27T12:00:00-05:00',
+  'FREQ=WEEKLY;BYDAY=MO,WE',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 3. Cálculo Diferencial — Mar/Jue 14:00-16:00, Aula 201
+--    Recurre semanal desde el 21 de abril
+INSERT INTO events (id, title, description, event_type, classroom_id, professor_id, start_time, end_time, recurring_rule, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000003',
+  'Cálculo Diferencial',
+  'Límites, derivadas, aplicaciones de la derivada e introducción a integrales.',
+  'class',
+  'a0000000-0000-0000-0000-000000000002',
+  NULL,
+  '2026-04-21T14:00:00-05:00',
+  '2026-04-21T16:00:00-05:00',
+  'FREQ=WEEKLY;BYDAY=TU,TH',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 4. Física Mecánica — Mié 07:00-10:00, Aula 301
+--    Recurre semanal desde el 22 de abril
+INSERT INTO events (id, title, description, event_type, classroom_id, professor_id, start_time, end_time, recurring_rule, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000004',
+  'Física Mecánica',
+  'Cinemática, dinámica, leyes de Newton, trabajo y energía, conservación del momento.',
+  'class',
+  'a0000000-0000-0000-0000-000000000006',
+  NULL,
+  '2026-04-22T07:00:00-05:00',
+  '2026-04-22T10:00:00-05:00',
+  'FREQ=WEEKLY;BYDAY=WE',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 5. Inglés Técnico — Jue 09:00-11:00, Aula 101
+--    Recurre semanal desde el 23 de abril
+INSERT INTO events (id, title, description, event_type, classroom_id, professor_id, start_time, end_time, recurring_rule, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000005',
+  'Inglés Técnico',
+  'Vocabulario técnico en inglés para ingeniería, comprensión de lectura técnica y redacción de informes.',
+  'class',
+  'a0000000-0000-0000-0000-000000000001',
+  NULL,
+  '2026-04-23T09:00:00-05:00',
+  '2026-04-23T11:00:00-05:00',
+  'FREQ=WEEKLY;BYDAY=TH',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- ONE-TIME EVENTS
+-- ============================================================
+
+-- 6. Examen Parcial de Cálculo — Aula Magna
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000006',
+  'Parcial de Cálculo Diferencial',
+  'Primer examen parcial. Temas: límites, continuidad y derivadas. No se permite calculadora gráfica.',
+  'exam',
+  'a0000000-0000-0000-0000-000000000007',
+  '2026-05-12T08:00:00-05:00',
+  '2026-05-12T11:00:00-05:00',
+  '#EF4444'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 7. Charla — IA en la Educación
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000007',
+  'Charla: Inteligencia Artificial en la Educación',
+  'Charla abierta sobre el impacto de la IA en procesos educativos. Invitado: Dr. Andrés Mendoza (Universidad de los Andes).',
+  'workshop',
+  'a0000000-0000-0000-0000-000000000004',
+  '2026-05-15T10:00:00-05:00',
+  '2026-05-15T12:00:00-05:00',
+  '#F97316'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 8. Sustentación de Proyectos
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000008',
+  'Sustentación de Proyectos de Grado',
+  'Sustentación pública de los proyectos de grado de los estudiantes de último semestre. Entrada libre.',
+  'meeting',
+  'a0000000-0000-0000-0000-000000000004',
+  '2026-05-25T14:00:00-05:00',
+  '2026-05-25T17:00:00-05:00',
+  '#22C55E'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 9. Taller de Machine Learning
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000009',
+  'Taller de Machine Learning con Python',
+  'Taller práctico introductorio a machine learning usando scikit-learn. Cupo limitado a 30 personas.',
+  'workshop',
+  'a0000000-0000-0000-0000-000000000003',
+  '2026-05-30T09:00:00-05:00',
+  '2026-05-30T13:00:00-05:00',
+  '#F97316'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 10. Cierre de Notas — Fin de Semestre
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000010',
+  'Cierre de Notas — Fin de Semestre',
+  'Reunión de docentes para el cierre y validación de notas del semestre.',
+  'other',
+  'a0000000-0000-0000-0000-000000000002',
+  '2026-06-01T10:00:00-05:00',
+  '2026-06-01T12:00:00-05:00',
+  '#6B7280'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 11. Reunión de Facultad
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000011',
+  'Reunión de Facultad de Ingeniería',
+  'Reunión mensual del cuerpo docente para tratar temas administrativos y académicos.',
+  'meeting',
+  'a0000000-0000-0000-0000-000000000005',
+  '2026-06-05T15:00:00-05:00',
+  '2026-06-05T16:30:00-05:00',
+  '#22C55E'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 12. Semana de Repaso — Aula 301
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000012',
+  'Semana de Repaso — Física',
+  'Sesión especial de repaso general previa al examen final de Física Mecánica.',
+  'class',
+  'a0000000-0000-0000-0000-000000000006',
+  '2026-06-08T07:00:00-05:00',
+  '2026-06-08T09:00:00-05:00',
+  '#3B82F6'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 13. Examen Ordinario de Física
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000013',
+  'Examen Ordinario — Física Mecánica',
+  'Examen final ordinario (segunda oportunidad). Temas: todo el semestre. Calculadora permitida.',
+  'exam',
+  'a0000000-0000-0000-0000-000000000002',
+  '2026-06-10T14:00:00-05:00',
+  '2026-06-10T16:00:00-05:00',
+  '#EF4444'
+) ON CONFLICT (id) DO NOTHING;
+
+-- 14. Examen Final de Álgebra
+INSERT INTO events (id, title, description, event_type, classroom_id, start_time, end_time, color)
+VALUES (
+  'f0000000-0000-0000-0000-000000000014',
+  'Examen Final — Álgebra Lineal',
+  'Examen final del curso. Temas: todo el semestre. No se permite calculadora.',
+  'exam',
+  'a0000000-0000-0000-0000-000000000004',
+  '2026-06-15T08:00:00-05:00',
+  '2026-06-15T11:00:00-05:00',
+  '#EF4444'
+) ON CONFLICT (id) DO NOTHING;

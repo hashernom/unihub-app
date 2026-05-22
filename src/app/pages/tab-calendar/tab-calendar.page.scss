@@ -23,6 +23,13 @@
   font-weight: var(--weight-medium);
 }
 
+.month-label {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
 ion-segment {
   padding: 0 var(--space-4);
   margin-bottom: var(--space-3);
@@ -90,8 +97,7 @@ ion-segment {
   --fc-event-bg-color: var(--ion-color-primary);
   --fc-event-border-color: var(--ion-color-primary);
   --fc-event-text-color: #fff;
-  --fc-today-bg-color: rgba(212, 168, 67, 0.08);
-  --fc-highlight-color: rgba(30, 58, 95, 0.05);
+  --fc-today-bg-color: rgba(212, 168, 67, 0.1);
 }
 
 ::ng-deep .fc {
@@ -110,6 +116,15 @@ ion-segment {
   padding: var(--space-1) var(--space-2);
 }
 
+::ng-deep .fc a.fc-daygrid-day-number {
+  color: var(--ion-color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+::ng-deep .fc a.fc-daygrid-day-number:hover {
+  text-decoration: underline;
+}
+
 ::ng-deep .fc .fc-col-header-cell-cushion {
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
@@ -125,6 +140,16 @@ ion-segment {
   font-weight: var(--weight-medium);
   cursor: pointer;
   border: none;
+}
+
+::ng-deep .fc .fc-daygrid-day.fc-day-selected,
+::ng-deep .fc .fc-timegrid-col.fc-day-selected {
+  background: rgba(212, 168, 67, 0.22) !important;
+}
+
+::ng-deep .fc .fc-daygrid-day:hover {
+  cursor: pointer;
+  background: rgba(30, 58, 95, 0.04);
 }
 
 ::ng-deep .fc .fc-daygrid-event {

@@ -131,16 +131,6 @@ export class AdminEventsPage implements OnInit {
     this.selectedInstanceDate = '';
   }
 
-  editEvent(event: CalendarEvent): void {
-    if (event.recurring_rule) {
-      this.cancelTarget = event;
-      this.showCancelInstanceAction = false;
-      this.showEditAction = true;
-    } else {
-      this.router.navigate(['/admin/events/edit', event.id]);
-    }
-  }
-
   showEditAction = false;
   editTarget: CalendarEvent | null = null;
   editInstanceDate = '';

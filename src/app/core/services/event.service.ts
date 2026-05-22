@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { OfflineManagerService } from './offline-manager.service';
-import { RRule, RRuleSet } from 'rrule';
+import { RRule } from 'rrule';
 
 export interface CalendarEvent {
   id: string;
@@ -121,7 +121,7 @@ export class EventService {
 
     const nonRecurringPromise = this.supabase.client
       .from('events')
-      .select(`*, classrooms!inner(name)`)
+      .select(`*, classrooms(name)`)
       .eq('is_cancelled', false)
       .is('recurring_rule', null)
       .gte('start_time', start)
@@ -190,6 +190,7 @@ export class EventService {
             const occEnd = new Date(occDate.getTime() + duration);
             result.push(this.mapEvent({
               ...e,
+              id: `${eventId}_${dateKey}`,
               start_time: occDate.toISOString(),
               end_time: occEnd.toISOString(),
             }, (e['classrooms'] as Record<string, unknown> | null)?.['name'] as string | null));

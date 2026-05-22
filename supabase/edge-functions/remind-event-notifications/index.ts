@@ -36,8 +36,8 @@ serve(async (_req: Request) => {
     }
 
     const fifteenMinEvents = await findEvents(supabase, now, inFifteenMin);
-    const fifteenMinIds = new Set(fifteenMinEvents.map((e) => e.id));
-    const fifteenMinOnly = fifteenMinEvents.filter((e) => !fifteenMinIds.has(e.id));
+    const oneHourIds = new Set(oneHourEvents.map((e) => e.id));
+    const fifteenMinOnly = fifteenMinEvents.filter((e) => !oneHourIds.has(e.id));
 
     for (const event of fifteenMinOnly) {
       const users = await getEnabledUsers(supabase, "event_reminder_15m");

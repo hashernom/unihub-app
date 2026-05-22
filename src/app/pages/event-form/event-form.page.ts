@@ -6,8 +6,9 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonDatetime, IonToast, IonNote,
+  IonButton, IonToast, IonNote,
   IonList, IonListHeader, IonIcon, IonToggle,
+  IonSegment, IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircle, checkmarkCircle, mail } from 'ionicons/icons';
@@ -23,8 +24,9 @@ import { environment } from '../../../environments/environment';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonDatetime, IonToast, IonNote,
+    IonButton, IonToast, IonNote,
     IonList, IonListHeader, IonIcon, IonToggle,
+    IonSegment, IonSegmentButton,
   ],
   templateUrl: './event-form.page.html',
   styleUrl: './event-form.page.scss',
@@ -40,12 +42,18 @@ export class EventFormPage implements OnInit {
   eventId: string | null = null;
   title = '';
   description = '';
-  eventType: string = 'class';
+  eventType = 'class';
   classroomId: string | null = null;
   startDate = '';
   endDate = '';
   startTime = '';
   endTime = '';
+  startHour = 7;
+  startMinute = 0;
+  startPeriod: 'AM' | 'PM' = 'AM';
+  endHour = 8;
+  endMinute = 0;
+  endPeriod: 'AM' | 'PM' = 'AM';
   recurringRule: string | null = null;
   saving = false;
   showToast = false;
@@ -74,6 +82,21 @@ export class EventFormPage implements OnInit {
     { value: 'FREQ=WEEKLY;BYDAY=TU,TH', label: 'Mar-Jue' },
     { value: 'FREQ=MONTHLY', label: 'Mensual' },
   ];
+
+  readonly hours = Array.from({ length: 12 }, (_, i) => i + 1);
+  readonly minutes = [0, 15, 30, 45];
+
+  padMinute(m: number): string {
+    return m.toString().padStart(2, '0');
+  }
+
+  onSegmentChange(which: 'start' | 'end', value: unknown): void {
+    if (typeof value !== 'string' || (value !== 'AM' && value !== 'PM')) return;
+    if (which === 'start') this.startPeriod = value;
+    else this.endPeriod = value;
+    this.syncTimeToStorage(which);
+    this.checkAvailabilityInline();
+  }
 
   ngOnInit(): void {
     addIcons({ alertCircle, checkmarkCircle, mail });
@@ -113,15 +136,44 @@ export class EventFormPage implements OnInit {
         this.classroomId = event.classroom_id;
         const start = new Date(event.start_time);
         const end = new Date(event.end_time);
-        this.startDate = start.toISOString();
-        this.endDate = end.toISOString();
+        this.startDate = start.toISOString().slice(0, 10);
+        this.endDate = end.toISOString().slice(0, 10);
         this.startTime = start.toTimeString().slice(0, 5);
         this.endTime = end.toTimeString().slice(0, 5);
+        this.syncTimeToDisplay('start');
+        this.syncTimeToDisplay('end');
         this.recurringRule = event.recurring_rule;
         this.professorId = event.professor_id;
       }
     } catch {
       this.toast('Error al cargar el evento');
+    }
+  }
+
+  private syncTimeToDisplay(which: 'start' | 'end'): void {
+    const t = which === 'start' ? this.startTime : this.endTime;
+    const [h24, m] = t.split(':').map(Number);
+    const h12 = h24 % 12 || 12;
+    if (which === 'start') {
+      this.startHour = h12;
+      this.startMinute = m;
+      this.startPeriod = h24 < 12 ? 'AM' : 'PM';
+    } else {
+      this.endHour = h12;
+      this.endMinute = m;
+      this.endPeriod = h24 < 12 ? 'AM' : 'PM';
+    }
+  }
+
+  syncTimeToStorage(which: 'start' | 'end'): void {
+    const h = which === 'start' ? this.startHour : this.endHour;
+    const m = which === 'start' ? this.startMinute : this.endMinute;
+    const p = which === 'start' ? this.startPeriod : this.endPeriod;
+    const h24 = p === 'AM' ? (h === 12 ? 0 : h) : (h === 12 ? 12 : h + 12);
+    if (which === 'start') {
+      this.startTime = `${String(h24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    } else {
+      this.endTime = `${String(h24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
   }
 
@@ -136,6 +188,8 @@ export class EventFormPage implements OnInit {
       return;
     }
 
+    this.syncTimeToStorage('start');
+    this.syncTimeToStorage('end');
     const startDateTime = this.combineDateTime(this.startDate, this.startTime || '00:00');
     const endDateTime = this.combineDateTime(this.endDate, this.endTime || '23:59');
 
@@ -195,7 +249,9 @@ export class EventFormPage implements OnInit {
 
         if (this.sendEmailNotification) {
           this.eventId = newEventId;
-          this.sendInvitations().catch(() => {});
+          this.sendInvitations().catch(() => {
+            this.toast('Evento creado pero no se pudieron enviar las invitaciones por email');
+          });
         }
       }
       setTimeout(() => this.router.navigate(['/admin/events']), 1000);
@@ -207,9 +263,9 @@ export class EventFormPage implements OnInit {
   }
 
   private combineDateTime(date: string, time: string): string {
-    const d = new Date(date);
+    const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
-    d.setHours(hours, minutes, 0, 0);
+    const d = new Date(year, month - 1, day, hours, minutes, 0, 0);
     return d.toISOString();
   }
 

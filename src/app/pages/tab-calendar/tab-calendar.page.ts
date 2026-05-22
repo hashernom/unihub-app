@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ViewChild, inject, ChangeDetectorRef } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
@@ -11,11 +11,11 @@ import {
 import { addIcons } from "ionicons";
 import { calendar, today, arrowBack, arrowForward, time, location, person, alertCircle, business, school, repeat, funnel } from "ionicons/icons";
 import { EventService, type CalendarEvent, type Classroom } from "../../core/services/event.service";
-import { FullCalendarModule } from "@fullcalendar/angular";
+import { FullCalendarModule, FullCalendarComponent } from "@fullcalendar/angular";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { CalendarOptions, EventClickArg } from "@fullcalendar/core/index.js";
+import type { CalendarOptions, EventClickArg, DatesSetArg } from "@fullcalendar/core/index.js";
 
 @Component({
   selector: "app-tab-calendar",
@@ -36,6 +36,8 @@ export class TabCalendarPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   readonly eventService = inject(EventService);
 
+  @ViewChild(FullCalendarComponent) calendarComponent?: FullCalendarComponent;
+
   events: CalendarEvent[] = [];
   allClassrooms: Classroom[] = [];
   selectedEvent: CalendarEvent | null = null;
@@ -45,6 +47,7 @@ export class TabCalendarPage implements OnInit {
   activeFilter: string | null = null;
   activeClassroomFilter: string | null = null;
   currentView: "dayGridMonth" | "timeGridWeek" | "timeGridDay" = "dayGridMonth";
+  currentMonthLabel = "";
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -53,8 +56,11 @@ export class TabCalendarPage implements OnInit {
     firstDay: 1,
     height: "auto",
     headerToolbar: false,
+    navLinks: true,
     events: [],
     eventClick: (arg: EventClickArg) => this.onEventClick(arg),
+    datesSet: (arg: DatesSetArg) => this.onDatesSet(arg),
+    dateClick: (arg) => this.onDateClick(arg.dateStr, arg.dayEl),
     dayMaxEventRows: 3,
     eventTimeFormat: {
       hour: "2-digit",
@@ -165,24 +171,28 @@ export class TabCalendarPage implements OnInit {
   onCalendarViewChange(view: string | undefined): void {
     if (!view) return;
     this.currentView = view as "dayGridMonth" | "timeGridWeek" | "timeGridDay";
-    this.calendarOptions = { ...this.calendarOptions, initialView: this.currentView };
+    this.calendarComponent?.getApi().changeView(view);
   }
 
   goToToday(): void {
-    this.calendarOptions = { ...this.calendarOptions };
-    setTimeout(() => {
-      const el = document.querySelector(".full-calendar") as unknown as { getApi: () => { today: () => void } };
-      el?.getApi().today();
-    });
+    this.calendarComponent?.getApi().today();
   }
 
   navigateDate(direction: -1 | 1): void {
-    this.calendarOptions = { ...this.calendarOptions };
-    setTimeout(() => {
-      const el = document.querySelector(".full-calendar") as unknown as { getApi: () => { prev: () => void; next: () => void } };
-      if (direction === -1) el?.getApi().prev();
-      else el?.getApi().next();
-    });
+    const api = this.calendarComponent?.getApi();
+    if (!api) return;
+    if (direction === -1) api.prev();
+    else api.next();
+  }
+
+  private onDatesSet(arg: DatesSetArg): void {
+    this.currentMonthLabel = arg.view.title;
+  }
+
+  private onDateClick(_dateStr: string, dayEl: HTMLElement): void {
+    const prev = document.querySelector('.fc-daygrid-day.fc-day-selected');
+    if (prev) prev.classList.remove('fc-day-selected');
+    dayEl.classList.add('fc-day-selected');
   }
 
   filterByType(type: string | null): void {

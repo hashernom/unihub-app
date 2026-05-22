@@ -49,6 +49,69 @@ ion-item {
   --inner-padding-end: 0;
 }
 
+.datetime-pair {
+  --inner-padding-end: 0;
+}
+
+.datetime-inline {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+  align-items: center;
+}
+
+.datetime-inline ion-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.time-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.time-selector select {
+  background: var(--ion-color-step-100, #eee);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 6px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  min-width: 44px;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.time-selector select:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 1px;
+}
+
+.time-colon {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--ion-color-step-500, #888);
+  padding: 0 1px;
+}
+
+.time-selector ion-segment {
+  width: auto;
+  min-width: 76px;
+  margin-left: var(--space-1);
+}
+
+.time-selector ion-segment-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  font-size: var(--text-xs);
+  min-height: 28px;
+  --border-radius: var(--radius-sm);
+}
+
 .required {
   color: var(--ion-color-danger);
 }
