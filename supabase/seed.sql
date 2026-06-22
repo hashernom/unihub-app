@@ -33,66 +33,66 @@ ON CONFLICT (id) DO NOTHING;
 -- ============================================================
 -- FAQ ENTRIES
 -- ============================================================
-INSERT INTO faq_entries (id, question, answer, category, sort_order) VALUES
+INSERT INTO faq_entries (id, question, answer, category, sort_order, language) VALUES
 ('b0000000-0000-0000-0000-000000000001',
  '¿Cómo me registro en la aplicación?',
  'Para registrarte, necesitas tu código estudiantil (formato U########) y un correo electrónico válido. Descarga la app, selecciona "Crear cuenta", ingresa tu código y sigue las instrucciones de verificación.',
- 'Cuenta', 1),
+ 'Cuenta', 1, 'es'),
 
 ('b0000000-0000-0000-0000-000000000002',
  '¿Olvidé mi contraseña, qué hago?',
  'En la pantalla de inicio de sesión, selecciona "¿Olvidaste tu contraseña?". Te enviaremos un enlace de recuperación a tu correo electrónico registrado.',
- 'Cuenta', 2),
+ 'Cuenta', 2, 'es'),
 
 ('b0000000-0000-0000-0000-000000000003',
  '¿Cómo consulto mi horario de clases?',
  'Ve a la sección "Calendario" en el menú principal. Allí podrás ver todos los eventos y clases programados. Puedes filtrar por día, semana o mes.',
- 'Calendario', 3),
+ 'Calendario', 3, 'es'),
 
 ('b0000000-0000-0000-0000-000000000004',
  '¿Cómo respondo una encuesta?',
  'Las encuestas activas aparecen en la sección "Encuestas" del menú. Selecciona una encuesta disponible, responde las preguntas y presiona "Enviar". Solo puedes responder una vez por encuesta.',
- 'Encuestas', 4),
+ 'Encuestas', 4, 'es'),
 
 ('b0000000-0000-0000-0000-000000000005',
  '¿Dónde veo los anuncios de la universidad?',
  'Los anuncios aparecen en la pantalla principal (Dashboard). Los anuncios urgentes se muestran al inicio con un indicador especial. También puedes filtrar por categoría.',
- 'Dashboard', 5),
+ 'Dashboard', 5, 'es'),
 
 ('b0000000-0000-0000-0000-000000000006',
  '¿Puedo cambiar mi foto de perfil?',
  'Sí, ve a tu perfil (icono en la esquina superior derecha), selecciona "Editar perfil" y toca sobre tu foto actual para cambiarla.',
- 'Cuenta', 6),
+ 'Cuenta', 6, 'es'),
 
 ('b0000000-0000-0000-0000-000000000007',
  '¿La app funciona sin conexión a internet?',
  'La app guarda localmente los anuncios, avisos y FAQ más recientes para que puedas consultarlos sin conexión. Sin embargo, para responder encuestas o ver contenido nuevo necesitas conexión.',
- 'General', 7),
+ 'General', 7, 'es'),
 
 ('b0000000-0000-0000-0000-000000000008',
  '¿Cómo reporto un problema con la app?',
  'Si encuentras un error o tienes una sugerencia, ve a "Ayuda" en el menú y usa la opción "Reportar problema". Describe el problema y nuestro equipo lo revisará.',
- 'Soporte', 8),
+ 'Soporte', 8, 'es'),
 
 ('b0000000-0000-0000-0000-000000000009',
  '¿Cómo sé si tengo un evento próximo?',
  'La app te enviará notificaciones cuando un evento en tu calendario esté próximo a iniciar. Asegúrate de tener las notificaciones activadas en la configuración de tu dispositivo.',
- 'Calendario', 9),
+ 'Calendario', 9, 'es'),
 
 ('b0000000-0000-0000-0000-000000000010',
  '¿Los profesores pueden ver quién respondió las encuestas?',
  'No. Las respuestas de las encuestas son anónimas. Los administradores solo pueden ver resultados agregados (estadísticas), nunca respuestas individuales vinculadas a un estudiante.',
- 'Encuestas', 10),
+ 'Encuestas', 10, 'es'),
 
 ('b0000000-0000-0000-0000-000000000011',
  '¿Cómo me pongo en contacto con un profesor?',
  'En la sección de Calendario, al ver los detalles de un evento o clase, aparece el nombre del profesor asignado. Si tienes dudas académicas, contacta al profesor por los canales oficiales de la universidad.',
- 'General', 11),
+ 'General', 11, 'es'),
 
 ('b0000000-0000-0000-0000-000000000012',
  '¿Qué hago si mi código estudiantil no es aceptado?',
  'Verifica que el código tenga el formato correcto: "U" seguido de 8 dígitos (ej: U20231001). Si el formato es correcto pero sigue sin funcionar, contacta a la administración de la universidad.',
- 'Cuenta', 12)
+ 'Cuenta', 12, 'es')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================

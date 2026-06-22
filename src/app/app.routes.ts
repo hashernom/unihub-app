@@ -47,6 +47,9 @@ export const routes: Routes = [
   { path: 'admin/classrooms/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/classroom-form/classroom-form.page').then(m => m.ClassroomFormPage) },
   { path: 'admin/classrooms/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/classroom-form/classroom-form.page').then(m => m.ClassroomFormPage) },
   { path: 'admin/faq', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-faq/admin-faq.page').then(m => m.AdminFaqPage) },
+  { path: 'admin/faq/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/faq-form/faq-form.page').then(m => m.FaqFormPage) },
+  { path: 'admin/faq/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/faq-form/faq-form.page').then(m => m.FaqFormPage) },
+  { path: 'admin/help-queries', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-help-queries/admin-help-queries.page').then(m => m.AdminHelpQueriesPage) },
   { path: 'admin/users', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-users/admin-users.page').then(m => m.AdminUsersPage) },
 
   // -- Redirects --

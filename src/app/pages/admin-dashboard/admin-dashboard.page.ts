@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { addIcons } from 'ionicons';
-import { megaphone, notifications, checkbox, calendar, helpCircle, people, logOut, personCircle, business } from 'ionicons/icons';
+import { megaphone, notifications, checkbox, calendar, helpCircle, people, logOut, personCircle, business, trendingUp } from 'ionicons/icons';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonCard, IonCardHeader, IonCardTitle, IonIcon,
@@ -37,11 +37,12 @@ export class AdminDashboardPage implements OnInit {
     { title: "Aulas", icon: "business", route: "/admin/classrooms", color: "tertiary" },
     { title: "Calendario", icon: "calendar", route: "/admin/events", color: "success" },
     { title: "FAQ", icon: "help-circle", route: "/admin/faq", color: "warning" },
-    { title: "Usuarios", icon: "people", route: "/admin/users", color: "danger" },
+    { title: "Escalación", icon: "trending-up", route: "/admin/help-queries", color: "danger" },
+    { title: "Usuarios", icon: "people", route: "/admin/users", color: "medium" },
   ];
 
   ngOnInit(): void {
-    addIcons({ megaphone, notifications, checkbox, calendar, helpCircle, people, 'log-out': logOut, 'person-circle': personCircle, business });
+    addIcons({ megaphone, notifications, checkbox, calendar, helpCircle, people, 'log-out': logOut, 'person-circle': personCircle, business, 'trending-up': trendingUp });
     this.loadMetrics();
   }
 

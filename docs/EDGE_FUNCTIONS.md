@@ -9,9 +9,15 @@ Edge Functions son funciones serverless escritas en TypeScript que corren en el 
 | Función | Estado | Milestone |
 |---------|:------:|-----------|
 | `validate-student-code` | ✅ Implementada | M1 |
-| `notify-on-announcement` | ❌ Planeada | M2 |
-| `process-survey-results` | ❌ Planeada | M3 |
-| `help-bot-search` | ❌ Planeada | M5 |
+| `notify-on-announcement` | ✅ Implementada | M2 |
+| `process-survey-results` | ✅ Implementada | M3 |
+| `help-bot-search` | ✅ Implementada | M5 |
+| `deactivate-expired-surveys` | ✅ Implementada | M3 |
+| `remind-pending-surveys` | ✅ Implementada | M3 |
+| `check-classroom-availability` | ✅ Implementada | M4 |
+| `send-event-invitation` | ✅ Implementada | M4 |
+| `export-survey-results` | ✅ Implementada | M3 |
+| `remind-event-notifications` | ✅ Implementada | M4 |
 
 ---
 
@@ -106,7 +112,7 @@ interface QuestionResult {
 
 ---
 
-## 3. `help-bot-search` ❌ Planeada
+## 3. `help-bot-search` ✅ Implementada
 
 **Trigger**: HTTP llamada desde la app (help bot screen)
 
@@ -119,14 +125,17 @@ interface HelpSearchRequest {
   query: string;        // texto del usuario
   user_id: string;      // para registrar help_queries
   max_results?: number; // default 5
+  language?: string;    // 'es' | 'en' (auto-detectado si no se envía)
 }
 
 // Output
 interface HelpSearchResponse {
   query: string;
+  language: string;        // idioma detectado o enviado
   results: FaqMatch[];
   is_resolved: boolean;    // true si encontró match con score > umbral
-  suggestion?: string;     // "¿Intentaste con...?" si no hay match exacto
+  suggestions?: string[];  // "¿Intentaste con...?" si no hay match exacto
+  fallback_language?: string; // idioma usado si hubo fallback
 }
 
 interface FaqMatch {
@@ -134,22 +143,25 @@ interface FaqMatch {
   question: string;
   answer: string;
   category: string;
+  language: string;
   relevance_score: number;  // 0.0 - 1.0
 }
 ```
 
 **Lógica**:
-1. Realiza búsqueda `tsquery` en `faq_entries` usando `to_tsvector('spanish', question || ' ' || answer)`
-2. Filtra solo `is_active = true`
+1. Detecta idioma de la query (es/en) por stopwords y caracteres si no se envía `language`
+2. Realiza búsqueda `tsquery` en `faq_entries` filtrando por `language` y `is_active = true`
 3. Ranking: `ts_rank()` con peso 2x para matches en `question`, 1x para `answer`
-4. Si `max(relevance_score) < 0.3` → guarda `help_queries` (no resuelta) y retorna sugerencias con `pg_trgm` similarity
-5. Si hay match → guarda `help_queries` con `matched_faq_id` y `resolved = true`
+4. Si no hay resultados en el idioma detectado, hace fallback al otro idioma
+5. Si `max(relevance_score) < 0.3` → guarda `help_queries` (no resuelta) y retorna sugerencias con `pg_trgm` similarity
+6. Si hay match → guarda `help_queries` con `matched_faq_id` y `resolved = true`
 
 **Índices requeridos**:
 ```sql
 CREATE INDEX idx_faq_fts ON faq_entries USING GIN(to_tsvector('spanish', question || ' ' || answer));
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX idx_faq_trgm ON faq_entries USING GIN(question gin_trgm_ops);
+CREATE INDEX idx_faq_language_active ON faq_entries(language, is_active);
 ```
 
 ---
@@ -194,7 +206,7 @@ interface ValidateCodeResponse {
 ## Estructura de Archivos
 
 ```
-supabase/edge-functions/
+supabase/functions/
 ├── notify-on-announcement/
 │   ├── index.ts        # handler principal
 │   ├── fcm.ts          # Firebase Cloud Messaging client

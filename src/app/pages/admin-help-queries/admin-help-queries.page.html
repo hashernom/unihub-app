@@ -1,0 +1,100 @@
+<ion-header class="admin-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Escalación de consultas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content">
+  <div class="admin-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Consultas no resueltas</h1>
+      <p class="hero-subtitle">Revisa, agrupa y convierte preguntas frecuentes en FAQs</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  } @else {
+    <div class="metrics-row">
+      <ion-card class="metric-card">
+        <ion-card-content>
+          <div class="metric-value">{{ groups.length }}</div>
+          <div class="metric-label">Grupos únicos</div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="metric-card">
+        <ion-card-content>
+          <div class="metric-value">{{ overallRate }}%</div>
+          <div class="metric-label">Tasa de resolución</div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-card class="chart-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="trending-up"></ion-icon>
+          Resolución semanal
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="chart-wrapper">
+          <canvas #resolutionChart></canvas>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="queries-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="help-circle"></ion-icon>
+          Top consultas no resueltas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        @if (topQueries.length === 0) {
+          <div class="empty-state">
+            <p>No hay consultas pendientes</p>
+          </div>
+        } @else {
+          <ion-list lines="full">
+            @for (group of topQueries; track group.normalized_text) {
+              <ion-item class="query-item">
+                <div class="query-content" slot="start">
+                  <ion-badge color="danger">{{ group.count }}</ion-badge>
+                  <ion-label>
+                    <h3>{{ group.query_text }}</h3>
+                    <p>{{ group.sample_ids.length }} ocurrencias agrupadas</p>
+                  </ion-label>
+                </div>
+                <div class="query-actions" slot="end">
+                  <ion-button fill="clear" color="success" (click)="markResolved(group)">
+                    <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" color="primary" (click)="createFaqFromQuery(group)">
+                    <ion-icon name="add-circle" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
+
+<ion-toast
+  [isOpen]="showToast"
+  [message]="toastMessage"
+  duration="2500"
+  (didDismiss)="showToast = false"
+></ion-toast>

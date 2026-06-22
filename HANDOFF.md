@@ -345,7 +345,7 @@ npx cap open android
 - `npm run build` → Build exitoso (warnings de canvg/jspdf/localforage, no de código propio)
 
 ### Supabase CI
-- `deno lint supabase/edge-functions/` → .github/workflows/supabase-ci.yml
+- `deno lint supabase/functions/` → .github/workflows/supabase-ci.yml
 - `supabase db lint --file supabase/migrations/*.sql`
 
 ---

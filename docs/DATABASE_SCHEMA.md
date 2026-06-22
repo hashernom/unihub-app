@@ -84,7 +84,7 @@ erDiagram
         text question
         text answer
         text category
-        text lang "es|en"
+        text language "es|en"
         boolean is_active
     }
 ```
@@ -189,8 +189,9 @@ CREATE EXTENSION IF NOT EXISTS "btree_gist";  -- para exclusión GIST en events
 ### faq_entries
 - `id` UUID PK, `question` TEXT NOT NULL, `answer` TEXT NOT NULL
 - `category` TEXT, `sort_order` INT DEFAULT 0, `is_active` BOOLEAN DEFAULT true
+- `language` TEXT CHECK (es|en) DEFAULT 'es'
 - `created_at`, `updated_at` TIMESTAMPTZ
-- **Indexes**: GIN full-text search (`to_tsvector('spanish', ...)`), trigram, `is_active` (partial)
+- **Indexes**: GIN full-text search, trigram, `is_active` (partial), `language`
 
 ### help_queries
 - `id` UUID PK, `user_id` UUID FK → profiles (SET NULL)
@@ -219,6 +220,19 @@ CREATE EXTENSION IF NOT EXISTS "btree_gist";  -- para exclusión GIST en events
 - `expires_at` TIMESTAMPTZ DEFAULT (now() + 1 hour)
 
 ---
+
+## Funciones RPC
+
+### `search_faq_fts(query_text TEXT, result_limit INT)`
+Búsqueda full-text en `faq_entries` activas con ranking ponderado:
+- Peso 2x para matches en `question`.
+- Peso 1x para matches en `answer`.
+- Usa `to_tsvector('spanish', ...)` y `to_tsquery('spanish', query_text)`.
+
+### `search_faq_trigram(query_text TEXT, result_limit INT)`
+Fallback basado en `pg_trgm` para búsquedas difusas / con errores tipográficos.
+
+Ver migración `supabase/migrations/00009_help_bot_search_functions.sql`.
 
 ## Triggers
 
@@ -256,3 +270,4 @@ Todas las tablas tienen RLS habilitado. Políticas completas en `supabase/migrat
 5. **`is_cancelled` en events**: Eventos cancelados ocultos
 6. **`is_active` + rango de fechas en surveys**: Validación en RLS y CHECK constraint
 7. **Tablas nuevas**: `notification_tokens`, `student_code_blacklist`, `survey_results_cache`
+8. **Funciones RPC para help-bot**: `search_faq_fts`, `search_faq_trigram`

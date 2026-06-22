@@ -1,8 +1,145 @@
-﻿<ion-header><ion-toolbar color="primary"><ion-buttons slot="start"><ion-back-button defaultHref="/admin/dashboard"></ion-back-button></ion-buttons><ion-title>FAQ</ion-title></ion-toolbar></ion-header>
-<ion-content>
-  <div class="empty-state">
-    <ion-icon name="help-circle" class="empty-state-icon"></ion-icon>
-    <p class="empty-state-text">Gestión de FAQ</p>
-    <p class="empty-state-subtext">Módulo en construcción — Próximamente podrás gestionar preguntas frecuentes.</p>
+﻿<ion-header class="admin-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestor de FAQs</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="newFaq()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content">
+  <div class="admin-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Preguntas frecuentes</h1>
+      <p class="hero-subtitle">Administra, organiza y traduce las respuestas del asistente</p>
+    </div>
   </div>
+
+  <ion-item class="search-item" lines="none">
+    <ion-icon name="search" slot="start"></ion-icon>
+    <ion-input
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchInput($event)"
+      placeholder="Buscar pregunta o respuesta..."
+      clearInput
+    ></ion-input>
+  </ion-item>
+
+  <div class="filters-row">
+    <ion-segment [(ngModel)]="activeFilter" (ionChange)="setActiveFilter($any($event).detail.value)">
+      <ion-segment-button value="all">
+        <ion-label>Todas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="active">
+        <ion-label>Activas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="inactive">
+        <ion-label>Inactivas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-segment [(ngModel)]="languageFilter" (ionChange)="setLanguageFilter($any($event).detail.value)">
+      <ion-segment-button value="all">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="es">
+        <ion-label>ES</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="en">
+        <ion-label>EN</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando FAQs...</p>
+    </div>
+  } @else if (groupedFaqs.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="help-circle" class="empty-state-icon"></ion-icon>
+      <p class="empty-state-text">No se encontraron FAQs</p>
+      <p class="empty-state-subtext">Crea la primera con el botón +</p>
+    </div>
+  } @else {
+    @for (group of groupedFaqs; track group.category) {
+      <ion-card class="faq-category-card">
+        <ion-card-header>
+          <ion-card-title>
+            {{ group.category }}
+            <ion-badge color="tertiary">{{ group.items.length }}</ion-badge>
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-list lines="full">
+            @for (faq of group.items; track faq.id; let i = $index) {
+              <ion-item class="faq-item" [class.inactive]="!faq.is_active">
+                <div class="faq-content" slot="start">
+                  <div class="drag-handle">
+                    <ion-button fill="clear" size="small" (click)="moveUp(group, i)" [disabled]="i === 0">
+                      <ion-icon name="arrow-up"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" size="small" (click)="moveDown(group, i)" [disabled]="i === group.items.length - 1">
+                      <ion-icon name="arrow-down"></ion-icon>
+                    </ion-button>
+                  </div>
+                  <div class="faq-text">
+                    <ion-label>
+                      <h3>{{ faq.question }}</h3>
+                      <p>{{ faq.answer | slice:0:120 }}{{ faq.answer.length > 120 ? '...' : '' }}</p>
+                    </ion-label>
+                    <div class="faq-meta">
+                      <ion-badge [color]="faq.is_active ? 'success' : 'medium'">
+                        {{ faq.is_active ? 'Activa' : 'Inactiva' }}
+                      </ion-badge>
+                      <ion-badge color="light">
+                        <ion-icon name="globe"></ion-icon>
+                        {{ faq.language | uppercase }}
+                      </ion-badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="faq-actions" slot="end">
+                  <ion-toggle
+                    [checked]="faq.is_active"
+                    (ionChange)="toggleActive(faq)"
+                  ></ion-toggle>
+                  <ion-button fill="clear" color="primary" (click)="editFaq(faq)">
+                    <ion-icon name="create" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" color="danger" (click)="confirmDelete(faq)">
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+            }
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
 </ion-content>
+
+<ion-alert
+  [isOpen]="showDeleteAlert"
+  header="¿Eliminar FAQ?"
+  message="Esta acción no se puede deshacer."
+  [buttons]="deleteAlertButtons"
+  (didDismiss)="showDeleteAlert = false"
+></ion-alert>
+
+<ion-toast
+  [isOpen]="showToast"
+  [message]="toastMessage"
+  duration="2500"
+  (didDismiss)="showToast = false"
+></ion-toast>
