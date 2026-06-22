@@ -82,22 +82,19 @@
     } @else {
       <div class="preview-pane" [innerHTML]="renderedAnswer"></div>
     }
+
+    <div class="form-actions">
+      <ion-button
+        expand="block"
+        [disabled]="saving"
+        (click)="save()"
+      >
+        <ion-icon name="save" slot="start"></ion-icon>
+        {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar FAQ' : 'Crear FAQ') }}
+      </ion-button>
+    </div>
   </div>
 </ion-content>
-
-<ion-footer class="form-footer">
-  <ion-toolbar>
-    <ion-button
-      expand="block"
-      [disabled]="saving"
-      (click)="save()"
-      class="save-button"
-    >
-      <ion-icon name="save" slot="start"></ion-icon>
-      {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar FAQ' : 'Crear FAQ') }}
-    </ion-button>
-  </ion-toolbar>
-</ion-footer>
 
 <ion-toast
   [isOpen]="showToast"

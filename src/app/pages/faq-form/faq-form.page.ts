@@ -7,7 +7,7 @@ import {
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
   IonButton, IonToggle, IonToast, IonSegment, IonSegmentButton,
-  IonIcon, IonFooter,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { save, eye, create, helpCircle } from 'ionicons/icons';
@@ -21,7 +21,7 @@ import { FaqService } from '../../core/services/faq.service';
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
     IonButton, IonToggle, IonToast, IonSegment, IonSegmentButton,
-    IonIcon, IonFooter,
+  IonIcon,
   ],
   templateUrl: './faq-form.page.html',
   styleUrls: ['./faq-form.page.scss'],

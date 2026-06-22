@@ -79,7 +79,8 @@ export class AdminHelpQueriesPage implements OnInit {
     }
   }
 
-  createFaqFromQuery(group: HelpQueryGroup): void {
+  async createFaqFromQuery(group: HelpQueryGroup): Promise<void> {
+    await this.markResolved(group);
     this.router.navigate(['/admin/faq/new'], {
       state: { question: group.query_text },
     });
