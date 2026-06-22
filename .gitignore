@@ -60,3 +60,4 @@ Thumbs.db
 # Kilo (agent runtime config)
 .kilo/
 
+supabase/.temp/
