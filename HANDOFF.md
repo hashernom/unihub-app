@@ -7,11 +7,9 @@
 | M1 — Auth (login, register, forgot/reset, profile, guards) | ✅ Completo y estable |
 | M2 — Dashboard (anuncios, avisos, realtime, search, admin CRUDs, edge function) | ✅ Completo |
 | M3 — Surveys (listado, respuesta, admin CRUD, resultados, export, edge functions) | ✅ Completo |
-| M4 — Calendar | ⬜ Pendiente |
+| M4 — Calendar | ✅ Completo |
 | M5 — Help Bot | ⬜ Pendiente |
 | M6+ (Polish, Testing, DevOps, Deploy) | ⬜ Issues creados en GitHub |
-
-**Último bug conocido**: `IonBadge` unused import warning en `TabDashboardPage` (no crítico).
 
 ---
 
@@ -24,7 +22,175 @@
 
 ---
 
-## M3 — Surveys (completado hoy)
+## M4 — Calendar (completado en esta sesión)
+
+### Páginas del módulo
+
+| Ruta | Página | Funcionalidad |
+|------|--------|---------------|
+| `/tabs/calendar` | `tab-calendar.page` | Calendario estudiante con FullCalendar (mes/semana/día), filtros por tipo y aula, modal de detalles |
+| `/admin/events` | `admin-events.page` | CRUD eventos con ActionSheet para recurrentes, cancelar/eliminar, badges de estado |
+| `/admin/events/new` | `event-form.page` | Crear evento con selector 12h AM/PM, conflicto de horario, disponibilidad inline, notificación email |
+| `/admin/events/edit/:id` | `event-form.page` | Editar evento (carga datos existentes) |
+| `/admin/classrooms` | `admin-classrooms.page` | CRUD aulas con filtro por edificio, toggle activo/inactivo, disponibilidad semanal |
+| `/admin/classrooms/new` | `classroom-form.page` | Crear aula con validaciones |
+| `/admin/classrooms/edit/:id` | `classroom-form.page` | Editar aula |
+| `/notification-settings` | `notification-settings.page` | Preferencias: 1h, 15min, encuestas, anuncios |
+
+### Servicios y Edge Functions
+
+| Archivo | Propósito |
+|---------|-----------|
+| `core/services/event.service.ts` | Supabase queries, RRULE expansion (`rrule` library), conflict detection, CRUD |
+| `core/services/offline-manager.service.ts` | Caching network-first para eventos próximos |
+| `supabase/.../send-event-invitation/index.ts` | Edge function - envía emails con ICS via Resend |
+| `supabase/.../check-classroom-availability/index.ts` | Edge function - verifica disponibilidad de aula |
+| `supabase/.../remind-event-notifications/index.ts` | Edge function (cron 15min) - notificaciones FCM push |
+
+### FullCalendar configuración
+
+| Opción | Valor | Propósito |
+|--------|-------|-----------|
+| `plugins` | dayGrid, timeGrid, interaction | Vistas mes/semana/día + interacciones |
+| `locale` | `es` | Español |
+| `firstDay` | `1` | Semana empieza lunes |
+| `navLinks` | `true` | Números de día son links navegables |
+| `dateClick` | handler | Navega a vista diaria al clickear día |
+| `eventClick` | handler | Abre modal con detalles del evento |
+| `dayMaxEventRows` | `3` | Límite de eventos visibles por día (+ "más") |
+| `headerToolbar` | `false` | Toolbar personalizado en template |
+| `dayCellClassNames` | dinámico | Highlight dorado en día seleccionado |
+
+### Filtros del calendario estudiante
+
+-Filtro por tipo de evento (chips: Todos/Clases/Exámenes/Reuniones/Talleres/Otros)
+-Filtro por aula (selector IonSelect con popover)
+-Filtros combinables (tipo + aula)
+-Botón "Limpiar filtros"
+-Conteo de eventos por tipo y aula
+
+### Eventos recurrentes (RRULE)
+
+-Soporte completo: RRULE expandido via `rrule` library
+-Instancias con IDs únicos compuestos (`eventId_dateKey`)
+-Cancelación de instancia individual via `recurring_exceptions` (upsert)
+-Admin ActionSheet: "Solo esta instancia" / "Toda la serie"
+-Editar instancia: toast recomendando cancelar y recrear
+
+### Seed data (supabase/seed.sql)
+
+#### 7 aulas
+
+| Aula | Edificio | Capacidad |
+|------|----------|-----------|
+| Aula 101 | Edificio A | 40 |
+| Aula 201 | Edificio A | 60 |
+| Aula 301 | Edificio A | 35 |
+| Laboratorio 1 | Edificio B | 30 |
+| Auditorio Principal | Edificio C | 200 |
+| Sala de Reuniones | Edificio A | 15 |
+| Aula Magna | Edificio D | 150 |
+
+#### 5 eventos recurrentes (class)
+
+| Evento | Días | Horario | Aula | Inicia |
+|--------|------|---------|------|--------|
+| Álgebra Lineal | Lun, Mié, Vie | 08:00-10:00 | Aula 101 | 20-abr |
+| Programación I | Lun, Mié | 10:00-12:00 | Laboratorio 1 | 27-abr |
+| Cálculo Diferencial | Mar, Jue | 14:00-16:00 | Aula 201 | 21-abr |
+| Física Mecánica | Mié | 07:00-10:00 | Aula 301 | 22-abr |
+| Inglés Técnico | Jue | 09:00-11:00 | Aula 101 | 23-abr |
+
+#### 9 eventos únicos
+
+| Fecha | Evento | Tipo | Aula |
+|-------|--------|------|------|
+| 12-may | Parcial de Cálculo | exam 🔴 | Aula Magna |
+| 15-may | Charla: IA en la Educación | workshop 🟠 | Auditorio |
+| 25-may | Sustentación de Proyectos | meeting 🟢 | Auditorio |
+| 30-may | Taller de Machine Learning | workshop 🟠 | Laboratorio 1 |
+| 01-jun | Cierre de Notas | other ⚪ | Aula 201 |
+| 05-jun | Reunión de Facultad | meeting 🟢 | Sala Reuniones |
+| 08-jun | Semana de Repaso — Física | class 🔵 | Aula 301 |
+| 10-jun | Ordinario — Física | exam 🔴 | Aula 201 |
+| 15-jun | Examen Final — Álgebra | exam 🔴 | Auditorio |
+
+### Datos en Supabase
+
+Los datos se cargaron directamente en el proyecto Supabase via `supabase_execute_sql`:
+- 5 classrooms existentes renombradas a los nombres del seed
+- 2 aulas nuevas creadas (Aula 301 + Aula Magna)
+- 5 eventos viejos eliminados
+- 14 eventos insertados (5 recurrentes con RRULE + 9 únicos)
+
+### Guía de testing
+
+Documento `docs/M4-TESTING-GUIDE.md` con 50+ casos de prueba para:
+- Calendario estudiante (1.1-1.14)
+- Filtros (2.1-2.6)
+- Gestión de aulas admin (3.1-3.9)
+- Gestión de eventos admin (4.1-4.17)
+- Visualización estudiante (5.1-5.4)
+- Notificaciones (6.1-6.3)
+- Admin Dashboard (7.1)
+- Regresión M1-M3 (8.1-8.4)
+- Backend/API (9.1-9.5)
+
+---
+
+## Bugs corregidos en esta sesión (M4)
+
+### 1. Notificaciones 15 minutos nunca se enviaban
+- **Problema**: `remind-event-notifications/index.ts:39-40` — `fifteenMinIds` se creaba con los mismos `fifteenMinEvents`, filtrando contra sí mismo. `fifteenMinOnly` siempre vacío.
+- **Fix**: Usar `oneHourIds` en vez de `fifteenMinIds`.
+
+### 2. `editEvent()` muerto en admin-events
+- **Problema**: Método duplicado `editEvent()` que usaba `cancelTarget` en vez de `editTarget` y no era llamado desde el template.
+- **Fix**: Eliminado.
+
+### 3. Eventos sin aula invisibles en calendario estudiante
+- **Problema**: `classrooms!inner(name)` en non-recurring (INNER JOIN) vs `classrooms(name)` en recurring (LEFT JOIN). Eventos sin aula no aparecían.
+- **Fix**: Cambiado a `classrooms(name)` (LEFT JOIN) consistente.
+
+### 4. Errores de invitación email silenciados
+- **Problema**: `sendInvitations().catch(() => {})` — sin feedback.
+- **Fix**: Toast con mensaje de error.
+
+### 5. Navegación calendario con DOM queries frágiles
+- **Problema**: `document.querySelector(".full-calendar")` con casting inseguro.
+- **Fix**: `@ViewChild(FullCalendarComponent)` con `getApi().today()/prev()/next()/changeView()`.
+
+### 6. Eventos recurrentes con IDs duplicados
+- **Problema**: Todas las instancias compartían el mismo ID del evento padre → FullCalendar renderizaba erráticamente.
+- **Fix**: IDs compuestos únicos: `${eventId}_${dateKey}`.
+
+### 7. Mes no se mostraba en calendario
+- **Fix**: `currentMonthLabel` actualizado via `datesSet` callback + template `{{ currentMonthLabel }}`.
+
+### 8. No se podía seleccionar día en calendario
+- **Problema**: `selectable` + `select` callback causaba highlight en todo el contenedor.
+- **Fix**: `dateClick` + `dayCellClassNames` dinámico + manipulación directa del DOM. Highlight dorado visible.
+
+### 9. Modal de detalles del evento en blanco
+- **Problema**: `<ng-template>` deprecated en Ionic 8 impedía renderizar contenido del modal.
+- **Fix**: Eliminado `<ng-template>`, contenido proyectado directamente.
+
+### 10. Date pickers del form no funcionaban (IonDatetime)
+- **Problema**: `IonDatetime presentation="date"` no permitía seleccionar días visualmente.
+- **Fix**: Reemplazado por `<ion-input type="date">` nativo.
+
+### 11. Horas en 24h sin opción AM/PM
+- **Problema**: `<ion-input type="time">` en 24h.
+- **Fix**: Selector custom con hour (1-12), : minute (00/15/30/45), segment AM/PM. Conversión automática a 24h para BD.
+
+### 12. Lint errors preexistentes
+- `IonBadge` unused import → removido
+- `RRuleSet` unused import → removido
+- `eventType: string = 'class'` → `eventType = 'class'`
+
+---
+
+## M3 — Surveys (completado en sesión anterior)
 
 | Issue | Descripción |
 |---|---|
@@ -51,15 +217,11 @@
 
 ### DB — Migraciones aplicadas
 
-00001 (schema inicial), 00002 (RLS), 00003 (trigger perfil), 00005 (realtime), 00006 (survey_reminders + UNIQUE)
-
-Migration `00006_add_survey_reminders.sql` crea tabla `survey_reminders` con UNIQUE(survey_id, user_id).
-
-Mock data SQL disponible para 3 surveys con preguntas de todos los tipos y 3 responses.
+00001 (schema inicial), 00002 (RLS), 00003 (trigger perfil), 00005 (realtime), 00006 (survey_reminders + UNIQUE), 00007 (recurring_exceptions), 00008 (notification_settings)
 
 ---
 
-## Rediseño Frontend (completado hoy)
+## Rediseño Frontend (completado en sesión anterior)
 
 ### Design System (`src/theme/`)
 
@@ -82,126 +244,6 @@ Mock data SQL disponible para 3 surveys con preguntas de todos los tipos y 3 res
 | `_forms.scss` | `.form-actions`, `.required-star`, `.stars-container`, `.option-row` |
 | `_loading-states.scss` | `.loading-spinner`, `.skeleton*` con shimmer animation |
 | `_dark-mode.scss` | Stub preparado para M5 (solo redefinir tokens) |
-
-### Tipografía
-
-- **Body**: Outfit (300/400/500/600/700) — cargada vía Google Fonts
-- **Headings**: DM Serif Display (para títulos principales)
-- Escala: 12px–32px con tokens `--text-xs` a `--text-3xl`
-
-### Layout — Dashboard estudiante
-
-- Hero gradient navy con stats glassmorphism (anuncios, avisos, encuestas)
-- Secciones con acento lateral coloreado (oro=anuncios, azul=avisos, purple=eventos, verde=encuestas)
-- Iconos decorativos en cada cabecera (megaphone, warning, calendar, checkbox)
-- Empty states con icono + texto principal + subtexto
-- Survey CTA con glow dorado pulsante
-
-### Layout — Auth pages
-
-- Header oculto (`ion-hide`)
-- Full-bleed gradient background (navy degradado con orbes dorados)
-- Card flotante blanca con sombra para el formulario
-- Inputs con fondo gris suave, highlight dorado al focus
-- Marca con icono en recuadro glassmorphism
-
-### Layout — Panel admin
-
-- Hero con badge "Panel de Administración", stats glassmorphism
-- Sección Módulos con acento dorado
-- Cards de navegación con shadow + gradient + scale al presionar
-- Admin list pages con barras de acento (oro=anuncios, azul=avisos, verde=encuestas)
-- Skeleton shimmer loading (reemplaza texto "Cargando...")
-- Empty states premium con iconos + botón de acción
-- Admin Register con auth-style layout
-
-### Layout — Tab bar
-
-- Glassmorphism (`backdrop-filter: blur(12px)`)
-- Indicador dorado en tab activo (2px línea superior)
-- 64px altura, padding generoso
-
----
-
-## Bugs corregidos hoy
-
-### 1. Encoding de caracteres españoles
-- **Problema**: `Set-Content` de PowerShell guardaba archivos sin UTF-8 → ó, ñ, é, ¿ se veían como ? o caracteres rotos
-- **Fix**: Cambiar a usar solo `read`/`edit` tools para modificaciones de archivos. Nunca usar PowerShell `Set-Content` o `node -e` para HTML/TS con caracteres especiales.
-- **Lección aprendida**: Las herramientas `read`/`edit`/`write` trabajan con el workspace root sin restricciones. No usar shell para escribir archivos.
-
-### 2. `tsconfig.app.json` configuración incorrecta
-- **Problema**: Usaba `include: ["src/**/*.ts"]` que es demasiado amplio para Angular 21 con esbuild
-- **Fix**: Cambiar a `files: ["src/main.ts"]` + `include: ["src/**/*.d.ts"]`
-
----
-
-## Arquitectura actualizada
-
-```
-src/
-├── index.html                        # Google Fonts Outfit + DM Serif Display
-├── styles.scss                       # Global: importa tokens + partials + resets
-├── theme/
-│   ├── variables.css                 # Colores Ionic (navy + gold + step colors)
-│   ├── tokens.css                    # Design tokens (spacing, fonts, shadows, semantic surfaces)
-│   └── utilities.css                 # Clases atómicas
-├── app/
-│   ├── app.scss                      # Headings globales (h1-h4), links, focus, selection
-│   ├── app.config.ts                 # APP_INITIALIZER para auth
-│   ├── core/services/
-│   │   ├── auth.service.ts           # signUp, signIn, signOut, restoreSession
-│   │   ├── announcement.service.ts   # CRUD anuncios + caché
-│   │   ├── notice.service.ts         # CRUD avisos + caché
-│   │   ├── survey.service.ts         # CRUD encuestas, respuestas, resultados, export
-│   │   ├── realtime.service.ts       # Suscripciones Realtime
-│   │   └── supabase.client.ts        # Cliente Supabase singleton
-│   ├── pages/
-│   │   ├── login/                    # Full-bleed auth layout + floating card
-│   │   ├── register/                 # Full-bleed auth layout + floating card
-│   │   ├── forgot-password/          # Full-bleed auth layout
-│   │   ├── reset-password/           # Full-bleed auth layout
-│   │   ├── tab-dashboard/            # Hero + sections accent + survey CTA gold
-│   │   ├── tab-surveys/              # Survey list with badges, skeletons
-│   │   ├── survey-response/          # Dynamic form with all question types
-│   │   ├── survey-results/           # Chart.js charts + CSV/PDF export
-│   │   ├── tabs/                     # Glassmorphism tab bar + gold indicator
-│   │   ├── admin-dashboard/          # Hero + metrics + nav grid
-│   │   ├── admin-announcements/      # CRUD con accent bar oro
-│   │   ├── admin-notices/            # CRUD con accent bar azul
-│   │   ├── admin-surveys/            # CRUD con accent bar verde
-│   │   ├── admin-register/           # Auth-style layout
-│   │   ├── survey-form/              # Admin create/edit survey con questions builder
-│   │   ├── announcement-form/        # Admin create/edit announcement
-│   │   ├── notice-form/              # Admin create/edit notice
-│   │   ├── admin-events/             # Stub con empty state
-│   │   ├── admin-faq/                # Stub con empty state
-│   │   └── admin-users/              # Stub con empty state
-│   ├── shared/components/
-│   │   ├── announcement-card/        # Card con accent bar oro, badge categoría, pin, fecha
-│   │   └── notice-card/              # Card con accent bar azul, badge prioridad, alerta
-│   └── styles/                       # Partials SCSS compartidos
-│       ├── _index.scss               # Barrel file
-│       ├── _animations.scss          # Keyframes + stagger + reduced motion
-│       ├── _cards.scss               # %card-base con accent bar
-│       ├── _auth.scss                # Full-bleed auth layout
-│       ├── _forms.scss               # Form actions, stars, options
-│       ├── _badges.scss              # .badge-pill, .badge-count, .badge-status
-│       ├── _dashboard.scss           # Metrics + sections
-│       ├── _empty-states.scss        # Empty state con iconos
-│       ├── _loading-states.scss      # Skeleton shimmer + spinner
-│       └── _dark-mode.scss           # Stub para M5
-├── supabase/
-│   ├── edge-functions/
-│   │   ├── process-survey-results/   # v3 — CORS + JWT decode manual
-│   │   ├── export-survey-results/    # v2 — CORS + JWT decode manual
-│   │   ├── deactivate-expired-surveys/ # Cron job
-│   │   └── remind-pending-surveys/   # FCM push reminders
-│   └── migrations/
-│       └── 00006_add_survey_reminders.sql
-└── docs/
-    └── FRONTEND-GUIDE.md             # Cómo modificar el frontend sin romper
-```
 
 ---
 
@@ -245,7 +287,7 @@ src/
 
 ---
 
-## Deploy — Estrategia (según issues M10)
+## Deploy — Estrategia
 
 ### Ruta 1: PWA (inmediata, sin stores)
 ```bash
@@ -258,37 +300,12 @@ Ya tiene `@angular/service-worker`. Falta crear `manifest.webmanifest` con icons
 ### Ruta 2: Nativa (Capacitor — para Play Store / App Store)
 ```bash
 ionic build --configuration=production
-npx cap add android                    # Instalar @capacitor/android
+npx cap add android
 npx cap copy
 npx cap sync
-npx cap open android                   # Android Studio → APK firmado
+npx cap open android
 ```
 `@capacitor/core` v8.3.3 ya está. **No están instalados** `@capacitor/android` ni `@capacitor/ios`.
-
-### Push notifications
-Edge function `remind-pending-surveys` existe pero **no está conectada a FCM**. Para push real:
-1. Instalar `@capacitor/push-notifications`
-2. Configurar Firebase project
-3. Conectar edge function a Firebase Admin SDK
-
----
-
-## Lo que falta/pendiente
-
-### Configuración manual en Supabase Dashboard
-- Habilitar Realtime para `announcements` y `notices`
-- Webhook para INSERT en `announcements` → Edge Function `notify-on-announcement`
-- Configurar `FCM_SERVER_KEY` como secreto
-
-### Próximos milestones (en orden de issues de GitHub)
-1. **M4 — Calendar** (#31-36): calendario académico, eventos, horarios
-2. **M5 — Help Bot** (#37-43): chatbot FAQ, búsqueda
-3. **M6 — Polish** (#50-52): error handling service, loading states consistente, dark mode, accesibilidad
-4. **M7 — Testing** (#53-58): unit tests (Jest), component tests, E2E
-5. **M8 — Performance** (#59-63): bundle optimization, lazy loading, caching, PWA audit
-6. **M9 — DevOps** (#64-71, #90): CI/CD pipeline audit, caching, preview deploys
-7. **M10 — Deploy** (#74-79): PWA production, Supabase prod, runbook, docs, integration test, launch
-8. **M11 — Maintenance** (#80-83): Sentry, analytics, monitoring, backups
 
 ---
 
@@ -298,30 +315,43 @@ Edge function `remind-pending-surveys` existe pero **no está conectada a FCM**.
 |---|---|
 | `theme/tokens.css` | Design tokens (no tocar valores hardcodeados) |
 | `theme/variables.css` | Colores Ionic (primary navy, tertiary gold) |
-| `app/styles/_cards.scss` | Card system con accent bar (modificar aquí para cambiar cards globalmente) |
-| `app/styles/_auth.scss` | Full-bleed auth layout |
+| `core/services/event.service.ts` | Calendar queries, RRULE expansion, conflict detection, CRUD |
 | `core/services/survey.service.ts` | CRUD encuestas + respuestas + resultados + export |
 | `core/services/auth.service.ts` | initialize() + restoreSession() + cleanup sesiones stale |
 | `app.config.ts` | APP_INITIALIZER para auth |
-| `styles.scss` | Global styles (gradiente headers, botones, toasts) |
-| `docs/FRONTEND-GUIDE.md` | Guía para modificar frontend sin romper |
+| `supabase/seed.sql` | Seed data: aulas, eventos, FAQs, surveys |
+| `docs/M4-TESTING-GUIDE.md` | Testing guide para M4 con 50+ test cases |
+| `HANDOFF.md` | Este archivo |
 
 ---
 
-## Verificación final (cuando corras `ng serve`)
+## Próximos milestones
 
-1. Login con admin → admin dashboard con hero + stats + nav cards
-2. Login con student → student dashboard con hero + sections accent + empty states con iconos
-3. Navegar a encuestas → badge rojo si hay pendientes
-4. Admin → Anuncios/Avisos/Encuestas → skeleton shimmer loading + accent bars + premium empty states
-5. Auth pages → full-bleed gradient + floating card + brand icon
-6. Tab bar → glassmorphism + gold indicator
-7. Caracteres españoles (ó, ñ, é, ¿, ¡) deben verse correctamente
+1. **M5 — Help Bot**: chatbot FAQ, búsqueda
+2. **M6 — Polish**: error handling service, loading states consistente, dark mode, accesibilidad
+3. **M7 — Testing**: unit tests (Jest), component tests, E2E
+4. **M8 — Performance**: bundle optimization, lazy loading, caching, PWA audit
+5. **M9 — DevOps**: CI/CD pipeline audit, caching, preview deploys
+6. **M10 — Deploy**: PWA production, Supabase prod, runbook, docs, integration test, launch
+7. **M11 — Maintenance**: Sentry, analytics, monitoring, backups
+
+---
+
+## CI Pipeline
+
+### Ionic CI
+- `npm run lint` → All files pass (0 errors)
+- `npm test` → 66 tests, 6 files
+- `npm run build` → Build exitoso (warnings de canvg/jspdf/localforage, no de código propio)
+
+### Supabase CI
+- `deno lint supabase/functions/` → .github/workflows/supabase-ci.yml
+- `supabase db lint --file supabase/migrations/*.sql`
 
 ---
 
 ## Tests
 
-- **41 tests** unitarios (servicios de anuncios, avisos, auth)
-- **Lint**: 0 errores (solo warnings de libs externas: canvg, jspdf, localforage)
+- **66 tests** unitarios (servicios: auth, announcements, notices, events)
+- **Lint**: 0 errores
 - **Build**: pasa (development + production)

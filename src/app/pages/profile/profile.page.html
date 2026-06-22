@@ -37,6 +37,10 @@
       } @else {
         <ion-button expand="block" (click)="toggleEdit()">Editar perfil</ion-button>
       }
+      <ion-button expand="block" fill="outline" routerLink="/notification-settings">
+        <ion-icon slot="start" name="notifications"></ion-icon>
+        Notificaciones
+      </ion-button>
       <ion-button expand="block" color="danger" fill="outline" class="ion-margin-top" (click)="onLogout()">Cerrar sesi&oacute;n</ion-button>
     </div>
   }

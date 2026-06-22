@@ -79,7 +79,7 @@ src/
 │   └── app.routes.ts          # Definición de rutas con guards
 ├── supabase/
 │   ├── migrations/            # Migraciones SQL versionadas
-│   ├── edge-functions/        # Edge Functions (Deno)
+│   ├── functions/             # Edge Functions (Deno)
 │   └── seed.sql               # Datos de prueba
 └── docs/                      # Documentación del proyecto
 ```

@@ -1,1 +1,169 @@
-<ion-header><ion-toolbar color="primary"><ion-title>Calendario</ion-title></ion-toolbar></ion-header><ion-content class="ion-padding"><h2>Calendario</h2><p>Aqui apareceran los eventos y clases.</p></ion-content>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Calendario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p class="loading-text">Cargando calendario...</p>
+    </div>
+  } @else {
+    <div class="calendar-toolbar">
+      <ion-button fill="clear" size="small" (click)="navigateDate(-1)">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+      <span class="month-label">{{ currentMonthLabel }}</span>
+      <ion-button fill="clear" size="small" (click)="goToToday()" class="today-btn">
+        <ion-icon slot="start" name="today"></ion-icon>
+        Hoy
+      </ion-button>
+      <ion-button fill="clear" size="small" (click)="navigateDate(1)">
+        <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-segment [value]="currentView" (ionChange)="onCalendarViewChange($any($event).detail.value)">
+      <ion-segment-button value="dayGridMonth">
+        <ion-label>Mes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="timeGridWeek">
+        <ion-label>Semana</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="timeGridDay">
+        <ion-label>Día</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div class="filters-row">
+      <div class="filter-chips">
+        @for (type of eventTypes; track type.key) {
+          <ion-chip
+            [outline]="activeFilter !== type.key"
+            [style.--background]="activeFilter === type.key ? (type.color || 'var(--ion-color-primary)') : 'transparent'"
+            [style.--color]="activeFilter === type.key ? '#fff' : 'var(--text-secondary)'"
+            (click)="filterByType(type.key)"
+          >
+            @if (type.color) {
+              <ion-icon [style.color]="type.color" name="calendar" slot="start"></ion-icon>
+            }
+            <ion-label>{{ type.label }}</ion-label>
+          </ion-chip>
+        }
+      </div>
+
+      <div class="classroom-filter">
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="business" slot="start"></ion-icon>
+          <ion-select
+            [value]="activeClassroomFilter"
+            (ionChange)="filterByClassroom($any($event).detail.value)"
+            interface="popover"
+            placeholder="Filtrar por aula"
+          >
+            <ion-select-option [value]="null">Todas las aulas</ion-select-option>
+            @for (c of allClassrooms; track c.id) {
+              <ion-select-option [value]="c.id">
+                {{ c.name }}@if (c.building) { — {{ c.building }} }
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </div>
+
+      @if (hasActiveFilters()) {
+        <ion-button fill="clear" size="small" color="medium" (click)="clearFilters()" class="clear-btn">
+          <ion-icon slot="start" name="funnel"></ion-icon>
+          Limpiar filtros
+        </ion-button>
+      }
+    </div>
+
+    <div class="calendar-wrapper">
+      <full-calendar
+        class="full-calendar"
+        [options]="calendarOptions"
+      ></full-calendar>
+    </div>
+  }
+
+  <ion-modal [isOpen]="showModal" (didDismiss)="dismissModal()">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Detalles del Evento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="dismissModal()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      @if (selectedEvent) {
+        <div class="event-detail">
+          <div class="event-type-badge" [style.background]="selectedEvent.color || eventService.getEventColor(selectedEvent.event_type)">
+            {{ eventService.getEventTypeLabel(selectedEvent.event_type) }}
+          </div>
+          <h2 class="event-title">{{ selectedEvent.title }}</h2>
+          @if (selectedEvent.description) {
+            <p class="event-description">{{ selectedEvent.description }}</p>
+          }
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">Horario</h3>
+            <div class="event-info-item">
+              <ion-icon name="time"></ion-icon>
+              <span>{{ selectedEvent.start_time | date:'EEEE d MMM, h:mm a' }} — {{ selectedEvent.end_time | date:'h:mm a' }}</span>
+            </div>
+            @if (selectedEvent.recurring_rule) {
+              <div class="event-info-item">
+                <ion-icon name="repeat"></ion-icon>
+                <span>Evento recurrente</span>
+              </div>
+            }
+          </div>
+
+          @if (selectedEvent.classroom_name || selectedEventClassroom) {
+            <div class="detail-section">
+              <h3 class="detail-section-title">Aula</h3>
+              <div class="event-info-item">
+                <ion-icon name="location"></ion-icon>
+                <span>{{ selectedEvent.classroom_name }}</span>
+              </div>
+              @if (selectedEventClassroom) {
+                <div class="classroom-info">
+                  @if (selectedEventClassroom.capacity) {
+                    <div class="classroom-detail">
+                      <ion-icon name="school"></ion-icon>
+                      <span>Capacidad: {{ selectedEventClassroom.capacity }} personas</span>
+                    </div>
+                  }
+                  @if (selectedEventClassroom.building) {
+                    <div class="classroom-detail">
+                      <ion-icon name="business"></ion-icon>
+                      <span>Edificio: {{ selectedEventClassroom.building }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (selectedEvent.professor_name) {
+            <div class="detail-section">
+              <h3 class="detail-section-title">Profesor</h3>
+              <div class="event-info-item">
+                <ion-icon name="person"></ion-icon>
+                <span>{{ selectedEvent.professor_name }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </ion-content>
+  </ion-modal>
+</ion-content>

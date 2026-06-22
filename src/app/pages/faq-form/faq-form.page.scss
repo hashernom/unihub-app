@@ -1,0 +1,107 @@
+.form-header {
+  ion-toolbar {
+    --background: var(--surface-gradient-header);
+    --color: var(--text-on-primary);
+  }
+}
+
+.form-content {
+  --background: var(--surface-page);
+  --padding-bottom: var(--space-6);
+}
+
+.form-card {
+  margin: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: var(--card-shadow);
+}
+
+.form-item {
+  --background: var(--surface-input);
+  --border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+
+  &.toggle-item {
+    --background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &.textarea-item {
+    --background: var(--surface-input);
+  }
+}
+
+.inline-row {
+  display: flex;
+  gap: var(--space-3);
+
+  .half {
+    flex: 1;
+  }
+}
+
+.editor-tabs {
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.markdown-hint {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-info-light);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.preview-pane {
+  min-height: 240px;
+  padding: var(--space-4);
+  background: var(--surface-card-warm);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0 0 var(--space-2);
+  }
+
+  ul {
+    margin: 0 0 var(--space-3);
+    padding-left: var(--space-5);
+  }
+
+  li {
+    margin-bottom: var(--space-1);
+  }
+
+  strong {
+    font-weight: var(--weight-bold);
+  }
+
+  em {
+    font-style: italic;
+  }
+}
+
+.form-footer {
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+
+  .save-button {
+    margin: 0;
+    --border-radius: var(--radius-lg);
+  }
+}

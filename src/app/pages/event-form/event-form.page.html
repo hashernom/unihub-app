@@ -1,0 +1,165 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/events"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Evento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (conflictWarning) {
+    <ion-note color="danger" class="conflict-note">
+      <ion-icon name="alert-circle"></ion-icon>
+      {{ conflictWarning }}
+    </ion-note>
+  }
+
+  <ion-list>
+    <ion-list-header>Información del evento</ion-list-header>
+
+    <ion-item>
+      <ion-label position="stacked">Título <span class="required">*</span></ion-label>
+      <ion-input [(ngModel)]="title" placeholder="Ej: Álgebra Lineal"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Descripción</ion-label>
+      <ion-textarea [(ngModel)]="description" rows="3" placeholder="Descripción del evento..."></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tipo de evento <span class="required">*</span></ion-label>
+      <ion-select [(ngModel)]="eventType" interface="popover">
+        @for (t of eventTypes; track t.value) {
+          <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Aula</ion-label>
+      <ion-select
+        [(ngModel)]="classroomId"
+        interface="popover"
+        placeholder="Seleccionar aula..."
+        (ionChange)="checkAvailabilityInline()"
+      >
+        <ion-select-option [value]="null">Sin aula</ion-select-option>
+        @for (c of classrooms; track c.id) {
+          <ion-select-option [value]="c.id">
+            {{ c.name }}@if (c.building) { ({{ c.building }}) } @if (c.capacity) { — Cap. {{ c.capacity }} }
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    @if (availabilityPreview.length > 0) {
+      <ion-item lines="none">
+        <ion-note
+          slot="start"
+          [color]="availabilityPreview[0].includes('disponible') ? 'success' : 'danger'"
+          class="availability-inline"
+        >
+          <ion-icon [name]="availabilityPreview[0].includes('disponible') ? 'checkmark-circle' : 'alert-circle'"></ion-icon>
+          {{ availabilityPreview[0] }}
+        </ion-note>
+      </ion-item>
+    }
+
+    <ion-item>
+      <ion-label position="stacked">Profesor</ion-label>
+      <ion-select [(ngModel)]="professorId" interface="popover" placeholder="Seleccionar profesor...">
+        <ion-select-option [value]="null">Sin profesor</ion-select-option>
+        @for (p of professors; track p.id) {
+          <ion-select-option [value]="p.id">{{ p.full_name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>Fecha y hora</ion-list-header>
+
+    <ion-item class="datetime-pair">
+      <ion-label position="stacked">Inicio</ion-label>
+      <div class="datetime-inline">
+        <ion-input type="date" [(ngModel)]="startDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <div class="time-selector">
+          <select [(ngModel)]="startHour" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+            @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
+          </select>
+          <span class="time-colon">:</span>
+          <select [(ngModel)]="startMinute" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+            @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
+          </select>
+          <ion-segment [value]="startPeriod" (ionChange)="onSegmentChange('start', $event.detail.value)">
+            <ion-segment-button value="AM">AM</ion-segment-button>
+            <ion-segment-button value="PM">PM</ion-segment-button>
+          </ion-segment>
+        </div>
+      </div>
+    </ion-item>
+
+    <ion-item class="datetime-pair">
+      <ion-label position="stacked">Fin</ion-label>
+      <div class="datetime-inline">
+        <ion-input type="date" [(ngModel)]="endDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <div class="time-selector">
+          <select [(ngModel)]="endHour" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+            @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
+          </select>
+          <span class="time-colon">:</span>
+          <select [(ngModel)]="endMinute" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+            @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
+          </select>
+          <ion-segment [value]="endPeriod" (ionChange)="onSegmentChange('end', $event.detail.value)">
+            <ion-segment-button value="AM">AM</ion-segment-button>
+            <ion-segment-button value="PM">PM</ion-segment-button>
+          </ion-segment>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>Repetición</ion-list-header>
+
+    <ion-item>
+      <ion-label position="stacked">Repetir</ion-label>
+      <ion-select [(ngModel)]="recurringRule" interface="popover">
+        @for (r of recurrenceOptions; track r.value) {
+          <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  @if (!isEdit) {
+    <ion-list>
+      <ion-list-header>Notificación</ion-list-header>
+
+      <ion-item>
+        <ion-toggle slot="start" [(ngModel)]="sendEmailNotification"></ion-toggle>
+        <ion-label>
+          <h2>Notificar por email</h2>
+          <p>Enviar invitación con archivo ICS a los estudiantes</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  }
+
+  <div class="form-actions">
+    <ion-button expand="block" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar evento' : 'Crear evento') }}
+    </ion-button>
+  </div>
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    color="primary"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
+</ion-content>

@@ -1,0 +1,34 @@
+ion-list {
+  margin-bottom: var(--space-4);
+  background: transparent;
+}
+
+ion-list-header {
+  font-family: var(--font-heading, "DM Serif Display", serif);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  padding-left: 0;
+  margin-bottom: var(--space-2);
+}
+
+ion-item {
+  --background: var(--ion-color-step-50, #f8f8f8);
+  --border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  --padding-start: var(--space-4);
+  --padding-end: var(--space-4);
+}
+
+.required {
+  color: var(--ion-color-danger);
+}
+
+.form-actions {
+  padding: var(--space-4) 0 var(--space-8);
+}
+
+.form-actions ion-button {
+  --border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  min-height: 48px;
+}

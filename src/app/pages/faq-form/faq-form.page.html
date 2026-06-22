@@ -1,0 +1,107 @@
+<ion-header class="form-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/faq" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar FAQ' : 'Nueva FAQ' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="form-content">
+  <div class="form-card">
+    <ion-item class="form-item" lines="none">
+      <ion-label position="stacked">Pregunta</ion-label>
+      <ion-input
+        [(ngModel)]="question"
+        placeholder="¿Cómo...?"
+        fill="solid"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
+      <ion-label position="stacked">Categoría</ion-label>
+      <ion-input
+        [(ngModel)]="category"
+        placeholder="Ej: Cuenta, Calendario..."
+        fill="solid"
+      ></ion-input>
+    </ion-item>
+
+    <div class="inline-row">
+      <ion-item class="form-item half" lines="none">
+        <ion-label position="stacked">Idioma</ion-label>
+        <ion-select [(ngModel)]="language" fill="solid" interface="popover">
+          @for (lang of languages; track lang.value) {
+            <ion-select-option [value]="lang.value">{{ lang.label }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="form-item half" lines="none">
+        <ion-label position="stacked">Orden</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="sortOrder"
+          fill="solid"
+        ></ion-input>
+      </ion-item>
+    </div>
+
+    <ion-item class="form-item toggle-item" lines="none">
+      <ion-label>Activa</ion-label>
+      <ion-toggle [(ngModel)]="isActive" slot="end"></ion-toggle>
+    </ion-item>
+
+    <div class="editor-tabs">
+      <ion-segment [(ngModel)]="previewMode" (ionChange)="setPreviewMode($any($event).detail.value)">
+        <ion-segment-button value="edit">
+          <ion-icon name="create"></ion-icon>
+          <ion-label>Editar</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="preview">
+          <ion-icon name="eye"></ion-icon>
+          <ion-label>Vista previa</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    @if (previewMode === 'edit') {
+      <ion-item class="form-item textarea-item" lines="none">
+        <ion-label position="stacked">Respuesta (Markdown)</ion-label>
+        <ion-textarea
+          [(ngModel)]="answer"
+          placeholder="Escribe la respuesta en markdown..."
+          [rows]="12"
+          fill="solid"
+        ></ion-textarea>
+      </ion-item>
+
+      <div class="markdown-hint">
+        <p><strong>Soportado:</strong> # títulos, **negrita**, *cursiva*, - listas</p>
+      </div>
+    } @else {
+      <div class="preview-pane" [innerHTML]="renderedAnswer"></div>
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="form-footer">
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      [disabled]="saving"
+      (click)="save()"
+      class="save-button"
+    >
+      <ion-icon name="save" slot="start"></ion-icon>
+      {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar FAQ' : 'Crear FAQ') }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+
+<ion-toast
+  [isOpen]="showToast"
+  [message]="toastMessage"
+  duration="2500"
+  (didDismiss)="showToast = false"
+></ion-toast>

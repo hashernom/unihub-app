@@ -1,0 +1,6 @@
+# Supabase CLI configuration
+project_id = "syhxhnisksggxhtbvggu"
+
+[functions]
+# Functions are served from supabase/functions/ by default.
+# The CLI expects each function in its own subdirectory with an index.ts entrypoint.

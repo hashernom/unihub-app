@@ -25,6 +25,7 @@ export const routes: Routes = [
 
   // -- Profile page --
   { path: 'profile', canActivate: [AuthGuard], loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage) },
+  { path: 'notification-settings', canActivate: [AuthGuard], loadComponent: () => import('./pages/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage) },
 
   // -- Admin routes --
   { path: 'admin/dashboard', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage) },
@@ -40,7 +41,15 @@ export const routes: Routes = [
   { path: 'admin/surveys/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/survey-form/survey-form.page').then(m => m.SurveyFormPage) },
   { path: 'admin/surveys/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/survey-form/survey-form.page').then(m => m.SurveyFormPage) },
   { path: 'admin/events', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-events/admin-events.page').then(m => m.AdminEventsPage) },
+  { path: 'admin/events/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/event-form/event-form.page').then(m => m.EventFormPage) },
+  { path: 'admin/events/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/event-form/event-form.page').then(m => m.EventFormPage) },
+  { path: 'admin/classrooms', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-classrooms/admin-classrooms.page').then(m => m.AdminClassroomsPage) },
+  { path: 'admin/classrooms/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/classroom-form/classroom-form.page').then(m => m.ClassroomFormPage) },
+  { path: 'admin/classrooms/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/classroom-form/classroom-form.page').then(m => m.ClassroomFormPage) },
   { path: 'admin/faq', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-faq/admin-faq.page').then(m => m.AdminFaqPage) },
+  { path: 'admin/faq/new', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/faq-form/faq-form.page').then(m => m.FaqFormPage) },
+  { path: 'admin/faq/edit/:id', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/faq-form/faq-form.page').then(m => m.FaqFormPage) },
+  { path: 'admin/help-queries', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-help-queries/admin-help-queries.page').then(m => m.AdminHelpQueriesPage) },
   { path: 'admin/users', canActivate: [AuthGuard, AdminGuard], loadComponent: () => import('./pages/admin-users/admin-users.page').then(m => m.AdminUsersPage) },
 
   // -- Redirects --

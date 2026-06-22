@@ -1,0 +1,127 @@
+.conflict-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.availability-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  padding: var(--space-1) 0;
+}
+
+.availability-inline ion-icon {
+  font-size: 1rem;
+}
+
+.conflict-note ion-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+ion-list {
+  margin-bottom: var(--space-4);
+  background: transparent;
+}
+
+ion-list-header {
+  font-family: var(--font-heading, "DM Serif Display", serif);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  padding-left: 0;
+  margin-bottom: var(--space-2);
+}
+
+ion-item {
+  --background: var(--ion-color-step-50, #f8f8f8);
+  --border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  --padding-start: var(--space-4);
+  --padding-end: var(--space-4);
+  --inner-padding-end: 0;
+}
+
+.datetime-pair {
+  --inner-padding-end: 0;
+}
+
+.datetime-inline {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+  align-items: center;
+}
+
+.datetime-inline ion-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.time-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.time-selector select {
+  background: var(--ion-color-step-100, #eee);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 6px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  min-width: 44px;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.time-selector select:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 1px;
+}
+
+.time-colon {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--ion-color-step-500, #888);
+  padding: 0 1px;
+}
+
+.time-selector ion-segment {
+  width: auto;
+  min-width: 76px;
+  margin-left: var(--space-1);
+}
+
+.time-selector ion-segment-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  font-size: var(--text-xs);
+  min-height: 28px;
+  --border-radius: var(--radius-sm);
+}
+
+.required {
+  color: var(--ion-color-danger);
+}
+
+.form-actions {
+  padding: var(--space-4) 0 var(--space-8);
+}
+
+.form-actions ion-button {
+  --border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  min-height: 48px;
+}

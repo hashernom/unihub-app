@@ -1,8 +1,125 @@
-﻿<ion-header><ion-toolbar color="primary"><ion-buttons slot="start"><ion-back-button defaultHref="/admin/dashboard"></ion-back-button></ion-buttons><ion-title>Calendario</ion-title></ion-toolbar></ion-header>
-<ion-content>
-  <div class="empty-state">
-    <ion-icon name="calendar" class="empty-state-icon"></ion-icon>
-    <p class="empty-state-text">Gestión de Calendario</p>
-    <p class="empty-state-subtext">Módulo en construcción — Próximamente podrás gestionar eventos académicos.</p>
-  </div>
+﻿<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Eventos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/admin/events/new">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading) {
+    <div class="ion-padding">
+      @for (_ of [1,2,3]; track _) {
+        <div class="skeleton-card-wrapped">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      }
+    </div>
+  } @else if (events.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="calendar" class="empty-state-icon"></ion-icon>
+      <p class="empty-state-text">No hay eventos</p>
+      <p class="empty-state-subtext">Crea el primer evento para el calendario académico.</p>
+      <ion-button routerLink="/admin/events/new" color="primary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crear evento
+      </ion-button>
+    </div>
+  } @else {
+    @for (event of events; track event.id) {
+      <ion-card class="admin-card" [class.cancelled]="event.is_cancelled">
+        <ion-card-header>
+          <ion-card-title>
+            @if (event.recurring_rule) { ⟳ }
+            {{ event.title }}
+          </ion-card-title>
+          <div class="card-meta">
+            <ion-badge [color]="eventStatus(event).color">{{ eventStatus(event).label }}</ion-badge>
+            <ion-badge
+              [style.--background]="getEventColor(event.event_type)"
+              [style.--color]="'#fff'"
+            >
+              {{ getEventTypeLabel(event.event_type) }}
+            </ion-badge>
+            <span class="card-date">{{ event.start_time | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          @if (event.description) {
+            <p class="card-body">{{ event.description }}</p>
+          }
+          <div class="card-meta-details">
+            <span>{{ event.start_time | date:'h:mm a' }} - {{ event.end_time | date:'h:mm a' }}</span>
+            @if (event.classroom_name) {
+              <span> | {{ event.classroom_name }}</span>
+            }
+            @if (event.recurring_rule) {
+              <ion-badge color="medium" class="recurring-badge">⟳ Recurrente</ion-badge>
+            }
+          </div>
+          @if (!event.is_cancelled) {
+            <div class="card-actions">
+              <ion-button size="small" fill="clear" (click)="editEventClick(event)">
+                <ion-icon slot="icon-only" name="create"></ion-icon>
+              </ion-button>
+              <ion-button size="small" fill="clear" color="warning" (click)="confirmCancel(event)">
+                <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+              </ion-button>
+              <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(event)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-button>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+
+  <ion-alert
+    [isOpen]="showDeleteAlert"
+    header="Eliminar evento"
+    message="¿Estás seguro de eliminar este evento permanentemente? Esta acción no se puede deshacer."
+    [buttons]="deleteAlertButtons"
+    (didDismiss)="showDeleteAlert = false"
+  ></ion-alert>
+
+  <ion-alert
+    [isOpen]="showCancelAlert"
+    header="Cancelar evento"
+    message="¿Cancelar este evento? Los estudiantes ya no lo verán en el calendario."
+    [buttons]="cancelAlertButtons"
+    (didDismiss)="showCancelAlert = false"
+  ></ion-alert>
+
+  <ion-action-sheet
+    [isOpen]="showCancelInstanceAction"
+    header="Cancelar evento recurrente"
+    subHeader="¿Qué instancias deseas cancelar?"
+    [buttons]="cancelInstanceActions"
+    (didDismiss)="showCancelInstanceAction = false"
+  ></ion-action-sheet>
+
+  <ion-action-sheet
+    [isOpen]="showEditAction"
+    header="Editar evento recurrente"
+    subHeader="¿Qué instancias deseas editar?"
+    [buttons]="editRecurringActions"
+    (didDismiss)="showEditAction = false"
+  ></ion-action-sheet>
+
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    color="primary"
+    [duration]="3000"
+    (didDismiss)="showToast = false"
+  ></ion-toast>
 </ion-content>

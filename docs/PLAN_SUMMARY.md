@@ -91,7 +91,7 @@
 | M2: Dashboard | 1.5 | #15-#22 | p0 | M1 |
 | M3: Surveys | 2 | #23-#30 | p1 | M1 |
 | M4: Calendar | 2 | #31-#39 | p1 | M1 + M3 |
-| M5: Help Bot | 1.5 | #40-#45 | p1 | M1 + M2 |
+| M5: Help Bot | 1.5 | #40-#45 | p1 | M1 + M2 | ✅ Completed |
 | M6: Polish | 1.5 | #46-#52 | p2 | ≥2 de M2-M5 funcionales |
 | M7: Testing | 1.5 | #53-#60 | p2 | por módulo (unit → component → E2E) |
 | M8: Security | 1 | #61-#67 | p2 | por capa (CSP temprano, RLS ya hecho, audit final) |
@@ -168,7 +168,7 @@ unihub-app/
 │   ├── migrations/            # PostgreSQL versionado
 │   │   ├── 00001_initial_schema.sql   (14 tablas, constraints, índices, triggers)
 │   │   └── 00002_rls_policies.sql     (40+ políticas RLS con filtros por estado)
-│   ├── edge-functions/        # Deno TypeScript (4 funciones con contratos documentados)
+│   ├── functions/             # Deno TypeScript (4 funciones con contratos documentados)
 │   └── seed.sql               # 7 aulas, 12 FAQs, 2 encuestas de ejemplo
 ├── docs/
 │   ├── ARCHITECTURE.md        # ADR: Ionic vs Native, Supabase vs Firebase, capas, seguridad
