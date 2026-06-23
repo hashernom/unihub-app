@@ -7,11 +7,15 @@ import {
   IonButtons, IonBackButton, IonButton, IonIcon,
   IonList, IonItem, IonLabel, IonToggle, IonInput,
   IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-  IonToast, IonAlert, IonSegment, IonSegmentButton, IonSpinner,
+  IonToast, IonAlert, IonSegment, IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, create, trash, arrowUp, arrowDown, search, globe } from 'ionicons/icons';
 import { FaqService, type FaqEntry } from '../../core/services/faq.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 interface FaqGroup {
   category: string;
@@ -26,7 +30,8 @@ interface FaqGroup {
     IonButtons, IonBackButton, IonButton, IonIcon,
     IonList, IonItem, IonLabel, IonToggle, IonInput,
     IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-    IonToast, IonAlert, IonSegment, IonSegmentButton, IonSpinner,
+    IonToast, IonAlert, IonSegment, IonSegmentButton,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-faq.page.html',
   styleUrls: ['./admin-faq.page.scss'],
@@ -35,12 +40,14 @@ export class AdminFaqPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly faqService = inject(FaqService);
   private readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   faqs: FaqEntry[] = [];
   filteredFaqs: FaqEntry[] = [];
   groupedFaqs: FaqGroup[] = [];
   categories: string[] = [];
   loading = true;
+  error: unknown = null;
   searchQuery = '';
   activeFilter: 'all' | 'active' | 'inactive' = 'all';
   languageFilter: 'all' | 'es' | 'en' = 'all';
@@ -66,12 +73,17 @@ export class AdminFaqPage implements OnInit {
 
   async loadFaqs(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       this.faqs = await this.faqService.getFaqs();
       this.categories = await this.faqService.getCategories();
       this.applyFilters();
-    } catch {
-      this.toast('Error al cargar FAQs');
+    } catch (err) {
+      this.faqs = [];
+      this.categories = [];
+      this.applyFilters();
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadFaqs());
     }
     this.loading = false;
     this.cdr.detectChanges();

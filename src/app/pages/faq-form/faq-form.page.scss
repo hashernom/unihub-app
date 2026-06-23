@@ -37,10 +37,12 @@
 
 .inline-row {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3);
 
   .half {
-    flex: 1;
+    flex: 1 1 calc(50% - var(--space-2));
+    min-width: 120px;
   }
 }
 

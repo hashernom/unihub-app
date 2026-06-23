@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin/classrooms"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar' : 'Nueva' }} Aula</ion-title>
+    <ion-title>{{ isEdit ? 'Editar aula' : 'Nueva aula' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,22 +13,29 @@
 
     <ion-item>
       <ion-label position="stacked">Nombre <span class="required">*</span></ion-label>
-      <ion-input [(ngModel)]="name" placeholder="Ej: A-101"></ion-input>
+      <ion-input [(ngModel)]="name" name="name" required minlength="2" #nameInput="ngModel" placeholder="Ej: A-101"></ion-input>
     </ion-item>
+    @if (nameInput.invalid && nameInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Nombre', nameInput.errors) }}</ion-note>
+    }
 
     <ion-item>
       <ion-label position="stacked">Edificio</ion-label>
-      <ion-input [(ngModel)]="building" placeholder="Ej: Edificio Central"></ion-input>
+      <ion-input [(ngModel)]="building" name="building" placeholder="Ej: Edificio Central"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Capacidad</ion-label>
-      <ion-input type="number" [(ngModel)]="capacity" placeholder="Ej: 30"></ion-input>
+      <ion-input type="number" [(ngModel)]="capacity" name="capacity" min="1" #capacityInput="ngModel" placeholder="Ej: 30"></ion-input>
     </ion-item>
+    @if (capacityInput.invalid && capacityInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Capacidad', capacityInput.errors) }}</ion-note>
+    }
   </ion-list>
 
   <div class="form-actions">
     <ion-button expand="block" (click)="save()" [disabled]="saving">
+      @if (saving) { <ion-spinner slot="start"></ion-spinner> }
       {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar aula' : 'Crear aula') }}
     </ion-button>
   </div>

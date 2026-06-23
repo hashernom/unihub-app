@@ -11,7 +11,7 @@
 }
 
 .skeleton {
-  background: var(--ion-color-step-200, #e0e0e0);
+  background: var(--surface-skeleton);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-2);
   animation: skeleton-pulse 1.5s ease-in-out infinite;
@@ -51,7 +51,7 @@
 .empty-state-icon {
   font-size: 3rem;
   margin-bottom: var(--space-4);
-  color: var(--ion-color-step-300, #c0c0c0);
+  color: var(--text-tertiary);
 }
 
 .empty-state-text {
@@ -63,14 +63,14 @@
 
 .empty-state-subtext {
   font-size: var(--text-sm);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   margin-bottom: var(--space-4);
 }
 
 .admin-card {
   margin-bottom: var(--space-4);
   border-left: 3px solid var(--ion-color-primary);
-  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.08);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-lg);
 }
 
@@ -96,7 +96,7 @@
 
 .card-meta-details {
   font-size: var(--text-xs);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   margin-bottom: var(--space-3);
 }
 

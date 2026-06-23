@@ -8,29 +8,52 @@
 </ion-header>
 
 <ion-content class="form-content">
+  @if (submitSuccess) {
+    <div class="success-animation">
+      <div class="success-icon-circle">
+        <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+      </div>
+      <h2 class="success-title">¡Listo!</h2>
+      <p class="success-message">{{ isEdit ? 'La FAQ se actualizó correctamente.' : 'La FAQ se creó correctamente.' }}</p>
+    </div>
+  } @else {
   <div class="form-card">
     <ion-item class="form-item" lines="none">
-      <ion-label position="stacked">Pregunta</ion-label>
+      <ion-label position="stacked">Pregunta <span class="required">*</span></ion-label>
       <ion-input
         [(ngModel)]="question"
+        name="question"
+        required
+        minlength="5"
+        #questionInput="ngModel"
         placeholder="¿Cómo...?"
         fill="solid"
       ></ion-input>
     </ion-item>
+    @if (questionInput.invalid && questionInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Pregunta', questionInput.errors) }}</ion-note>
+    }
 
     <ion-item class="form-item" lines="none">
-      <ion-label position="stacked">Categoría</ion-label>
+      <ion-label position="stacked">Categoría <span class="required">*</span></ion-label>
       <ion-input
         [(ngModel)]="category"
+        name="category"
+        required
+        minlength="2"
+        #categoryInput="ngModel"
         placeholder="Ej: Cuenta, Calendario..."
         fill="solid"
       ></ion-input>
     </ion-item>
+    @if (categoryInput.invalid && categoryInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Categoría', categoryInput.errors) }}</ion-note>
+    }
 
     <div class="inline-row">
       <ion-item class="form-item half" lines="none">
-        <ion-label position="stacked">Idioma</ion-label>
-        <ion-select [(ngModel)]="language" fill="solid" interface="popover">
+        <ion-label position="stacked">Idioma <span class="required">*</span></ion-label>
+        <ion-select [(ngModel)]="language" name="language" required #languageInput="ngModel" fill="solid" interface="popover">
           @for (lang of languages; track lang.value) {
             <ion-select-option [value]="lang.value">{{ lang.label }}</ion-select-option>
           }
@@ -38,14 +61,24 @@
       </ion-item>
 
       <ion-item class="form-item half" lines="none">
-        <ion-label position="stacked">Orden</ion-label>
+        <ion-label position="stacked">Orden <span class="required">*</span></ion-label>
         <ion-input
           type="number"
           [(ngModel)]="sortOrder"
+          name="sortOrder"
+          required
+          min="0"
+          #sortOrderInput="ngModel"
           fill="solid"
         ></ion-input>
       </ion-item>
     </div>
+    @if (languageInput.invalid && languageInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Idioma', languageInput.errors) }}</ion-note>
+    }
+    @if (sortOrderInput.invalid && sortOrderInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Orden', sortOrderInput.errors) }}</ion-note>
+    }
 
     <ion-item class="form-item toggle-item" lines="none">
       <ion-label>Activa</ion-label>
@@ -55,11 +88,11 @@
     <div class="editor-tabs">
       <ion-segment [(ngModel)]="previewMode" (ionChange)="setPreviewMode($any($event).detail.value)">
         <ion-segment-button value="edit">
-          <ion-icon name="create"></ion-icon>
+          <ion-icon name="create" aria-hidden="true"></ion-icon>
           <ion-label>Editar</ion-label>
         </ion-segment-button>
         <ion-segment-button value="preview">
-          <ion-icon name="eye"></ion-icon>
+          <ion-icon name="eye" aria-hidden="true"></ion-icon>
           <ion-label>Vista previa</ion-label>
         </ion-segment-button>
       </ion-segment>
@@ -67,17 +100,24 @@
 
     @if (previewMode === 'edit') {
       <ion-item class="form-item textarea-item" lines="none">
-        <ion-label position="stacked">Respuesta (Markdown)</ion-label>
+        <ion-label position="stacked">Respuesta (Markdown) <span class="required">*</span></ion-label>
         <ion-textarea
           [(ngModel)]="answer"
+          name="answer"
+          required
+          minlength="10"
+          #answerInput="ngModel"
           placeholder="Escribe la respuesta en markdown..."
           [rows]="12"
           fill="solid"
         ></ion-textarea>
       </ion-item>
+      @if (answerInput.invalid && answerInput.touched) {
+        <ion-note color="danger">{{ formValidation.getErrorMessage('Respuesta', answerInput.errors) }}</ion-note>
+      }
 
       <div class="markdown-hint">
-        <p><strong>Soportado:</strong> # títulos, **negrita**, *cursiva*, - listas</p>
+        <p><strong>Soporta:</strong> # títulos, **negrita**, *cursiva*, - listas</p>
       </div>
     } @else {
       <div class="preview-pane" [innerHTML]="renderedAnswer"></div>
@@ -89,11 +129,13 @@
         [disabled]="saving"
         (click)="save()"
       >
-        <ion-icon name="save" slot="start"></ion-icon>
+        <ion-icon name="save" slot="start" aria-hidden="true"></ion-icon>
+        @if (saving) { <ion-spinner slot="start"></ion-spinner> }
         {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar FAQ' : 'Crear FAQ') }}
       </ion-button>
     </div>
   </div>
+  }
 </ion-content>
 
 <ion-toast

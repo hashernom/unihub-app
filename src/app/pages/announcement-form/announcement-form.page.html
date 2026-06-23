@@ -3,43 +3,53 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin/announcements"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Anuncio</ion-title>
+    <ion-title>{{ isEdit ? 'Editar anuncio' : 'Nuevo anuncio' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <ion-item>
-    <ion-label position="stacked">Título *</ion-label>
-    <ion-input [(ngModel)]="title" placeholder="Título del anuncio"></ion-input>
+    <ion-label position="stacked">Título <span class="required">*</span></ion-label>
+    <ion-input [(ngModel)]="title" name="title" required minlength="3" #titleInput="ngModel" placeholder="Título del anuncio"></ion-input>
   </ion-item>
+  @if (titleInput.invalid && titleInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Título', titleInput.errors) }}</ion-note>
+  }
 
   <ion-item>
-    <ion-label position="stacked">Contenido *</ion-label>
-    <ion-textarea [(ngModel)]="body" rows="5" placeholder="Contenido del anuncio"></ion-textarea>
+    <ion-label position="stacked">Contenido <span class="required">*</span></ion-label>
+    <ion-textarea [(ngModel)]="body" name="body" required minlength="10" #bodyInput="ngModel" rows="5" placeholder="Contenido del anuncio"></ion-textarea>
   </ion-item>
+  @if (bodyInput.invalid && bodyInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Contenido', bodyInput.errors) }}</ion-note>
+  }
 
   <ion-item>
-    <ion-label position="stacked">Categoría</ion-label>
-    <ion-select [(ngModel)]="category">
+    <ion-label position="stacked">Categoría <span class="required">*</span></ion-label>
+    <ion-select [(ngModel)]="category" name="category" required #categoryInput="ngModel">
       <ion-select-option value="general">General</ion-select-option>
       <ion-select-option value="academic">Académico</ion-select-option>
       <ion-select-option value="event">Evento</ion-select-option>
       <ion-select-option value="urgent">Urgente</ion-select-option>
     </ion-select>
   </ion-item>
+  @if (categoryInput.invalid && categoryInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Categoría', categoryInput.errors) }}</ion-note>
+  }
 
   <ion-item>
-    <ion-label>Fijar (pinned)</ion-label>
-    <ion-toggle [(ngModel)]="isPinned" slot="end"></ion-toggle>
+    <ion-label>Fijar anuncio</ion-label>
+    <ion-toggle [(ngModel)]="isPinned" slot="end" aria-label="Fijar anuncio"></ion-toggle>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Fecha de expiración</ion-label>
-    <ion-datetime presentation="date" [(ngModel)]="expiresAt"></ion-datetime>
+    <ion-datetime presentation="date" preferWheel="true" showDefaultButtons="true" showClearButton="true" [(ngModel)]="expiresAt"></ion-datetime>
   </ion-item>
 
   <div class="form-actions">
     <ion-button expand="block" (click)="save()" [disabled]="saving">
+      @if (saving) { <ion-spinner slot="start"></ion-spinner> }
       {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear') }}
     </ion-button>
   </div>

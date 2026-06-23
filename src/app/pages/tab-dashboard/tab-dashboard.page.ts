@@ -1,19 +1,20 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { RouterLink, Router } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { Subject, Subscription, firstValueFrom } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonButton, IonIcon, IonRefresher,
-  IonRefresherContent, IonSkeletonText,
+  IonRefresherContent,
   IonCard, IonCardHeader,
   IonCardTitle, IonCardContent, IonChip, IonLabel,
-  IonSearchbar,
+  IonSearchbar, IonGrid, IonRow, IonCol,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { personCircle, alertCircle, checkmarkCircle, calendar, search } from "ionicons/icons";
+import { personCircle, alertCircle, checkmarkCircle, calendar, search, newspaperOutline, calendarOutline, documentTextOutline } from "ionicons/icons";
 import { AuthService } from "../../core/services/auth.service";
+import { ErrorHandlerService } from "../../core/services/error-handler.service";
 import { SupabaseService } from "../../core/services/supabase.service";
 import { AnnouncementService, type Announcement } from "../../core/services/announcement.service";
 import { NoticeService, type Notice } from "../../core/services/notice.service";
@@ -21,6 +22,9 @@ import { RealtimeService } from "../../core/services/realtime.service";
 import { SurveyService } from "../../core/services/survey.service";
 import { AnnouncementCardComponent } from "../../shared/components/announcement-card/announcement-card.component";
 import { NoticeCardComponent } from "../../shared/components/notice-card/notice-card.component";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { ErrorStateComponent } from "../../shared/components/error-state/error-state.component";
+import { SkeletonListComponent } from "../../shared/components/skeleton-list/skeleton-list.component";
 
 interface UpcomingEvent {
   id: string;
@@ -34,12 +38,13 @@ interface UpcomingEvent {
   imports: [
     RouterLink, DatePipe,
     AnnouncementCardComponent, NoticeCardComponent,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonButton, IonIcon, IonRefresher,
-  IonRefresherContent, IonSkeletonText,
-  IonCard, IonCardHeader,
+    IonRefresherContent,
+    IonCard, IonCardHeader,
     IonCardTitle, IonCardContent, IonChip, IonLabel,
-    IonSearchbar,
+    IonSearchbar, IonGrid, IonRow, IonCol,
   ],
   templateUrl: "./tab-dashboard.page.html",
   styleUrl: "./tab-dashboard.page.scss",
@@ -52,8 +57,11 @@ export class TabDashboardPage implements OnInit, OnDestroy {
   private readonly noticeService = inject(NoticeService);
   private readonly realtime = inject(RealtimeService);
   private readonly surveyService = inject(SurveyService);
+  private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly router = inject(Router);
 
   loading = true;
+  error = false;
   announcements: Announcement[] = [];
   notices: Notice[] = [];
   events: UpcomingEvent[] = [];
@@ -74,13 +82,18 @@ export class TabDashboardPage implements OnInit, OnDestroy {
   private realtimeSubscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    addIcons({ 'person-circle': personCircle, alertCircle, checkmarkCircle, calendar, search });
+    addIcons({ 'person-circle': personCircle, alertCircle, checkmarkCircle, calendar, search, 'newspaper-outline': newspaperOutline, 'calendar-outline': calendarOutline, 'document-text-outline': documentTextOutline });
     this.setupRealtime();
     this.setupSearch();
     this.loadAll();
   }
 
-  ionViewWillEnter(): void {
+  async ionViewWillEnter(): Promise<void> {
+    const isAdmin = await firstValueFrom(this.auth.isAdmin$);
+    if (isAdmin) {
+      this.router.navigate(['/admin/dashboard']);
+      return;
+    }
     this.loadAll();
   }
 
@@ -91,6 +104,7 @@ export class TabDashboardPage implements OnInit, OnDestroy {
 
   async loadAll(): Promise<void> {
     this.loading = true;
+    this.error = false;
     await Promise.all([
       this.withTimeout(this.loadAnnouncements(), 5000),
       this.withTimeout(this.loadNotices(), 5000),
@@ -102,15 +116,11 @@ export class TabDashboardPage implements OnInit, OnDestroy {
     console.log("[Dashboard] Load complete");
   }
 
-  private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | undefined> {
-    try {
-      return await Promise.race([
-        promise,
-        new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms)),
-      ]);
-    } catch {
-      return undefined;
-    }
+  private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms)),
+    ]);
   }
 
   private setupRealtime(): void {
@@ -175,8 +185,9 @@ export class TabDashboardPage implements OnInit, OnDestroy {
     try {
       const { data } = await this.announcementService.getAnnouncements();
       this.announcements = data;
-    } catch {
-      console.warn("[Dashboard] Failed to load announcements");
+    } catch (err) {
+      this.error = true;
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
   }
 
@@ -184,8 +195,9 @@ export class TabDashboardPage implements OnInit, OnDestroy {
     try {
       const { data } = await this.noticeService.getNotices();
       this.notices = data;
-    } catch {
-      console.warn("[Dashboard] Failed to load notices");
+    } catch (err) {
+      this.error = true;
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
   }
 
@@ -199,8 +211,10 @@ export class TabDashboardPage implements OnInit, OnDestroy {
         .order("start_time", { ascending: true })
         .limit(3);
       this.events = (data ?? []) as UpcomingEvent[];
-    } catch {
+    } catch (err) {
+      this.error = true;
       this.events = [];
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
   }
 
@@ -210,8 +224,10 @@ export class TabDashboardPage implements OnInit, OnDestroy {
       if (user) {
         this.surveyCount = await this.surveyService.getPendingSurveyCount(user.id);
       }
-    } catch {
+    } catch (err) {
+      this.error = true;
       this.surveyCount = 0;
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
   }
 }

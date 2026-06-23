@@ -1,4 +1,9 @@
-﻿/* ── Hero Section ── */
+﻿/* ── Layout fix: ensure content clears tab bar ── */
+ion-content {
+  --padding-bottom: 80px;
+}
+
+/* ── Hero Section ── */
 .hero {
   position: relative;
   padding: var(--space-8) var(--space-5) var(--space-8);
@@ -9,7 +14,7 @@
 .hero-bg {
   position: absolute;
   inset: -20px -20px 0;
-  background: linear-gradient(135deg, #1E3A5F 0%, #1A2F4F 40%, #2C5282 70%, #1E3A5F 100%);
+  background: var(--surface-gradient-header);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 
   &::after {
@@ -48,7 +53,7 @@
   right: 8%;
   width: 16px;
   height: 16px;
-  border: 1.5px solid rgba(107,163,199,0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   border-radius: 3px;
   transform: rotate(45deg);
   animation: float 8s ease-in-out infinite;
@@ -58,7 +63,7 @@
   left: 5%;
   width: 50px;
   height: 50px;
-  background: radial-gradient(circle, rgba(107,163,199,0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
   animation: float-reverse 9s ease-in-out infinite;
 }
 
@@ -73,7 +78,7 @@
 }
 
 .hero-sub {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: var(--text-sm);
   margin: 0 0 var(--space-5);
   font-weight: var(--weight-normal);
@@ -86,12 +91,13 @@
 
 .hero-stat {
   flex: 1;
-  background: rgba(255,255,255,0.1);
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-2);
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .hero-stat-value {
@@ -106,7 +112,7 @@
 .hero-stat-label {
   display: block;
   font-size: var(--text-xs);
-  color: rgba(255,255,255,0.65);
+  color: rgba(255, 255, 255, 0.65);
   font-weight: var(--weight-medium);
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -115,6 +121,7 @@
 /* ── Sections ── */
 .section {
   padding: var(--space-4) var(--space-4) var(--space-3);
+  min-width: 0;
 }
 
 .section + .section {
@@ -137,6 +144,7 @@
   gap: var(--space-2);
   margin-bottom: var(--space-3);
   position: relative;
+  min-width: 0;
 }
 
 .section-header-accent {
@@ -158,12 +166,17 @@
   flex: 1;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .section-icon {
   font-size: 1.15rem;
   color: var(--text-tertiary);
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .section-announcements .section-icon { color: var(--color-accent); }
@@ -173,7 +186,8 @@
 
 .count-badge {
   background: var(--color-accent);
-  color: #fff;
+  color: var(--ion-color-primary-contrast);
+  flex-shrink: 0;
   font-size: var(--text-xs);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
@@ -181,6 +195,7 @@
   min-width: 20px;
   text-align: center;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .search-bar {
@@ -248,12 +263,13 @@
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
   background: var(--surface-gradient-card);
-  border: 1px solid rgba(255,255,255,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-left: 3px solid var(--ion-color-tertiary);
 }
 .event-card ion-card-title {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
+  word-break: break-word;
 }
 
 .event-date {
@@ -267,8 +283,8 @@
   margin: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-accent);
-  --background: linear-gradient(135deg, rgba(30,58,95,0.03) 0%, rgba(107,163,199,0.06) 100%);
-  border: 1px solid rgba(107,163,199,0.2);
+  --background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.03) 0%, rgba(var(--color-accent-rgb), 0.06) 100%);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.2);
   border-left: 3px solid var(--color-accent);
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -295,11 +311,13 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 
   strong {
     font-size: var(--text-base);
     color: var(--text-primary);
     font-weight: var(--weight-semibold);
+    word-break: break-word;
   }
 
   span {
@@ -312,6 +330,22 @@
   font-size: 1.2rem;
   color: var(--text-tertiary);
   flex-shrink: 0;
+}
+
+/* ── Dashboard Grid ── */
+.dashboard-grid {
+  --card-margin: var(--space-2) 0;
+
+  ion-col {
+    padding: var(--space-1) var(--space-2);
+    min-width: 0;
+  }
+
+  .event-card,
+  .survey-cta-card {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 /* ── Survey Badge ── */

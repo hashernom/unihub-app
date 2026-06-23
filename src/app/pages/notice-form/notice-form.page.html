@@ -3,37 +3,47 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin/notices"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Aviso</ion-title>
+    <ion-title>{{ isEdit ? 'Editar aviso' : 'Nuevo aviso' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <ion-item>
-    <ion-label position="stacked">Título *</ion-label>
-    <ion-input [(ngModel)]="title" placeholder="Título del aviso"></ion-input>
+    <ion-label position="stacked">Título <span class="required">*</span></ion-label>
+    <ion-input [(ngModel)]="title" name="title" required minlength="3" #titleInput="ngModel" placeholder="Título del aviso"></ion-input>
   </ion-item>
+  @if (titleInput.invalid && titleInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Título', titleInput.errors) }}</ion-note>
+  }
 
   <ion-item>
-    <ion-label position="stacked">Contenido *</ion-label>
-    <ion-textarea [(ngModel)]="content" rows="5" placeholder="Contenido del aviso"></ion-textarea>
+    <ion-label position="stacked">Contenido <span class="required">*</span></ion-label>
+    <ion-textarea [(ngModel)]="content" name="content" required minlength="10" #contentInput="ngModel" rows="5" placeholder="Contenido del aviso"></ion-textarea>
   </ion-item>
+  @if (contentInput.invalid && contentInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Contenido', contentInput.errors) }}</ion-note>
+  }
 
   <ion-item>
-    <ion-label position="stacked">Prioridad</ion-label>
-    <ion-select [(ngModel)]="priority">
+    <ion-label position="stacked">Prioridad <span class="required">*</span></ion-label>
+    <ion-select [(ngModel)]="priority" name="priority" required #priorityInput="ngModel">
       <ion-select-option value="low">Baja</ion-select-option>
       <ion-select-option value="medium">Media</ion-select-option>
       <ion-select-option value="high">Alta</ion-select-option>
     </ion-select>
   </ion-item>
+  @if (priorityInput.invalid && priorityInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Prioridad', priorityInput.errors) }}</ion-note>
+  }
 
   <ion-item>
     <ion-label>Activo</ion-label>
-    <ion-toggle [(ngModel)]="isActive" slot="end"></ion-toggle>
+    <ion-toggle [(ngModel)]="isActive" slot="end" aria-label="Aviso activo"></ion-toggle>
   </ion-item>
 
   <div class="form-actions">
     <ion-button expand="block" (click)="save()" [disabled]="saving">
+      @if (saving) { <ion-spinner slot="start"></ion-spinner> }
       {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear') }}
     </ion-button>
   </div>

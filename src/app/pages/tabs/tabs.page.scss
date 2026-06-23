@@ -1,11 +1,11 @@
 ion-tab-bar {
-  --background: rgba(255, 255, 255, 0.82);
+  --background: rgba(var(--ion-color-primary-contrast-rgb), 0.82);
   --border: none;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   height: var(--bottom-tab-height);
   padding: var(--space-1) 0 var(--space-2);
-  box-shadow: 0 -2px 20px rgba(30, 58, 95, 0.08);
+  box-shadow: var(--shadow-md);
 
   &::before {
     content: '';

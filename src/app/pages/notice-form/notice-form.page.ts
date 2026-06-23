@@ -6,10 +6,11 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonToggle, IonToast,
+  IonButton, IonToggle, IonToast, IonNote, IonSpinner,
 } from '@ionic/angular/standalone';
 import { NoticeService, type Notice } from '../../core/services/notice.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 @Component({
   selector: 'app-notice-form',
@@ -18,7 +19,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonToggle, IonToast,
+    IonButton, IonToggle, IonToast, IonNote, IonSpinner,
   ],
   templateUrl: './notice-form.page.html',
   styleUrl: './notice-form.page.scss',
@@ -28,6 +29,7 @@ export class NoticeFormPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   noticeId: string | null = null;

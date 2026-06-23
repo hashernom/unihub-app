@@ -5,13 +5,17 @@ import {
   IonButton, IonIcon, IonRefresher,
   IonRefresherContent, IonChip, IonLabel, IonSegment,
   IonSegmentButton, IonModal,
-  IonButtons, IonSpinner, IonSelect, IonSelectOption,
+  IonButtons, IonSelect, IonSelectOption,
   IonItem,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { calendar, today, arrowBack, arrowForward, time, location, person, alertCircle, business, school, repeat, funnel } from "ionicons/icons";
 import { EventService, type CalendarEvent, type Classroom } from "../../core/services/event.service";
+import { ErrorHandlerService } from "../../core/services/error-handler.service";
 import { FullCalendarModule, FullCalendarComponent } from "@fullcalendar/angular";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { ErrorStateComponent } from "../../shared/components/error-state/error-state.component";
+import { SkeletonListComponent } from "../../shared/components/skeleton-list/skeleton-list.component";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -22,11 +26,12 @@ import type { CalendarOptions, EventClickArg, DatesSetArg } from "@fullcalendar/
   imports: [
     DatePipe,
     FullCalendarModule,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButton, IonIcon, IonRefresher,
     IonRefresherContent, IonChip, IonLabel, IonSegment,
     IonSegmentButton, IonModal,
-    IonButtons, IonSpinner, IonSelect, IonSelectOption,
+    IonButtons, IonSelect, IonSelectOption,
     IonItem,
   ],
   templateUrl: "./tab-calendar.page.html",
@@ -35,6 +40,7 @@ import type { CalendarOptions, EventClickArg, DatesSetArg } from "@fullcalendar/
 export class TabCalendarPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   readonly eventService = inject(EventService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   @ViewChild(FullCalendarComponent) calendarComponent?: FullCalendarComponent;
 
@@ -43,6 +49,7 @@ export class TabCalendarPage implements OnInit {
   selectedEvent: CalendarEvent | null = null;
   selectedEventClassroom: Classroom | null = null;
   loading = true;
+  error = false;
   showModal = false;
   activeFilter: string | null = null;
   activeClassroomFilter: string | null = null;
@@ -75,7 +82,7 @@ export class TabCalendarPage implements OnInit {
     { key: "exam", label: "Exámenes", color: "#EF4444" },
     { key: "meeting", label: "Reuniones", color: "#22C55E" },
     { key: "workshop", label: "Talleres", color: "#F97316" },
-    { key: "other", label: "Otros", color: "#6B7280" },
+    { key: "other", label: "Otros", color: "#9CA3AF" },
   ];
 
   ngOnInit(): void {
@@ -87,21 +94,25 @@ export class TabCalendarPage implements OnInit {
   async loadClassrooms(): Promise<void> {
     try {
       this.allClassrooms = await this.eventService.getClassrooms(true);
-    } catch {
+    } catch (err) {
       this.allClassrooms = [];
+      this.errorHandler.handleHttpError(err, () => this.loadClassrooms());
     }
   }
 
   async loadEvents(): Promise<void> {
     this.loading = true;
+    this.error = false;
     try {
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       const end = new Date(now.getFullYear(), now.getMonth() + 2, 0, 23, 59, 59).toISOString();
       this.events = await this.eventService.getEvents(start, end);
       this.updateCalendarEvents();
-    } catch {
+    } catch (err) {
+      this.error = true;
       this.events = [];
+      this.errorHandler.handleHttpError(err, () => this.loadEvents());
     }
     this.loading = false;
     this.cdr.detectChanges();
@@ -126,7 +137,7 @@ export class TabCalendarPage implements OnInit {
         end: e.end_time,
         backgroundColor: e.color || this.eventService.getEventColor(e.event_type),
         borderColor: e.color || this.eventService.getEventColor(e.event_type),
-        textColor: "#fff",
+        textColor: "#ffffff",
         extendedProps: { event_type: e.event_type, is_recurring: !!e.recurring_rule, classroom_id: e.classroom_id },
       })),
     };

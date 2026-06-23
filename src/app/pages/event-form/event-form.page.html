@@ -3,14 +3,23 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin/events"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Evento</ion-title>
+    <ion-title>{{ isEdit ? 'Editar evento' : 'Nuevo evento' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  @if (submitSuccess) {
+    <div class="success-animation">
+      <div class="success-icon-circle">
+        <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+      </div>
+      <h2 class="success-title">¡Listo!</h2>
+      <p class="success-message">{{ isEdit ? 'El evento se actualizó correctamente.' : 'El evento se creó correctamente.' }}</p>
+    </div>
+  } @else {
   @if (conflictWarning) {
     <ion-note color="danger" class="conflict-note">
-      <ion-icon name="alert-circle"></ion-icon>
+      <ion-icon name="alert-circle" aria-hidden="true"></ion-icon>
       {{ conflictWarning }}
     </ion-note>
   }
@@ -20,8 +29,11 @@
 
     <ion-item>
       <ion-label position="stacked">Título <span class="required">*</span></ion-label>
-      <ion-input [(ngModel)]="title" placeholder="Ej: Álgebra Lineal"></ion-input>
+      <ion-input [(ngModel)]="title" name="title" required minlength="3" #titleInput="ngModel" placeholder="Ej: Álgebra Lineal"></ion-input>
     </ion-item>
+    @if (titleInput.invalid && titleInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Título', titleInput.errors) }}</ion-note>
+    }
 
     <ion-item>
       <ion-label position="stacked">Descripción</ion-label>
@@ -30,12 +42,15 @@
 
     <ion-item>
       <ion-label position="stacked">Tipo de evento <span class="required">*</span></ion-label>
-      <ion-select [(ngModel)]="eventType" interface="popover">
+      <ion-select [(ngModel)]="eventType" name="eventType" required #eventTypeInput="ngModel" interface="popover">
         @for (t of eventTypes; track t.value) {
           <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
+    @if (eventTypeInput.invalid && eventTypeInput.touched) {
+      <ion-note color="danger">{{ formValidation.getErrorMessage('Tipo de evento', eventTypeInput.errors) }}</ion-note>
+    }
 
     <ion-item>
       <ion-label position="stacked">Aula</ion-label>
@@ -82,15 +97,18 @@
     <ion-list-header>Fecha y hora</ion-list-header>
 
     <ion-item class="datetime-pair">
-      <ion-label position="stacked">Inicio</ion-label>
+      <ion-label position="stacked">Inicio <span class="required">*</span></ion-label>
       <div class="datetime-inline">
-        <ion-input type="date" [(ngModel)]="startDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <ion-input type="date" [(ngModel)]="startDate" name="startDate" required #startDateInput="ngModel" (ionChange)="checkAvailabilityInline()"></ion-input>
+        @if (startDateInput.invalid && startDateInput.touched) {
+          <ion-note color="danger">{{ formValidation.getErrorMessage('Fecha de inicio', startDateInput.errors) }}</ion-note>
+        }
         <div class="time-selector">
-          <select [(ngModel)]="startHour" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+          <select [(ngModel)]="startHour" (change)="syncTimeToStorage('start'); checkAvailabilityInline()" aria-label="Hora de inicio">
             @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
           </select>
           <span class="time-colon">:</span>
-          <select [(ngModel)]="startMinute" (change)="syncTimeToStorage('start'); checkAvailabilityInline()">
+          <select [(ngModel)]="startMinute" (change)="syncTimeToStorage('start'); checkAvailabilityInline()" aria-label="Minuto de inicio">
             @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
           </select>
           <ion-segment [value]="startPeriod" (ionChange)="onSegmentChange('start', $event.detail.value)">
@@ -102,15 +120,18 @@
     </ion-item>
 
     <ion-item class="datetime-pair">
-      <ion-label position="stacked">Fin</ion-label>
+      <ion-label position="stacked">Fin <span class="required">*</span></ion-label>
       <div class="datetime-inline">
-        <ion-input type="date" [(ngModel)]="endDate" (ionChange)="checkAvailabilityInline()"></ion-input>
+        <ion-input type="date" [(ngModel)]="endDate" name="endDate" required #endDateInput="ngModel" (ionChange)="checkAvailabilityInline()"></ion-input>
+        @if (endDateInput.invalid && endDateInput.touched) {
+          <ion-note color="danger">{{ formValidation.getErrorMessage('Fecha de fin', endDateInput.errors) }}</ion-note>
+        }
         <div class="time-selector">
-          <select [(ngModel)]="endHour" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+          <select [(ngModel)]="endHour" (change)="syncTimeToStorage('end'); checkAvailabilityInline()" aria-label="Hora de fin">
             @for (h of hours; track h) { <option [value]="h">{{ h }}</option> }
           </select>
           <span class="time-colon">:</span>
-          <select [(ngModel)]="endMinute" (change)="syncTimeToStorage('end'); checkAvailabilityInline()">
+          <select [(ngModel)]="endMinute" (change)="syncTimeToStorage('end'); checkAvailabilityInline()" aria-label="Minuto de fin">
             @for (m of minutes; track m) { <option [value]="m">{{ padMinute(m) }}</option> }
           </select>
           <ion-segment [value]="endPeriod" (ionChange)="onSegmentChange('end', $event.detail.value)">
@@ -151,9 +172,11 @@
 
   <div class="form-actions">
     <ion-button expand="block" (click)="save()" [disabled]="saving">
+      @if (saving) { <ion-spinner slot="start"></ion-spinner> }
       {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar evento' : 'Crear evento') }}
     </ion-button>
   </div>
+  }
 
   <ion-toast
     [isOpen]="showToast"

@@ -1,15 +1,432 @@
-/* 
- * Dark Mode � Preparaci�n para M5
- * Para activar, descomentar y completar:
- *
- * @media (prefers-color-scheme: dark) {
- *   :root {
- *     --surface-page: #121212;
- *     --surface-card: #1e1e1e;
- *     --surface-input: #2a2a2a;
- *     --text-primary: #e0e0e0;
- *     --text-secondary: #a0a0a0;
- *     --border-subtle: #333;
- *   }
- * }
- */
+/* ────────────────────────────────────────────────────────────────
+ * Dark Mode — palette + component overrides
+ * Activado mediante ThemeService poniendo data-theme="dark" en <html>.
+ * ─────────────────────────────────────────────────────────────── */
+
+html[data-theme="dark"] {
+  /* -- Semantic Surfaces -- */
+  --surface-page:       #070b14;
+  --surface-card:       #131d2c;
+  --surface-card-warm:  #151f30;
+  --surface-card-hover: #1c2a3f;
+  --surface-input:      #0e1622;
+  --surface-skeleton:   #1c2a3f;
+  --surface-skeleton-highlight: #253348;
+  --surface-overlay:    rgba(3, 7, 18, 0.75);
+  --surface-gradient-card: linear-gradient(135deg, #182538 0%, #142030 50%, #162234 100%);
+  --surface-gradient-header: linear-gradient(135deg, #182538 0%, #070b14 100%);
+  --surface-gradient-warm: linear-gradient(135deg, #070b14 0%, #182538 100%);
+
+  /* -- Semantic Borders -- */
+  --border-subtle:  #253348;
+  --border-default: #374760;
+  --border-strong:  #506280;
+  --border-focus:   var(--ion-color-primary);
+
+  /* -- Semantic Text -- */
+  --text-primary:    #f1f5f9;
+  --text-secondary:  #c8d6e5;
+  --text-tertiary:   #94a8b8;
+  --text-on-primary: #0a0f1a;
+  --text-link:       var(--ion-color-primary);
+  --text-accent:     var(--ion-color-primary);
+
+  /* -- Ionic Global Text Overrides -- */
+  --ion-text-color:         var(--text-primary);
+  --ion-item-color:         var(--text-primary);
+  --ion-input-color:        var(--text-primary);
+  --ion-placeholder-color:  var(--text-tertiary);
+
+  /* -- Decorative / Atmospheric -- */
+  --color-accent:         #60a5fa;
+  --color-accent-rgb:     96, 165, 250;
+  --color-accent-light:   #182538;
+  --color-accent-dark:    #93c5fd;
+  --gradient-accent-shimmer: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    var(--color-accent-dark) 20%,
+    var(--color-accent) 40%,
+    #ffffff 55%,
+    var(--color-accent) 70%,
+    var(--color-accent-dark) 85%,
+    #ffffff 100%
+  );
+  --color-gold-rgb:       251, 191, 36;
+  --color-glow-accent:    rgba(96, 165, 250, 0.2);
+  --hero-decoration-opacity: 0.12;
+  --noise-opacity:     0.04;
+
+  /* -- Semantic Feedback -- */
+  --color-success-light: rgba(52, 211, 153, 0.12);
+  --color-success-border: rgba(52, 211, 153, 0.35);
+  --color-warning-light: rgba(251, 191, 36, 0.12);
+  --color-warning-border: rgba(251, 191, 36, 0.35);
+  --color-warning-text:   #FEF3C7;
+  --color-danger-light: rgba(248, 113, 113, 0.12);
+  --color-danger-border: rgba(248, 113, 113, 0.35);
+  --color-info-light: rgba(96, 165, 250, 0.12);
+  --color-info-border: rgba(96, 165, 250, 0.35);
+
+  /* -- Shadows (deeper for dark surfaces) -- */
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md:    0 4px 14px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg:    0 12px 28px rgba(0, 0, 0, 0.36), 0 4px 10px rgba(0, 0, 0, 0.22);
+  --shadow-xl:    0 24px 48px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.26);
+  --shadow-accent:  0 4px 16px rgba(96, 165, 250, 0.3);
+
+  /* -- Ionic Component Overrides -- */
+  --ion-card-background:    var(--surface-card);
+  --ion-card-box-shadow:    var(--card-shadow);
+  --ion-tab-bar-background: #070b14;
+  --ion-tab-bar-border-color: var(--border-subtle);
+  --ion-toolbar-background: transparent;
+  --ion-toolbar-color:      var(--text-primary);
+  --ion-item-background:    transparent;
+  --ion-item-border-color:  var(--border-subtle);
+  --ion-input-background:   var(--surface-input);
+
+  color-scheme: dark;
+}
+
+/* Body background + noise texture must follow the theme */
+html[data-theme="dark"] body {
+  background: var(--surface-page);
+}
+
+html[data-theme="dark"] ion-content {
+  --background: var(--surface-page);
+}
+
+/* Cards: keep border visible but adapt to dark surfaces */
+html[data-theme="dark"] ion-card,
+html[data-theme="dark"] .announcement-card,
+html[data-theme="dark"] .notice-card,
+html[data-theme="dark"] .admin-card,
+html[data-theme="dark"] .question-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .card-admin,
+html[data-theme="dark"] .card-survey,
+html[data-theme="dark"] .card-event,
+html[data-theme="dark"] .card-question {
+  border-color: var(--border-subtle);
+  background: var(--surface-gradient-card);
+  --color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-card-title,
+html[data-theme="dark"] ion-card-subtitle {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .card-date,
+html[data-theme="dark"] .card-meta span {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .card-body,
+html[data-theme="dark"] .card-content {
+  color: var(--text-secondary);
+}
+
+/* Dashboard cards keep their branded colored background and white text */
+html[data-theme="dark"] .dashboard-card {
+  --background: var(--card-color, var(--ion-color-primary));
+  background: var(--card-color, var(--ion-color-primary));
+  --color: #ffffff;
+}
+
+/* Tab bar translucent backdrop */
+html[data-theme="dark"] ion-tab-bar {
+  --background: rgba(7, 11, 20, 0.92);
+  backdrop-filter: blur(12px);
+  border-top-color: var(--border-subtle);
+}
+
+/* Auth pages: avoid using the light gradient in dark mode */
+html[data-theme="dark"] .auth-content {
+  --background: linear-gradient(180deg, #070b14 0%, #182538 50%, #0e1622 100%);
+}
+
+html[data-theme="dark"] .auth-card {
+  background: var(--surface-card);
+  box-shadow: var(--shadow-lg);
+}
+
+html[data-theme="dark"] .auth-card .auth-item {
+  --background: var(--surface-input);
+}
+
+html[data-theme="dark"] .auth-success-text,
+html[data-theme="dark"] .auth-card ion-label,
+html[data-theme="dark"] .auth-card ion-input,
+html[data-theme="dark"] .auth-card ion-select,
+html[data-theme="dark"] .auth-card ion-textarea {
+  color: var(--text-primary);
+}
+
+/* Skeleton / loading states */
+html[data-theme="dark"] .skeleton,
+html[data-theme="dark"] .skeleton-card,
+html[data-theme="dark"] .skeleton-text,
+html[data-theme="dark"] .skeleton-circle {
+  background: var(--surface-skeleton);
+}
+
+/* Scrollbar thumb */
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(96, 165, 250, 0.25);
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(96, 165, 250, 0.45);
+}
+html[data-theme="dark"] * {
+  scrollbar-color: rgba(96, 165, 250, 0.25) transparent;
+}
+
+/* Calendar segment + filter chips */
+html[data-theme="dark"] ion-segment-button {
+  --color: var(--text-secondary);
+  --color-checked: var(--ion-color-primary);
+}
+
+html[data-theme="dark"] .filter-chips ion-chip {
+  --color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .filter-chips ion-chip[color="primary"],
+html[data-theme="dark"] .filter-chips ion-chip.ion-color-primary {
+  --color: var(--text-on-primary);
+  color: var(--text-on-primary);
+  --background: var(--ion-color-primary);
+  background: var(--ion-color-primary);
+}
+
+html[data-theme="dark"] .filter-chips ion-chip[color="medium"],
+html[data-theme="dark"] .filter-chips ion-chip.ion-color-medium {
+  --color: var(--text-secondary);
+  color: var(--text-secondary);
+  --background: transparent;
+  background: transparent;
+  border-color: var(--border-default);
+}
+
+html[data-theme="dark"] .filter-item ion-select,
+html[data-theme="dark"] .filter-item ion-select::part(placeholder),
+html[data-theme="dark"] .filter-item ion-select::part(text) {
+  color: var(--text-primary);
+}
+
+/* Modal dark background */
+html[data-theme="dark"] ion-modal {
+  --background: var(--surface-page);
+}
+
+html[data-theme="dark"] ion-modal::part(content) {
+  background: var(--surface-page);
+}
+
+html[data-theme="dark"] ion-modal ion-content {
+  --background: var(--surface-page);
+}
+
+html[data-theme="dark"] ion-modal ion-content::part(scroll) {
+  background: var(--surface-page);
+}
+
+html[data-theme="dark"] ion-modal ion-toolbar {
+  --background: var(--surface-card);
+  --color: var(--text-primary);
+}
+
+/* FullCalendar dark overrides */
+html[data-theme="dark"] .fc-theme-standard,
+html[data-theme="dark"] .full-calendar,
+html[data-theme="dark"] .fc {
+  --fc-border-color: var(--border-subtle);
+  --fc-neutral-bg-color: var(--surface-card);
+  --fc-page-bg-color: var(--surface-page);
+  --fc-event-text-color: #ffffff;
+  --fc-today-bg-color: rgba(96, 165, 250, 0.12);
+}
+
+html[data-theme="dark"] .fc-event,
+html[data-theme="dark"] .fc-event-title,
+html[data-theme="dark"] .fc-event-time,
+html[data-theme="dark"] .fc-daygrid-event,
+html[data-theme="dark"] .fc-timegrid-event {
+  color: #ffffff !important;
+}
+
+/* Admin hero + header: always dark gradient, text must be white */
+html[data-theme="dark"] .admin-header ion-toolbar,
+html[data-theme="dark"] .form-header ion-toolbar {
+  --color: #ffffff;
+}
+
+html[data-theme="dark"] .admin-hero {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .admin-hero .hero-subtitle,
+html[data-theme="dark"] .admin-hero .hero-title {
+  color: #ffffff;
+}
+
+/* Empty-state icon: use semantic variable instead of hardcoded step */
+html[data-theme="dark"] .empty-state-icon {
+  color: var(--text-tertiary);
+}
+
+/* Count badge on tab-dashboard: white on accent bg */
+html[data-theme="dark"] .count-badge {
+  color: #ffffff;
+}
+
+/* Event type badge in calendar modal: white on arbitrary colors */
+html[data-theme="dark"] .event-type-badge {
+  color: #ffffff;
+}
+
+/* Profile theme segment: white on checked */
+html[data-theme="dark"] .theme-segment-wrapper ion-segment-button {
+  --color-checked: #ffffff;
+}
+
+/* Survey card differentiation: pending vs responded */
+html[data-theme="dark"] .survey-card {
+  border-left: 3px solid var(--ion-color-success);
+}
+
+html[data-theme="dark"] .survey-card[disabled] {
+  opacity: 0.6;
+  border-left-color: var(--border-subtle);
+}
+
+html[data-theme="dark"] .survey-card .ion-color-medium {
+  --ion-color-base: #64748b;
+  --ion-color-contrast: #e2e8f0;
+}
+
+/* Dashboard card with medium/warning bg: override text for contrast */
+html[data-theme="dark"] .dashboard-card[style*="ion-color-medium"] {
+  --color: var(--ion-color-medium-contrast);
+}
+
+/* Tab Help: stronger chips */
+html[data-theme="dark"] .suggestion-chip,
+html[data-theme="dark"] .quick-reply-chip {
+  --background: #1a3354;
+  --color: var(--text-primary);
+}
+
+/* Tab Help: user bubble white text on primary bg */
+html[data-theme="dark"] .message-bubble.user-bubble {
+  color: #ffffff;
+}
+
+/* Event card border in dark mode */
+html[data-theme="dark"] .event-card {
+  border-color: var(--border-subtle);
+}
+
+/* Gold accent group */
+html[data-theme="dark"] {
+  --color-gold: #FBBF24;
+  --color-gold-light: #FDE68A;
+}
+
+/* Hero mesh gradient: no white glow in dark mode */
+html[data-theme="dark"] {
+  --gradient-hero-mesh: radial-gradient(
+    ellipse 120% 80% at 0% 20%,
+    rgba(96, 165, 250, 0.08) 0%,
+    transparent 60%
+  ),
+  radial-gradient(
+    ellipse 100% 60% at 100% 100%,
+    rgba(96, 165, 250, 0.05) 0%,
+    transparent 50%
+  );
+}
+
+/* Ionic Overlay Components: dark backgrounds */
+html[data-theme="dark"] ion-alert {
+  --background: var(--surface-overlay);
+  --backdrop-opacity: 0.6;
+}
+
+html[data-theme="dark"] ion-alert .alert-wrapper {
+  background: var(--surface-card);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-alert .alert-head,
+html[data-theme="dark"] ion-alert .alert-message {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-alert .alert-sub-title {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] ion-action-sheet {
+  --background: var(--surface-card);
+  --backdrop-opacity: 0.6;
+  --color: var(--text-primary);
+  --button-color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-action-sheet .action-sheet-title {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] ion-popover {
+  --background: var(--surface-card);
+  --backdrop-opacity: 0.4;
+  --color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-popover ion-content {
+  --background: var(--surface-card);
+}
+
+html[data-theme="dark"] ion-loading {
+  --background: var(--surface-card);
+  --backdrop-opacity: 0.5;
+  --spinner-color: var(--color-accent);
+  --color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-toast {
+  --background: var(--surface-card);
+  --color: var(--text-primary);
+  --button-color: var(--color-accent);
+  --box-shadow: var(--shadow-lg);
+}
+
+html[data-theme="dark"] ion-picker {
+  --background: var(--surface-card);
+  --backdrop-opacity: 0.4;
+}
+
+html[data-theme="dark"] ion-picker .picker-opt {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] ion-picker .picker-opt-selected {
+  color: var(--color-accent);
+}
+
+/* Ionic form items: explicit color override for shadow-DOM labels/inputs */
+html[data-theme="dark"] ion-item {
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-tertiary);
+}
+
+/* Ionic datetime: dark background + light text */
+html[data-theme="dark"] ion-datetime {
+  --background: var(--surface-input);
+  color: var(--text-primary);
+}

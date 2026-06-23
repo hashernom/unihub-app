@@ -5,20 +5,27 @@ import { firstValueFrom } from "rxjs";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonRefresher, IonRefresherContent,
-  IonSkeletonText, IonBadge,
+  IonBadge,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonList,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 import { SurveyService, type SurveyWithStatus } from "../../core/services/survey.service";
+import { ErrorHandlerService } from "../../core/services/error-handler.service";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { ErrorStateComponent } from "../../shared/components/error-state/error-state.component";
+import { SkeletonListComponent } from "../../shared/components/skeleton-list/skeleton-list.component";
 
 @Component({
   selector: "app-tab-surveys",
   imports: [
     DatePipe,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    SkeletonListComponent,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonRefresher, IonRefresherContent,
-    IonSkeletonText, IonBadge,
+    IonBadge,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonList,
   ],
@@ -30,8 +37,10 @@ export class TabSurveysPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly surveyService = inject(SurveyService);
   private readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   loading = true;
+  error: unknown = null;
   surveys: SurveyWithStatus[] = [];
 
   ngOnInit(): void {
@@ -44,13 +53,15 @@ export class TabSurveysPage implements OnInit {
 
   async loadSurveys(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       const user = await firstValueFrom(this.auth.currentUser$);
       if (user) {
         this.surveys = await this.surveyService.getActiveSurveys(user.id);
       }
-    } catch {
-      console.warn("[Surveys] Failed to load surveys");
+    } catch (err) {
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadSurveys());
     }
     this.loading = false;
     this.cdr.detectChanges();

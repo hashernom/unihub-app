@@ -6,10 +6,11 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonToggle, IonDatetime, IonToast,
+  IonButton, IonToggle, IonDatetime, IonToast, IonNote, IonSpinner,
 } from '@ionic/angular/standalone';
 import { AnnouncementService, type Announcement } from '../../core/services/announcement.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 @Component({
   selector: 'app-announcement-form',
@@ -18,7 +19,7 @@ import { AuthService } from '../../core/services/auth.service';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonToggle, IonDatetime, IonToast,
+    IonButton, IonToggle, IonDatetime, IonToast, IonNote, IonSpinner,
   ],
   templateUrl: './announcement-form.page.html',
   styleUrl: './announcement-form.page.scss',
@@ -28,6 +29,7 @@ export class AnnouncementFormPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   announcementId: string | null = null;

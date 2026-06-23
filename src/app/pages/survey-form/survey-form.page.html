@@ -3,10 +3,10 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin/surveys"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? 'Editar' : 'Nueva' }} Encuesta</ion-title>
+    <ion-title>{{ isEdit ? 'Editar encuesta' : 'Nueva encuesta' }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="previewMode = !previewMode">
-        <ion-icon slot="icon-only" [name]="previewMode ? 'eye-off' : 'eye'"></ion-icon>
+      <ion-button (click)="previewMode = !previewMode" [attr.aria-label]="previewMode ? 'Ocultar vista previa' : 'Mostrar vista previa'">
+        <ion-icon slot="icon-only" [name]="previewMode ? 'eye-off' : 'eye'" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -55,28 +55,31 @@
   }
 
   <ion-item>
-    <ion-label position="stacked">Título *</ion-label>
-    <ion-input [(ngModel)]="title" placeholder="Título de la encuesta"></ion-input>
+    <ion-label position="stacked">Título <span class="required">*</span></ion-label>
+    <ion-input [(ngModel)]="title" name="title" required minlength="3" #titleInput="ngModel" placeholder="Título de la encuesta"></ion-input>
   </ion-item>
+  @if (titleInput.invalid && titleInput.touched) {
+    <ion-note color="danger">{{ formValidation.getErrorMessage('Título', titleInput.errors) }}</ion-note>
+  }
 
   <ion-item>
     <ion-label position="stacked">Descripción</ion-label>
-    <ion-textarea [(ngModel)]="description" rows="3" placeholder="Descripción de la encuesta (opcional)"></ion-textarea>
+    <ion-textarea [(ngModel)]="description" name="description" rows="3" placeholder="Descripción de la encuesta (opcional)"></ion-textarea>
   </ion-item>
 
   <ion-item>
     <ion-label>Fecha de inicio</ion-label>
   </ion-item>
-  <ion-datetime presentation="date" [(ngModel)]="startDate" style="margin: 0 16px 16px;"></ion-datetime>
+  <ion-datetime presentation="date" preferWheel="true" showDefaultButtons="true" showClearButton="true" [(ngModel)]="startDate" style="margin: 0 16px 16px;" aria-label="Fecha de inicio"></ion-datetime>
 
   <ion-item>
     <ion-label>Fecha de cierre</ion-label>
   </ion-item>
-  <ion-datetime presentation="date" [(ngModel)]="endDate" style="margin: 0 16px 16px;"></ion-datetime>
+  <ion-datetime presentation="date" preferWheel="true" showDefaultButtons="true" showClearButton="true" [(ngModel)]="endDate" style="margin: 0 16px 16px;" aria-label="Fecha de cierre"></ion-datetime>
 
   <ion-item>
     <ion-label>Activa</ion-label>
-    <ion-toggle [(ngModel)]="isActive" slot="end"></ion-toggle>
+    <ion-toggle [(ngModel)]="isActive" slot="end" aria-label="Encuesta activa"></ion-toggle>
   </ion-item>
 
   <h3 class="section-title">Preguntas</h3>
@@ -91,13 +94,16 @@
       </ion-card-header>
       <ion-card-content>
         <ion-item>
-          <ion-label position="stacked">Pregunta</ion-label>
-          <ion-input [(ngModel)]="q.question_text" placeholder="Escribe la pregunta"></ion-input>
+          <ion-label position="stacked">Pregunta <span class="required">*</span></ion-label>
+          <ion-input [(ngModel)]="q.question_text" name="question_text_{{ q.tempId }}" required minlength="3" #qTextInput="ngModel" placeholder="Escribe la pregunta"></ion-input>
         </ion-item>
+        @if (qTextInput.invalid && qTextInput.touched) {
+          <ion-note color="danger">{{ formValidation.getErrorMessage('Pregunta', qTextInput.errors) }}</ion-note>
+        }
 
         <ion-item>
           <ion-label position="stacked">Tipo</ion-label>
-          <ion-select [(ngModel)]="q.question_type">
+          <ion-select [(ngModel)]="q.question_type" name="question_type_{{ q.tempId }}">
             @for (t of questionTypes; track t.value) {
               <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
             }
@@ -108,32 +114,32 @@
           <ion-label class="section-title" style="font-size: 0.9rem; display: block; margin-top: 12px;">Opciones</ion-label>
           @for (opt of q.options; track opt; let j = $index) {
             <div class="option-row">
-              <ion-input [(ngModel)]="q.options[j]" placeholder="Opción {{ j + 1 }}"></ion-input>
-              <ion-button size="small" fill="clear" color="danger" (click)="removeOption(q, j)">
-                <ion-icon slot="icon-only" name="remove"></ion-icon>
+              <ion-input [(ngModel)]="q.options[j]" placeholder="Opción {{ j + 1 }}" [attr.aria-label]="'Opción ' + (j + 1) + ' de la pregunta ' + (i + 1)"></ion-input>
+              <ion-button size="small" fill="clear" color="danger" (click)="removeOption(q, j)" aria-label="Eliminar opción">
+                <ion-icon slot="icon-only" name="remove" aria-hidden="true"></ion-icon>
               </ion-button>
             </div>
           }
           <ion-button size="small" fill="clear" class="add-option-btn" (click)="addOption(q)">
-            <ion-icon slot="start" name="add"></ion-icon>
+            <ion-icon slot="start" name="add" aria-hidden="true"></ion-icon>
             Agregar opción
           </ion-button>
         }
 
         <ion-item>
           <ion-label>Obligatoria</ion-label>
-          <ion-toggle [(ngModel)]="q.is_required" slot="end"></ion-toggle>
+          <ion-toggle [(ngModel)]="q.is_required" slot="end" [attr.aria-label]="'Pregunta ' + (i + 1) + ' obligatoria'"></ion-toggle>
         </ion-item>
 
         <div class="question-actions">
-          <ion-button size="small" fill="clear" (click)="moveUp(i)" [disabled]="i === 0">
-            <ion-icon slot="icon-only" name="arrow-up"></ion-icon>
+          <ion-button size="small" fill="clear" (click)="moveUp(i)" [disabled]="i === 0" aria-label="Mover pregunta arriba">
+            <ion-icon slot="icon-only" name="arrow-up" aria-hidden="true"></ion-icon>
           </ion-button>
-          <ion-button size="small" fill="clear" (click)="moveDown(i)" [disabled]="i === questions.length - 1">
-            <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
+          <ion-button size="small" fill="clear" (click)="moveDown(i)" [disabled]="i === questions.length - 1" aria-label="Mover pregunta abajo">
+            <ion-icon slot="icon-only" name="arrow-down" aria-hidden="true"></ion-icon>
           </ion-button>
-          <ion-button size="small" fill="clear" color="danger" (click)="removeQuestion(i)">
-            <ion-icon slot="icon-only" name="remove"></ion-icon>
+          <ion-button size="small" fill="clear" color="danger" (click)="removeQuestion(i)" aria-label="Eliminar pregunta">
+            <ion-icon slot="icon-only" name="remove" aria-hidden="true"></ion-icon>
           </ion-button>
         </div>
       </ion-card-content>
@@ -141,12 +147,13 @@
   }
 
   <ion-button expand="block" fill="outline" (click)="addQuestion()">
-    <ion-icon slot="start" name="add"></ion-icon>
+    <ion-icon slot="start" name="add" aria-hidden="true"></ion-icon>
     Agregar pregunta
   </ion-button>
 
   <div class="form-actions">
     <ion-button expand="block" (click)="save()" [disabled]="saving">
+      @if (saving) { <ion-spinner slot="start"></ion-spinner> }
       {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar encuesta' : 'Crear encuesta') }}
     </ion-button>
   </div>

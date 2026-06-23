@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-title>Aulas</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/admin/classrooms/new">
-        <ion-icon slot="icon-only" name="add"></ion-icon>
+      <ion-button routerLink="/admin/classrooms/new" aria-label="Nueva aula">
+        <ion-icon slot="icon-only" name="add" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -14,20 +14,15 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <div class="ion-padding">
-      @for (_ of [1,2,3]; track _) {
-        <div class="skeleton-card-wrapped">
-          <div class="skeleton skeleton-title"></div>
-          <div class="skeleton skeleton-text-sm"></div>
-        </div>
-      }
-    </div>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state message="No se pudieron cargar las aulas." (retry)="loadAll()"></app-error-state>
   } @else {
     <div class="filter-chips">
       <ion-chip
         [outline]="activeBuildingFilter !== null"
         [style.--background]="activeBuildingFilter === null ? 'var(--ion-color-primary)' : 'transparent'"
-        [style.--color]="activeBuildingFilter === null ? '#fff' : 'var(--text-secondary)'"
+        [style.--color]="activeBuildingFilter === null ? 'var(--ion-color-primary-contrast)' : 'var(--text-secondary)'"
         (click)="filterByBuilding(null)"
       >
         <ion-label>Todas ({{ classrooms.length }})</ion-label>
@@ -36,7 +31,7 @@
         <ion-chip
           [outline]="activeBuildingFilter !== b.name"
           [style.--background]="activeBuildingFilter === b.name ? 'var(--ion-color-primary)' : 'transparent'"
-          [style.--color]="activeBuildingFilter === b.name ? '#fff' : 'var(--text-secondary)'"
+          [style.--color]="activeBuildingFilter === b.name ? 'var(--ion-color-primary-contrast)' : 'var(--text-secondary)'"
           (click)="filterByBuilding(b.name)"
         >
           <ion-label>{{ b.name }} ({{ b.count }})</ion-label>
@@ -45,25 +40,18 @@
     </div>
 
     @if (filteredClassrooms.length === 0) {
-      <div class="empty-state">
-        <ion-icon name="business" class="empty-state-icon"></ion-icon>
-        <p class="empty-state-text">No hay aulas</p>
-        <p class="empty-state-subtext">
-          @if (activeBuildingFilter) {
-            No hay aulas en este edificio.
-          } @else {
-            Crea la primera aula para gestionar eventos.
-          }
-        </p>
-        <ion-button routerLink="/admin/classrooms/new" color="primary">
-          <ion-icon slot="start" name="add"></ion-icon>
-          Crear aula
-        </ion-button>
-      </div>
+      <app-empty-state
+        icon="business"
+        title="No hay aulas"
+        [message]="activeBuildingFilter ? 'No hay aulas en este edificio.' : 'Crea la primera aula para gestionar eventos.'"
+        actionText="Crear aula"
+        (action)="router.navigate(['/admin/classrooms/new'])"
+      ></app-empty-state>
     }
 
-    @for (classroom of filteredClassrooms; track classroom.id) {
-      <ion-card class="admin-card" [class.inactive]="!classroom.is_active">
+    <div class="animate-stagger">
+      @for (classroom of filteredClassrooms; track classroom.id) {
+        <ion-card class="admin-card" [class.inactive]="!classroom.is_active">
         <ion-card-header>
           <ion-card-title>
             {{ classroom.name }}
@@ -85,21 +73,23 @@
         </ion-card-header>
         <ion-card-content>
           <div class="card-actions">
-            <ion-button size="small" fill="clear" (click)="openAvailability(classroom)">
-              <ion-icon slot="start" name="time"></ion-icon>
+            <ion-button size="small" fill="clear" (click)="openAvailability(classroom)" aria-label="Ver disponibilidad de {{ classroom.name }}">
+              <ion-icon slot="start" name="time" aria-hidden="true"></ion-icon>
               Disponibilidad
             </ion-button>
             <ion-toggle
               [checked]="classroom.is_active"
               (ionChange)="toggleActive(classroom)"
+              [attr.aria-label]="classroom.is_active ? 'Desactivar aula' : 'Activar aula'"
             ></ion-toggle>
-            <ion-button size="small" fill="clear" [routerLink]="['/admin/classrooms/edit', classroom.id]">
-              <ion-icon slot="icon-only" name="create"></ion-icon>
+            <ion-button size="small" fill="clear" [routerLink]="['/admin/classrooms/edit', classroom.id]" aria-label="Editar aula">
+              <ion-icon slot="icon-only" name="create" aria-hidden="true"></ion-icon>
             </ion-button>
           </div>
         </ion-card-content>
       </ion-card>
-    }
+      }
+    </div>
   }
 
   <ion-modal [isOpen]="showAvailability" (didDismiss)="closeAvailability()">

@@ -36,12 +36,12 @@
           </div>
         </div>
         <div class="export-actions">
-          <ion-button fill="outline" size="small" (click)="exportCsv()" [disabled]="exporting">
-            <ion-icon slot="start" name="download"></ion-icon>
+          <ion-button fill="outline" size="small" (click)="exportCsv()" [disabled]="exporting" aria-label="Exportar resultados a CSV">
+            <ion-icon slot="start" name="download" aria-hidden="true"></ion-icon>
             CSV
           </ion-button>
-          <ion-button fill="outline" size="small" (click)="exportPdf()" [disabled]="exporting">
-            <ion-icon slot="start" name="download"></ion-icon>
+          <ion-button fill="outline" size="small" (click)="exportPdf()" [disabled]="exporting" aria-label="Exportar resultados a PDF">
+            <ion-icon slot="start" name="download" aria-hidden="true"></ion-icon>
             PDF
           </ion-button>
         </div>

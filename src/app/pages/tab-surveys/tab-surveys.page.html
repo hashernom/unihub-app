@@ -10,50 +10,43 @@
   </ion-refresher>
 
   @if (loading) {
-    <div class="ion-padding">
-      @for (_ of [1,2,3]; track _) {
-        <ion-card>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state
+      message="No se pudieron cargar las encuestas."
+      (retry)="loadSurveys()"
+    ></app-error-state>
+  } @else if (surveys.length === 0) {
+    <app-empty-state
+      icon="clipboard-outline"
+      title="Sin encuestas activas"
+      message="No hay encuestas disponibles en este momento. Vuelve más tarde."
+    ></app-empty-state>
+  } @else {
+    <ion-list class="survey-list animate-stagger">
+      @for (survey of surveys; track survey.id) {
+        <ion-card
+          button
+          [disabled]="survey.responded"
+          (click)="openSurvey(survey)"
+          class="survey-card"
+        >
           <ion-card-header>
-            <ion-skeleton-text animated style="width: 70%; height: 20px"></ion-skeleton-text>
+            <ion-card-title>{{ survey.title }}</ion-card-title>
+            <div class="card-meta">
+              <ion-badge [color]="survey.responded ? 'medium' : 'primary'">
+                {{ survey.responded ? 'Respondida' : 'Pendiente' }}
+              </ion-badge>
+              @if (survey.end_date) {
+                <span class="end-date">Vence: {{ survey.end_date | date:'dd/MM/yyyy' }}</span>
+              }
+            </div>
           </ion-card-header>
           <ion-card-content>
-            <ion-skeleton-text animated style="width: 100%; height: 14px"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 40%; height: 14px; margin-top: 8px"></ion-skeleton-text>
+            <p class="description">{{ survey.description }}</p>
           </ion-card-content>
         </ion-card>
       }
-    </div>
-  } @else {
-    @if (surveys.length === 0) {
-      <div class="empty-state">
-        <p>No hay encuestas activas en este momento.</p>
-      </div>
-    } @else {
-      <ion-list class="survey-list">
-        @for (survey of surveys; track survey.id) {
-          <ion-card
-            button
-            [disabled]="survey.responded"
-            (click)="openSurvey(survey)"
-            class="survey-card"
-          >
-            <ion-card-header>
-              <ion-card-title>{{ survey.title }}</ion-card-title>
-              <div class="card-meta">
-                <ion-badge [color]="survey.responded ? 'medium' : 'primary'">
-                  {{ survey.responded ? 'Respondida' : 'Pendiente' }}
-                </ion-badge>
-                @if (survey.end_date) {
-                  <span class="end-date">Vence: {{ survey.end_date | date:'dd/MM/yyyy' }}</span>
-                }
-              </div>
-            </ion-card-header>
-            <ion-card-content>
-              <p class="description">{{ survey.description }}</p>
-            </ion-card-content>
-          </ion-card>
-        }
-      </ion-list>
-    }
+    </ion-list>
   }
 </ion-content>

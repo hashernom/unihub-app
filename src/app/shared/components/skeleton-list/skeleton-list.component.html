@@ -1,0 +1,26 @@
+@for (i of items(); track i) {
+  @switch (type()) {
+    @case ('card') {
+      <div class="skeleton-card-wrapped">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text-sm"></div>
+      </div>
+    }
+    @case ('item') {
+      <div class="skeleton-item">
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text-sm"></div>
+      </div>
+    }
+    @case ('avatar') {
+      <div class="skeleton-avatar-row">
+        <div class="skeleton skeleton-avatar"></div>
+        <div class="skeleton-avatar-lines">
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text-sm"></div>
+        </div>
+      </div>
+    }
+  }
+}

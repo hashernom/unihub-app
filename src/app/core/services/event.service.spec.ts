@@ -318,8 +318,8 @@ describe('EventService', () => {
       expect(service.getEventColor('exam')).toBe('#EF4444');
       expect(service.getEventColor('meeting')).toBe('#22C55E');
       expect(service.getEventColor('workshop')).toBe('#F97316');
-      expect(service.getEventColor('other')).toBe('#6B7280');
-      expect(service.getEventColor('unknown')).toBe('#6B7280');
+      expect(service.getEventColor('other')).toBe('#9CA3AF');
+      expect(service.getEventColor('unknown')).toBe('#9CA3AF');
     });
   });
 

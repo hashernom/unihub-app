@@ -11,7 +11,7 @@
 
 .badge-count {
   background: var(--ion-color-primary);
-  color: #fff;
+  color: var(--ion-color-primary-contrast);
   font-size: var(--text-xs);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
@@ -26,4 +26,4 @@
 }
 .badge-status--active   { background: var(--color-success-light); color: var(--ion-color-success); }
 .badge-status--expired  { background: var(--color-danger-light);  color: var(--ion-color-danger); }
-.badge-status--draft    { background: var(--color-warning-light); color: #92400E; }
+.badge-status--draft    { background: var(--color-warning-light); color: var(--color-warning-text); }

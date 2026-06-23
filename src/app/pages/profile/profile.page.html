@@ -1,10 +1,26 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/dashboard"></ion-back-button></ion-buttons>
+    <ion-buttons slot="start"><ion-back-button [defaultHref]="defaultHref"></ion-back-button></ion-buttons>
     <ion-title>Mi Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  @if (userLoading) {
+    <div class="ion-padding">
+      <app-skeleton-list type="avatar" [count]="1"></app-skeleton-list>
+    </div>
+  } @else if (userError) {
+    <div class="ion-padding">
+      <app-error-state message="No se pudo cargar tu perfil." (retry)="retryLoadUser()"></app-error-state>
+    </div>
+  } @else if (!user) {
+    <app-empty-state
+      icon="person-circle"
+      title="No se encontró información de perfil"
+      message="Inicia sesión para ver tu perfil."
+    ></app-empty-state>
+  }
+
   @if (user) {
     <div class="profile-header">
       <ion-avatar class="profile-avatar">
@@ -19,7 +35,7 @@
       <ion-item>
         <ion-label>
           <h2>Nombre completo</h2>
-          @if (editing) { <ion-input [(ngModel)]="editName" name="fullName"></ion-input> }
+          @if (editing) { <ion-input [(ngModel)]="editName" name="fullName" aria-label="Nombre completo"></ion-input> }
           @else { <p>{{ user.profile.full_name }}</p> }
         </ion-label>
       </ion-item>
@@ -28,6 +44,34 @@
       <ion-item><ion-label><h2>Carrera</h2><p>{{ user.profile.carrera || "—" }}</p></ion-label></ion-item>
       <ion-item><ion-label><h2>Semestre</h2><p>{{ user.profile.semestre || "—" }}</p></ion-label></ion-item>
     </ion-list>
+
+    <ion-list>
+      <ion-list-header>Apariencia</ion-list-header>
+      <ion-item>
+        <ion-icon name="moon" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h2>Modo oscuro</h2>
+          <p>Elige el tema de la aplicación</p>
+        </ion-label>
+      </ion-item>
+      <div class="theme-segment-wrapper">
+        <ion-segment [value]="themeMode" (ionChange)="onThemeChange($any($event).detail.value)">
+          <ion-segment-button value="light">
+            <ion-icon name="sunny" aria-hidden="true"></ion-icon>
+            <ion-label>Claro</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="system">
+            <ion-icon name="desktop" aria-hidden="true"></ion-icon>
+            <ion-label>Sistema</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="dark">
+            <ion-icon name="moon" aria-hidden="true"></ion-icon>
+            <ion-label>Oscuro</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </ion-list>
+
     <div class="profile-actions">
       @if (editing) {
         <ion-button expand="block" (click)="saveProfile()" [disabled]="loading">
@@ -38,13 +82,11 @@
         <ion-button expand="block" (click)="toggleEdit()">Editar perfil</ion-button>
       }
       <ion-button expand="block" fill="outline" routerLink="/notification-settings">
-        <ion-icon slot="start" name="notifications"></ion-icon>
+        <ion-icon slot="start" name="notifications" aria-hidden="true"></ion-icon>
         Notificaciones
       </ion-button>
       <ion-button expand="block" color="danger" fill="outline" class="ion-margin-top" (click)="onLogout()">Cerrar sesi&oacute;n</ion-button>
     </div>
   }
-  <ion-toast [isOpen]="showToast" [message]="toastMessage" [duration]="3000" (didDismiss)="showToast = false"></ion-toast>
 </ion-content>
-
 

@@ -6,12 +6,13 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonToggle, IonToast, IonSegment, IonSegmentButton,
+  IonButton, IonToggle, IonToast, IonNote, IonSpinner, IonSegment, IonSegmentButton,
   IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { save, eye, create, helpCircle } from 'ionicons/icons';
 import { FaqService } from '../../core/services/faq.service';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 @Component({
   selector: 'app-faq-form',
@@ -20,7 +21,7 @@ import { FaqService } from '../../core/services/faq.service';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonToggle, IonToast, IonSegment, IonSegmentButton,
+    IonButton, IonToggle, IonToast, IonNote, IonSpinner, IonSegment, IonSegmentButton,
   IonIcon,
   ],
   templateUrl: './faq-form.page.html',
@@ -32,6 +33,7 @@ export class FaqFormPage implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly sanitizer = inject(DomSanitizer);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   faqId: string | null = null;
@@ -44,6 +46,7 @@ export class FaqFormPage implements OnInit {
   isActive = true;
 
   saving = false;
+  submitSuccess = false;
   showToast = false;
   toastMessage = '';
   previewMode: 'edit' | 'preview' = 'edit';
@@ -106,12 +109,14 @@ export class FaqFormPage implements OnInit {
 
       if (this.isEdit && this.faqId) {
         await this.faqService.updateFaq(this.faqId, data);
+        this.submitSuccess = true;
         this.toast('FAQ actualizada');
       } else {
         await this.faqService.createFaq(data);
+        this.submitSuccess = true;
         this.toast('FAQ creada');
       }
-      setTimeout(() => this.router.navigate(['/admin/faq']), 1000);
+      setTimeout(() => this.router.navigate(['/admin/faq']), 1200);
     } catch {
       this.toast('Error al guardar la FAQ');
     }

@@ -1,5 +1,5 @@
 .section-title { font-size: var(--text-lg); font-weight: var(--weight-semibold); margin: var(--space-4) 0 var(--space-2); color: var(--ion-color-primary); letter-spacing: -0.01em; }
-.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid rgba(255,255,255,0.6); border-left: 3px solid var(--color-gold); }
+.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid var(--border-subtle); border-left: 3px solid var(--color-gold); }
 .question-header { display: flex; align-items: center; gap: var(--space-2); }
 .question-number { font-weight: var(--weight-semibold); color: var(--color-gold); min-width: 24px; font-size: var(--text-sm); }
 .drag-handle { cursor: move; color: var(--text-tertiary); font-size: 1.2rem; }

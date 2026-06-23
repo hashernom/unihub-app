@@ -4,10 +4,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
-  IonInput, IonButton, IonToast,
+  IonInput, IonButton, IonToast, IonNote, IonSpinner,
   IonList, IonListHeader,
 } from '@ionic/angular/standalone';
 import { EventService } from '../../core/services/event.service';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 @Component({
   selector: 'app-classroom-form',
@@ -15,7 +16,7 @@ import { EventService } from '../../core/services/event.service';
     FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
-    IonInput, IonButton, IonToast,
+    IonInput, IonButton, IonToast, IonNote, IonSpinner,
     IonList, IonListHeader,
   ],
   templateUrl: './classroom-form.page.html',
@@ -25,6 +26,7 @@ export class ClassroomFormPage implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   classroomId: string | null = null;

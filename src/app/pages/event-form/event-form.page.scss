@@ -4,7 +4,7 @@
   gap: var(--space-2);
   padding: var(--space-3);
   margin-bottom: var(--space-4);
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(var(--ion-color-danger-rgb), 0.08);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
@@ -41,7 +41,7 @@ ion-list-header {
 }
 
 ion-item {
-  --background: var(--ion-color-step-50, #f8f8f8);
+  --background: var(--surface-input);
   --border-radius: var(--radius-md);
   margin-bottom: var(--space-2);
   --padding-start: var(--space-4);
@@ -55,25 +55,27 @@ ion-item {
 
 .datetime-inline {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   width: 100%;
   align-items: center;
 }
 
 .datetime-inline ion-input {
-  flex: 1;
+  flex: 1 1 120px;
   min-width: 0;
 }
 
 .time-selector {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 2px;
 }
 
 .time-selector select {
-  background: var(--ion-color-step-100, #eee);
-  border: none;
+  background: var(--surface-input);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 8px 6px;
   font-size: var(--text-sm);
@@ -94,7 +96,7 @@ ion-item {
 .time-colon {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   padding: 0 1px;
 }
 
@@ -121,7 +123,7 @@ ion-item {
 }
 
 .form-actions ion-button {
-  --border-radius: var(--radius-md);
+  --border-radius: var(--radius-lg);
   font-weight: var(--weight-semibold);
   min-height: 48px;
 }

@@ -11,6 +11,10 @@ import { addIcons } from "ionicons";
 import { send, helpCircle, chatbubbles, search, closeCircle } from "ionicons/icons";
 import { HelpBotService, type HelpBotMessage, type FaqMatch } from "../../core/services/help-bot.service";
 import { FaqService } from "../../core/services/faq.service";
+import { ErrorHandlerService } from "../../core/services/error-handler.service";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { ErrorStateComponent } from "../../shared/components/error-state/error-state.component";
+import { SkeletonListComponent } from "../../shared/components/skeleton-list/skeleton-list.component";
 
 interface SuggestionChip {
   label: string;
@@ -23,7 +27,8 @@ interface SuggestionChip {
     FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonFooter, IonItem, IonInput, IonButton, IonIcon,
-  IonChip, IonLabel, IonSpinner,
+    IonChip, IonLabel, IonSpinner,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: "./tab-help.page.html",
   styleUrls: ["./tab-help.page.scss"],
@@ -34,10 +39,13 @@ export class TabHelpPage implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly helpBot = inject(HelpBotService);
   private readonly faqService = inject(FaqService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   messages: HelpBotMessage[] = [];
   inputValue = "";
   loading = false;
+  categoriesLoading = true;
+  categoriesError = false;
   quickReplies: SuggestionChip[] = [
     { label: "Cuenta", query: "cuenta" },
     { label: "Académico", query: "academico" },
@@ -50,9 +58,9 @@ export class TabHelpPage implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     addIcons({ send, helpCircle, chatbubbles, search, 'close-circle': closeCircle });
-    await this.loadQuickReplies();
     this.setupWelcomeMessage();
     this.setupInputDebounce();
+    await this.loadQuickReplies();
   }
 
   ngOnDestroy(): void {
@@ -67,7 +75,9 @@ export class TabHelpPage implements OnInit, OnDestroy {
     );
   }
 
-  private async loadQuickReplies(): Promise<void> {
+  async loadQuickReplies(): Promise<void> {
+    this.categoriesLoading = true;
+    this.categoriesError = false;
     try {
       const categories = await this.faqService.getActiveCategories();
       if (categories.length > 0) {
@@ -77,7 +87,10 @@ export class TabHelpPage implements OnInit, OnDestroy {
         }));
       }
     } catch (err) {
-      console.warn('[TabHelpPage] Failed to load categories, using defaults', err);
+      this.categoriesError = true;
+      this.errorHandler.handleHttpError(err, () => this.loadQuickReplies());
+    } finally {
+      this.categoriesLoading = false;
     }
   }
 

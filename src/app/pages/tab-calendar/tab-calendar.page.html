@@ -10,22 +10,25 @@
   </ion-refresher>
 
   @if (loading) {
-    <div class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p class="loading-text">Cargando calendario...</p>
+    <div class="ion-padding">
+      <app-skeleton-list type="card" [count]="2"></app-skeleton-list>
+    </div>
+  } @else if (error) {
+    <div class="ion-padding">
+      <app-error-state message="No se pudieron cargar los eventos." (retry)="loadEvents()"></app-error-state>
     </div>
   } @else {
     <div class="calendar-toolbar">
-      <ion-button fill="clear" size="small" (click)="navigateDate(-1)">
-        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      <ion-button fill="clear" size="small" (click)="navigateDate(-1)" aria-label="Mes anterior">
+        <ion-icon slot="icon-only" name="arrow-back" aria-hidden="true"></ion-icon>
       </ion-button>
       <span class="month-label">{{ currentMonthLabel }}</span>
-      <ion-button fill="clear" size="small" (click)="goToToday()" class="today-btn">
-        <ion-icon slot="start" name="today"></ion-icon>
+      <ion-button fill="clear" size="small" (click)="goToToday()" class="today-btn" aria-label="Ir a hoy">
+        <ion-icon slot="start" name="today" aria-hidden="true"></ion-icon>
         Hoy
       </ion-button>
-      <ion-button fill="clear" size="small" (click)="navigateDate(1)">
-        <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+      <ion-button fill="clear" size="small" (click)="navigateDate(1)" aria-label="Mes siguiente">
+        <ion-icon slot="icon-only" name="arrow-forward" aria-hidden="true"></ion-icon>
       </ion-button>
     </div>
 
@@ -47,11 +50,11 @@
           <ion-chip
             [outline]="activeFilter !== type.key"
             [style.--background]="activeFilter === type.key ? (type.color || 'var(--ion-color-primary)') : 'transparent'"
-            [style.--color]="activeFilter === type.key ? '#fff' : 'var(--text-secondary)'"
+            [style.--color]="activeFilter === type.key ? 'var(--ion-color-primary-contrast)' : 'var(--text-secondary)'"
             (click)="filterByType(type.key)"
           >
             @if (type.color) {
-              <ion-icon [style.color]="type.color" name="calendar" slot="start"></ion-icon>
+              <ion-icon [style.color]="type.color" name="calendar" slot="start" aria-hidden="true"></ion-icon>
             }
             <ion-label>{{ type.label }}</ion-label>
           </ion-chip>
@@ -60,12 +63,13 @@
 
       <div class="classroom-filter">
         <ion-item lines="none" class="filter-item">
-          <ion-icon name="business" slot="start"></ion-icon>
+          <ion-icon name="business" slot="start" aria-hidden="true"></ion-icon>
           <ion-select
             [value]="activeClassroomFilter"
             (ionChange)="filterByClassroom($any($event).detail.value)"
             interface="popover"
             placeholder="Filtrar por aula"
+            aria-label="Filtrar por aula"
           >
             <ion-select-option [value]="null">Todas las aulas</ion-select-option>
             @for (c of allClassrooms; track c.id) {
@@ -79,18 +83,26 @@
 
       @if (hasActiveFilters()) {
         <ion-button fill="clear" size="small" color="medium" (click)="clearFilters()" class="clear-btn">
-          <ion-icon slot="start" name="funnel"></ion-icon>
+          <ion-icon slot="start" name="funnel" aria-hidden="true"></ion-icon>
           Limpiar filtros
         </ion-button>
       }
     </div>
 
-    <div class="calendar-wrapper">
-      <full-calendar
-        class="full-calendar"
-        [options]="calendarOptions"
-      ></full-calendar>
-    </div>
+    @if (events.length === 0) {
+      <app-empty-state
+        icon="calendar-outline"
+        title="No hay eventos próximos"
+        message="No hay eventos programados para este período."
+      ></app-empty-state>
+    } @else {
+      <div class="calendar-wrapper animate-stagger">
+        <full-calendar
+          class="full-calendar"
+          [options]="calendarOptions"
+        ></full-calendar>
+      </div>
+    }
   }
 
   <ion-modal [isOpen]="showModal" (didDismiss)="dismissModal()">
@@ -116,12 +128,12 @@
           <div class="detail-section">
             <h3 class="detail-section-title">Horario</h3>
             <div class="event-info-item">
-              <ion-icon name="time"></ion-icon>
+              <ion-icon name="time" aria-hidden="true"></ion-icon>
               <span>{{ selectedEvent.start_time | date:'EEEE d MMM, h:mm a' }} — {{ selectedEvent.end_time | date:'h:mm a' }}</span>
             </div>
             @if (selectedEvent.recurring_rule) {
               <div class="event-info-item">
-                <ion-icon name="repeat"></ion-icon>
+                <ion-icon name="repeat" aria-hidden="true"></ion-icon>
                 <span>Evento recurrente</span>
               </div>
             }
@@ -131,20 +143,20 @@
             <div class="detail-section">
               <h3 class="detail-section-title">Aula</h3>
               <div class="event-info-item">
-                <ion-icon name="location"></ion-icon>
+                <ion-icon name="location" aria-hidden="true"></ion-icon>
                 <span>{{ selectedEvent.classroom_name }}</span>
               </div>
               @if (selectedEventClassroom) {
                 <div class="classroom-info">
                   @if (selectedEventClassroom.capacity) {
                     <div class="classroom-detail">
-                      <ion-icon name="school"></ion-icon>
+                      <ion-icon name="school" aria-hidden="true"></ion-icon>
                       <span>Capacidad: {{ selectedEventClassroom.capacity }} personas</span>
                     </div>
                   }
                   @if (selectedEventClassroom.building) {
                     <div class="classroom-detail">
-                      <ion-icon name="business"></ion-icon>
+                      <ion-icon name="business" aria-hidden="true"></ion-icon>
                       <span>Edificio: {{ selectedEventClassroom.building }}</span>
                     </div>
                   }
@@ -157,7 +169,7 @@
             <div class="detail-section">
               <h3 class="detail-section-title">Profesor</h3>
               <div class="event-info-item">
-                <ion-icon name="person"></ion-icon>
+                <ion-icon name="person" aria-hidden="true"></ion-icon>
                 <span>{{ selectedEvent.professor_name }}</span>
               </div>
             </div>

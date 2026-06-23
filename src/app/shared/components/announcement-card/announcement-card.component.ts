@@ -49,7 +49,7 @@ export class AnnouncementCardComponent {
   get categoryLabel(): string {
     const labels: Record<string, string> = {
       general: 'General',
-      academic: 'Acad?mico',
+      academic: 'Académico',
       event: 'Evento',
       urgent: 'Urgente',
     };

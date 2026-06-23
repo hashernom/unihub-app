@@ -6,7 +6,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonToast, IonNote,
+  IonButton, IonToast, IonNote, IonSpinner,
   IonList, IonListHeader, IonIcon, IonToggle,
   IonSegment, IonSegmentButton,
 } from '@ionic/angular/standalone';
@@ -16,6 +16,7 @@ import { EventService, type CalendarEvent, type Classroom } from '../../core/ser
 import { AuthService } from '../../core/services/auth.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { environment } from '../../../environments/environment';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 @Component({
   selector: 'app-event-form',
@@ -24,7 +25,7 @@ import { environment } from '../../../environments/environment';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonToast, IonNote,
+    IonButton, IonToast, IonNote, IonSpinner,
     IonList, IonListHeader, IonIcon, IonToggle,
     IonSegment, IonSegmentButton,
   ],
@@ -37,6 +38,7 @@ export class EventFormPage implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   eventId: string | null = null;
@@ -65,6 +67,7 @@ export class EventFormPage implements OnInit {
   availabilityPreview: string[] = [];
   checkingAvailability = false;
   sendEmailNotification = false;
+  submitSuccess = false;
 
   readonly eventTypes = [
     { value: 'class', label: 'Clase' },
@@ -231,6 +234,7 @@ export class EventFormPage implements OnInit {
           recurring_rule: this.recurringRule,
           color,
         } as Partial<CalendarEvent>);
+        this.submitSuccess = true;
         this.toast('Evento actualizado');
       } else {
         const newEventId = await this.eventService.createEvent({
@@ -245,6 +249,7 @@ export class EventFormPage implements OnInit {
           color,
           created_by: userId,
         });
+        this.submitSuccess = true;
         this.toast('Evento creado');
 
         if (this.sendEmailNotification) {
@@ -254,7 +259,7 @@ export class EventFormPage implements OnInit {
           });
         }
       }
-      setTimeout(() => this.router.navigate(['/admin/events']), 1000);
+      setTimeout(() => this.router.navigate(['/admin/events']), 1200);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error al guardar el evento';
       this.toast(msg);

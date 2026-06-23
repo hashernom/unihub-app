@@ -1,0 +1,12 @@
+<div class="error-state">
+  <ion-icon [name]="icon()" class="error-state-icon" aria-hidden="true"></ion-icon>
+  <ion-label>
+    <h3 class="error-state-text">Algo salió mal</h3>
+    @if (message()) {
+      <p class="error-state-subtext">{{ message() }}</p>
+    }
+  </ion-label>
+  <ion-button fill="outline" size="small" (click)="onRetry()">
+    {{ retryText() }}
+  </ion-button>
+</div>

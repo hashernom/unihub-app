@@ -3,17 +3,18 @@ import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
-  IonItem, IonLabel, IonInput, IonButton,
+  IonItem, IonLabel, IonInput, IonButton, IonNote,
   IonToast, IonSpinner, IonButtons, IonBackButton, IonIcon,
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
+import { FormValidationService } from "../../core/services/form-validation.service";
 
 @Component({
   selector: "app-admin-register",
   imports: [
     FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar,
-    IonItem, IonLabel, IonInput, IonButton,
+    IonItem, IonLabel, IonInput, IonButton, IonNote,
     IonToast, IonSpinner, IonButtons, IonBackButton, IonIcon,
   ],
   templateUrl: "./admin-register.page.html",
@@ -22,6 +23,7 @@ import { AuthService } from "../../core/services/auth.service";
 export class AdminRegisterPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly formValidation = inject(FormValidationService);
 
   email = "";
   password = "";
@@ -34,8 +36,6 @@ export class AdminRegisterPage {
     if (!this.email || !this.password || !this.fullName) {
       this.show("Todos los campos son obligatorios"); return;
     }
-    if (!this.email.includes("@")) { this.show("Ingresa un email valido"); return; }
-    if (this.password.length < 8) { this.show("La contrasena debe tener al menos 8 caracteres"); return; }
     this.loading = true;
     this.auth.signUp(this.email, this.password, this.fullName, '', '', 'admin').subscribe({
       next: () => { this.loading = false; this.show("Admin registrado exitosamente"); this.router.navigate(["/admin/dashboard"]); },

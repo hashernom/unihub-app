@@ -55,7 +55,7 @@ const EVENT_COLORS: Record<string, string> = {
   exam: '#EF4444',
   meeting: '#22C55E',
   workshop: '#F97316',
-  other: '#6B7280',
+  other: '#9CA3AF',
 };
 
 const EVENT_TYPE_LABELS: Record<string, string> = {

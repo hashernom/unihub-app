@@ -1,11 +1,11 @@
 h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--ion-color-dark);
-  margin-bottom: 0.5rem;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
 }
 
 p {
-  font-size: 1rem;
-  color: var(--ion-color-medium);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
 }

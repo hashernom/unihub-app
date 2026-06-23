@@ -1,0 +1,14 @@
+<div class="empty-state" [class.empty-state-compact]="variant() === 'compact'" [class.empty-state-error]="variant() === 'error'">
+  <ion-icon [name]="icon()" class="empty-state-icon" aria-hidden="true"></ion-icon>
+  <ion-label>
+    <h3 class="empty-state-text">{{ title() }}</h3>
+    @if (message()) {
+      <p class="empty-state-subtext">{{ message() }}</p>
+    }
+  </ion-label>
+  @if (actionText()) {
+    <ion-button fill="clear" size="small" (click)="onAction()">
+      {{ actionText() }}
+    </ion-button>
+  }
+</div>

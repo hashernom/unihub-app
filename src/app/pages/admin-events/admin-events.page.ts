@@ -10,6 +10,10 @@ import {
 import { addIcons } from 'ionicons';
 import { add, create, trash, closeCircle } from 'ionicons/icons';
 import { EventService, type CalendarEvent } from '../../core/services/event.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-admin-events',
@@ -19,6 +23,7 @@ import { EventService, type CalendarEvent } from '../../core/services/event.serv
     IonButtons, IonBackButton, IonButton, IonIcon, IonBadge,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonAlert, IonToast, IonActionSheet,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-events.page.html',
   styleUrl: './admin-events.page.scss',
@@ -26,10 +31,12 @@ import { EventService, type CalendarEvent } from '../../core/services/event.serv
 export class AdminEventsPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly eventService = inject(EventService);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   events: CalendarEvent[] = [];
   loading = true;
+  error: unknown = null;
   deleteTarget: CalendarEvent | null = null;
   showDeleteAlert = false;
   showCancelAlert = false;
@@ -65,16 +72,21 @@ export class AdminEventsPage implements OnInit {
 
   ngOnInit(): void {
     addIcons({ add, create, trash, closeCircle });
+  }
+
+  ionViewWillEnter(): void {
     this.loadEvents();
   }
 
   async loadEvents(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       this.events = await this.eventService.getAllEvents();
-    } catch {
+    } catch (err) {
       this.events = [];
-      this.toast('Error al cargar eventos');
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadEvents());
     }
     this.loading = false;
     this.cdr.detectChanges();

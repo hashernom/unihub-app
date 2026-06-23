@@ -66,7 +66,7 @@ ion-segment {
 }
 
 .filter-item {
-  --background: var(--ion-color-step-50, #f8f8f8);
+  --background: var(--surface-input);
   --border-radius: var(--radius-md);
   --padding-start: var(--space-3);
   --padding-end: var(--space-3);
@@ -77,7 +77,7 @@ ion-segment {
 
 .filter-item ion-icon {
   font-size: 1.1rem;
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
 }
 
 .clear-btn {
@@ -91,13 +91,13 @@ ion-segment {
 }
 
 .full-calendar {
-  --fc-border-color: var(--ion-color-step-150, #e5e5e5);
+  --fc-border-color: var(--border-subtle);
   --fc-page-bg-color: transparent;
-  --fc-neutral-bg-color: var(--ion-color-step-50, #f8f8f8);
+  --fc-neutral-bg-color: var(--surface-card);
   --fc-event-bg-color: var(--ion-color-primary);
   --fc-event-border-color: var(--ion-color-primary);
-  --fc-event-text-color: #fff;
-  --fc-today-bg-color: rgba(212, 168, 67, 0.1);
+  --fc-event-text-color: #ffffff;
+  --fc-today-bg-color: rgba(var(--color-gold-rgb), 0.1);
 }
 
 ::ng-deep .fc {
@@ -144,12 +144,12 @@ ion-segment {
 
 ::ng-deep .fc .fc-daygrid-day.fc-day-selected,
 ::ng-deep .fc .fc-timegrid-col.fc-day-selected {
-  background: rgba(212, 168, 67, 0.22) !important;
+  background: rgba(var(--color-gold-rgb), 0.22) !important;
 }
 
 ::ng-deep .fc .fc-daygrid-day:hover {
   cursor: pointer;
-  background: rgba(30, 58, 95, 0.04);
+  background: rgba(var(--ion-color-primary-rgb), 0.04);
 }
 
 ::ng-deep .fc .fc-daygrid-event {
@@ -178,7 +178,7 @@ ion-segment {
   display: inline-block;
   padding: var(--space-1) var(--space-3);
   border-radius: 999px;
-  color: #fff;
+  color: var(--text-on-primary);
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
   margin-bottom: var(--space-3);
@@ -198,7 +198,7 @@ ion-segment {
   line-height: 1.6;
   margin-bottom: var(--space-6);
   padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--ion-color-step-100, #eee);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .detail-section {
@@ -208,7 +208,7 @@ ion-segment {
 .detail-section-title {
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: var(--space-2);
@@ -232,7 +232,7 @@ ion-segment {
 .classroom-info {
   margin-top: var(--space-2);
   padding: var(--space-3);
-  background: var(--ion-color-step-50, #f8f8f8);
+  background: var(--surface-input);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
@@ -249,6 +249,6 @@ ion-segment {
 
 .classroom-detail ion-icon {
   font-size: 1rem;
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-tertiary);
   flex-shrink: 0;
 }

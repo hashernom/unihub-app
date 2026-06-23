@@ -4,21 +4,29 @@ import { RouterLink } from "@angular/router";
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonItem, IonLabel, IonAvatar, IonButton, IonInput,
-  IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton, IonIcon,
+  IonBadge, IonSpinner, IonList, IonListHeader, IonButtons, IonBackButton, IonIcon,
+  IonSegment, IonSegmentButton,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { notifications } from "ionicons/icons";
+import { notifications, moon, sunny, desktop } from "ionicons/icons";
 import { Subscription } from "rxjs";
 import { AuthService, type AuthUser } from "../../core/services/auth.service";
 import { SupabaseService } from "../../core/services/supabase.service";
+import { ToastService } from "../../core/services/toast.service";
+import { ThemeService, type ThemeMode } from "../../core/services/theme.service";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
+import { ErrorStateComponent } from "../../shared/components/error-state/error-state.component";
+import { SkeletonListComponent } from "../../shared/components/skeleton-list/skeleton-list.component";
 
 @Component({
   selector: "app-profile",
   imports: [
     FormsModule, RouterLink,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonItem, IonLabel, IonAvatar, IonButton, IonInput,
-    IonBadge, IonToast, IonSpinner, IonList, IonButtons, IonBackButton, IonIcon,
+    IonBadge, IonSpinner, IonList, IonListHeader, IonButtons, IonBackButton, IonIcon,
+    IonSegment, IonSegmentButton,
   ],
   templateUrl: "./profile.page.html",
   styleUrl: "./profile.page.scss",
@@ -26,24 +34,40 @@ import { SupabaseService } from "../../core/services/supabase.service";
 export class ProfilePage implements OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService);
+  private readonly toastService = inject(ToastService);
+  private readonly themeService = inject(ThemeService);
   private sub = new Subscription();
 
   user: AuthUser | null = null;
   editName = "";
   editing = false;
   loading = false;
-  showToast = false;
-  toastMessage = "";
+  userLoading = true;
+  userError = false;
+  themeMode: ThemeMode = 'system';
 
   constructor() {
-    addIcons({ notifications });
-    this.sub.add(this.auth.currentUser$.subscribe((u) => {
-      this.user = u;
-      if (u) this.editName = u.profile.full_name;
+    addIcons({ notifications, moon, sunny, desktop });
+    this.themeMode = this.themeService.currentMode();
+    this.sub.add(this.auth.currentUser$.subscribe({
+      next: (u) => {
+        this.user = u;
+        this.userLoading = false;
+        this.userError = false;
+        if (u) this.editName = u.profile.full_name;
+      },
+      error: () => {
+        this.userLoading = false;
+        this.userError = true;
+      },
     }));
   }
 
   ngOnDestroy(): void { this.sub.unsubscribe(); }
+
+  get defaultHref(): string {
+    return this.user?.profile.role === 'admin' ? '/admin/dashboard' : '/tabs/dashboard';
+  }
 
   get avatarUrl(): string {
     return this.user?.profile.avatar_url ??
@@ -62,9 +86,9 @@ export class ProfilePage implements OnDestroy {
       await this.supabase.client.from("profiles").update({ full_name: this.editName.trim() }).eq("id", this.user.id);
       this.user = { ...this.user, profile: { ...this.user.profile, full_name: this.editName.trim() } };
       this.editing = false;
-      this.toast("Perfil actualizado");
+      await this.toastService.success("Perfil actualizado");
     } catch {
-      this.toast("Error al actualizar el perfil");
+      await this.toastService.error("Error al actualizar el perfil");
     }
     this.loading = false;
   }
@@ -73,9 +97,9 @@ export class ProfilePage implements OnDestroy {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
     const file = input.files[0];
-    if (file.size > 5242880) { this.toast("La imagen no puede superar los 5MB"); return; }
+    if (file.size > 5242880) { await this.toastService.warning("La imagen no puede superar los 5MB"); return; }
     if (!["image/png", "image/jpeg", "image/gif", "image/webp"].includes(file.type)) {
-      this.toast("Formato no soportado. Usa PNG, JPG, GIF o WebP"); return;
+      await this.toastService.warning("Formato no soportado. Usa PNG, JPG, GIF o WebP"); return;
     }
     if (!this.user) return;
     this.loading = true;
@@ -85,11 +109,16 @@ export class ProfilePage implements OnDestroy {
       if (url) {
         this.user = { ...this.user, profile: { ...this.user.profile, avatar_url: url } };
       }
-      this.toast("Foto actualizada");
+      await this.toastService.success("Foto actualizada");
     } catch {
-      this.toast("Error al subir la imagen");
+      await this.toastService.error("Error al subir la imagen");
     }
     this.loading = false;
+  }
+
+  async onThemeChange(mode: ThemeMode): Promise<void> {
+    await this.themeService.setTheme(mode);
+    this.themeMode = mode;
   }
 
   onLogout(): void { this.sub.add(this.auth.signOut().subscribe()); }
@@ -103,5 +132,20 @@ export class ProfilePage implements OnDestroy {
     });
   }
 
-  private toast(msg: string): void { this.toastMessage = msg; this.showToast = true; }
+  retryLoadUser(): void {
+    this.userLoading = true;
+    this.userError = false;
+    this.sub.add(this.auth.currentUser$.subscribe({
+      next: (u) => {
+        this.user = u;
+        this.userLoading = false;
+        this.userError = false;
+        if (u) this.editName = u.profile.full_name;
+      },
+      error: () => {
+        this.userLoading = false;
+        this.userError = true;
+      },
+    }));
+  }
 }

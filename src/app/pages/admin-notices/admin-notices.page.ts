@@ -1,5 +1,5 @@
 ﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
@@ -11,6 +11,10 @@ import {
 import { addIcons } from 'ionicons';
 import { add, create, trash } from 'ionicons/icons';
 import { NoticeService, type Notice } from '../../core/services/notice.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-admin-notices',
@@ -21,6 +25,7 @@ import { NoticeService, type Notice } from '../../core/services/notice.service';
     IonIcon, IonBadge, IonCard, IonCardHeader,
     IonCardTitle, IonCardContent, IonToggle, IonAlert,
     IonItem,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-notices.page.html',
   styles: `
@@ -37,9 +42,12 @@ import { NoticeService, type Notice } from '../../core/services/notice.service';
 export class AdminNoticesPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly noticeService = inject(NoticeService);
+  readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   notices: Notice[] = [];
   loading = true;
+  error: unknown = null;
   deleteTarget: Notice | null = null;
   showDeleteAlert = false;
 
@@ -50,15 +58,21 @@ export class AdminNoticesPage implements OnInit {
 
   ngOnInit(): void {
     addIcons({ add, create, trash });
+  }
+
+  ionViewWillEnter(): void {
     this.loadNotices();
   }
 
   async loadNotices(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       this.notices = await this.noticeService.getAllNotices();
-    } catch {
+    } catch (err) {
       this.notices = [];
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadNotices());
     }
     this.loading = false;
     this.cdr.detectChanges();

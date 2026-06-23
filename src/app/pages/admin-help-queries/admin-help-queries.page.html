@@ -17,10 +17,9 @@
   </div>
 
   @if (loading) {
-    <div class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Cargando...</p>
-    </div>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state message="No se pudieron cargar las consultas." (retry)="loadAll()"></app-error-state>
   } @else {
     <div class="metrics-row">
       <ion-card class="metric-card">
@@ -41,7 +40,7 @@
     <ion-card class="chart-card">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="trending-up"></ion-icon>
+          <ion-icon name="trending-up" aria-hidden="true"></ion-icon>
           Resolución semanal
         </ion-card-title>
       </ion-card-header>
@@ -55,17 +54,15 @@
     <ion-card class="queries-card">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="help-circle"></ion-icon>
+          <ion-icon name="help-circle" aria-hidden="true"></ion-icon>
           Top consultas no resueltas
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         @if (topQueries.length === 0) {
-          <div class="empty-state">
-            <p>No hay consultas pendientes</p>
-          </div>
+          <app-empty-state icon="help-circle" title="No hay consultas pendientes" message="Todas las consultas han sido resueltas."></app-empty-state>
         } @else {
-          <ion-list lines="full">
+          <ion-list lines="full" class="animate-stagger">
             @for (group of topQueries; track group.normalized_text) {
               <ion-item class="query-item">
                 <div class="query-content" slot="start">
@@ -76,11 +73,11 @@
                   </ion-label>
                 </div>
                 <div class="query-actions" slot="end">
-                  <ion-button fill="clear" color="success" (click)="markResolved(group)">
-                    <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+                  <ion-button fill="clear" color="success" (click)="markResolved(group)" aria-label="Marcar como resuelta">
+                    <ion-icon name="checkmark-circle" slot="icon-only" aria-hidden="true"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" color="primary" (click)="createFaqFromQuery(group)">
-                    <ion-icon name="add-circle" slot="icon-only"></ion-icon>
+                  <ion-button fill="clear" color="primary" (click)="createFaqFromQuery(group)" aria-label="Crear FAQ desde consulta">
+                    <ion-icon name="add-circle" slot="icon-only" aria-hidden="true"></ion-icon>
                   </ion-button>
                 </div>
               </ion-item>

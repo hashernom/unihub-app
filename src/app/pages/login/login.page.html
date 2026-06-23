@@ -11,7 +11,7 @@
     <div class="auth-decoration auth-decoration--diamond auth-decoration--diamond-2"></div>
     <div class="auth-brand-mark">
       <div class="auth-brand-icon">
-        <ion-icon name="school"></ion-icon>
+        <ion-icon name="school" aria-hidden="true"></ion-icon>
       </div>
       <h1>UniHub</h1>
       <p class="subtitle">Accede a tu plataforma universitaria</p>
@@ -19,7 +19,7 @@
     <div class="auth-card">
       <form (ngSubmit)="onLogin()">
       <ion-item class="auth-item">
-        <ion-label position="floating">Email</ion-label>
+        <ion-label position="floating">Correo electrónico</ion-label>
         <ion-input type="email" [(ngModel)]="email" name="email" required autocomplete="email"></ion-input>
       </ion-item>
       <ion-item class="auth-item">

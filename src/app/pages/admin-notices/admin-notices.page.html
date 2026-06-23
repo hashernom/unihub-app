@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-title>Avisos</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/admin/notices/new">
-        <ion-icon slot="icon-only" name="add"></ion-icon>
+      <ion-button routerLink="/admin/notices/new" aria-label="Nuevo aviso">
+        <ion-icon slot="icon-only" name="add" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -14,57 +14,51 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <div class="ion-padding">
-      @for (_ of [1,2,3]; track _) {
-        <div class="skeleton-card-wrapped">
-          <div class="skeleton skeleton-title"></div>
-          <div class="skeleton skeleton-text-sm"></div>
-          <div class="skeleton skeleton-text"></div>
-        </div>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state message="No se pudieron cargar los avisos." (retry)="loadNotices()"></app-error-state>
+  } @else if (notices.length === 0) {
+    <app-empty-state
+      icon="notifications"
+      title="No hay avisos"
+      message="Crea el primer aviso importante."
+      actionText="Crear aviso"
+      (action)="router.navigate(['/admin/notices/new'])"
+    ></app-empty-state>
+  } @else {
+    <div class="animate-stagger">
+      @for (notice of notices; track notice.id) {
+        <ion-card class="admin-card" [class.inactive]="!notice.is_active">
+          <ion-card-header>
+            <ion-card-title>{{ notice.title }}</ion-card-title>
+            <div class="card-meta">
+              <ion-badge [color]="badgeColor(notice.priority)">
+                {{ priorityLabel(notice.priority) }}
+              </ion-badge>
+              @if (!notice.is_active) {
+                <ion-badge color="medium">Inactivo</ion-badge>
+              }
+              <span class="card-date">{{ notice.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </ion-card-header>
+          <ion-card-content>
+            <p class="card-content">{{ notice.content }}</p>
+            <div class="card-actions">
+              <ion-item lines="none" class="toggle-item">
+                <ion-label>Activo</ion-label>
+                <ion-toggle [checked]="notice.is_active" (ionChange)="toggleActive(notice)"></ion-toggle>
+              </ion-item>
+              <ion-button size="small" fill="clear" [routerLink]="['/admin/notices/edit', notice.id]" aria-label="Editar aviso">
+                <ion-icon slot="icon-only" name="create" aria-hidden="true"></ion-icon>
+              </ion-button>
+              <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(notice)" aria-label="Eliminar aviso">
+                <ion-icon slot="icon-only" name="trash" aria-hidden="true"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
       }
     </div>
-  } @else if (notices.length === 0) {
-    <div class="empty-state">
-      <ion-icon name="notifications" class="empty-state-icon"></ion-icon>
-      <p class="empty-state-text">No hay avisos</p>
-      <p class="empty-state-subtext">Crea el primer aviso importante.</p>
-      <ion-button routerLink="/admin/notices/new" color="primary">
-        <ion-icon slot="start" name="add"></ion-icon>
-        Crear aviso
-      </ion-button>
-    </div>
-  } @else {
-    @for (notice of notices; track notice.id) {
-      <ion-card class="admin-card" [class.inactive]="!notice.is_active">
-        <ion-card-header>
-          <ion-card-title>{{ notice.title }}</ion-card-title>
-          <div class="card-meta">
-            <ion-badge [color]="badgeColor(notice.priority)">
-              {{ priorityLabel(notice.priority) }}
-            </ion-badge>
-            @if (!notice.is_active) {
-              <ion-badge color="medium">Inactivo</ion-badge>
-            }
-            <span class="card-date">{{ notice.created_at | date:'dd/MM/yyyy' }}</span>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          <p class="card-content">{{ notice.content }}</p>
-          <div class="card-actions">
-            <ion-item lines="none" class="toggle-item">
-              <ion-label>Activo</ion-label>
-              <ion-toggle [checked]="notice.is_active" (ionChange)="toggleActive(notice)"></ion-toggle>
-            </ion-item>
-            <ion-button size="small" fill="clear" [routerLink]="['/admin/notices/edit', notice.id]">
-              <ion-icon slot="icon-only" name="create"></ion-icon>
-            </ion-button>
-            <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(notice)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    }
   }
 
   <ion-alert

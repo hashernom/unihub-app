@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-title>Gestor de FAQs</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="newFaq()">
-        <ion-icon name="add" slot="icon-only"></ion-icon>
+      <ion-button (click)="newFaq()" aria-label="Nueva FAQ">
+        <ion-icon name="add" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -22,12 +22,13 @@
   </div>
 
   <ion-item class="search-item" lines="none">
-    <ion-icon name="search" slot="start"></ion-icon>
-    <ion-input
-      [(ngModel)]="searchQuery"
-      (ionInput)="onSearchInput($event)"
-      placeholder="Buscar pregunta o respuesta..."
-      clearInput
+  <ion-icon name="search" slot="start" aria-hidden="true"></ion-icon>
+  <ion-input
+  [(ngModel)]="searchQuery"
+  (ionInput)="onSearchInput($event)"
+  placeholder="Buscar pregunta o respuesta..."
+  clearInput
+    aria-label="Buscar pregunta o respuesta"
     ></ion-input>
   </ion-item>
 
@@ -58,17 +59,19 @@
   </div>
 
   @if (loading) {
-    <div class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Cargando FAQs...</p>
-    </div>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state message="No se pudieron cargar las FAQs." (retry)="loadFaqs()"></app-error-state>
   } @else if (groupedFaqs.length === 0) {
-    <div class="empty-state">
-      <ion-icon name="help-circle" class="empty-state-icon"></ion-icon>
-      <p class="empty-state-text">No se encontraron FAQs</p>
-      <p class="empty-state-subtext">Crea la primera con el botón +</p>
-    </div>
+    <app-empty-state
+      icon="help-circle"
+      title="No se encontraron FAQs"
+      message="Crea la primera con el botón +"
+      actionText="Crear FAQ"
+      (action)="newFaq()"
+    ></app-empty-state>
   } @else {
+    <div class="animate-stagger">
     @for (group of groupedFaqs; track group.category) {
       <ion-card class="faq-category-card">
         <ion-card-header>
@@ -84,11 +87,11 @@
               <ion-item class="faq-item" [class.inactive]="!faq.is_active">
                 <div class="faq-content" slot="start">
                   <div class="drag-handle">
-                    <ion-button fill="clear" size="small" (click)="moveUp(group, i)" [disabled]="i === 0">
-                      <ion-icon name="arrow-up"></ion-icon>
+                    <ion-button fill="clear" size="small" (click)="moveUp(group, i)" [disabled]="i === 0" aria-label="Mover FAQ arriba">
+                      <ion-icon name="arrow-up" aria-hidden="true"></ion-icon>
                     </ion-button>
-                    <ion-button fill="clear" size="small" (click)="moveDown(group, i)" [disabled]="i === group.items.length - 1">
-                      <ion-icon name="arrow-down"></ion-icon>
+                    <ion-button fill="clear" size="small" (click)="moveDown(group, i)" [disabled]="i === group.items.length - 1" aria-label="Mover FAQ abajo">
+                      <ion-icon name="arrow-down" aria-hidden="true"></ion-icon>
                     </ion-button>
                   </div>
                   <div class="faq-text">
@@ -113,11 +116,11 @@
                     [checked]="faq.is_active"
                     (ionChange)="toggleActive(faq)"
                   ></ion-toggle>
-                  <ion-button fill="clear" color="primary" (click)="editFaq(faq)">
-                    <ion-icon name="create" slot="icon-only"></ion-icon>
+                  <ion-button fill="clear" color="primary" (click)="editFaq(faq)" aria-label="Editar FAQ">
+                    <ion-icon name="create" slot="icon-only" aria-hidden="true"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" color="danger" (click)="confirmDelete(faq)">
-                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  <ion-button fill="clear" color="danger" (click)="confirmDelete(faq)" aria-label="Eliminar FAQ">
+                    <ion-icon name="trash" slot="icon-only" aria-hidden="true"></ion-icon>
                   </ion-button>
                 </div>
               </ion-item>
@@ -126,6 +129,7 @@
         </ion-card-content>
       </ion-card>
     }
+    </div>
   }
 </ion-content>
 

@@ -2,8 +2,8 @@
   <ion-toolbar color="primary">
     <ion-title>Panel Admin</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="onLogout()"><ion-icon slot="icon-only" name="log-out"></ion-icon></ion-button>
-      <ion-button routerLink="/profile"><ion-icon slot="icon-only" name="person-circle"></ion-icon></ion-button>
+      <ion-button (click)="onLogout()" aria-label="Cerrar sesión"><ion-icon slot="icon-only" name="log-out" aria-hidden="true"></ion-icon></ion-button>
+      <ion-button routerLink="/profile" aria-label="Perfil"><ion-icon slot="icon-only" name="person-circle" aria-hidden="true"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -40,7 +40,7 @@
       <h2>Módulos</h2>
     </div>
     <ion-grid class="ion-no-padding">
-      <ion-row>
+      <ion-row class="animate-stagger">
         @for (card of adminCards; track card.title) {
           <ion-col size="6" size-md="4">
             <ion-card [routerLink]="card.route" class="dashboard-card card-tilt" [style.--card-color]="'var(--ion-color-' + card.color + ')'">

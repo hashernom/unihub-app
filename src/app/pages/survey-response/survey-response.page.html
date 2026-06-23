@@ -24,6 +24,15 @@
           }
         </div>
       } @else {
+        @if (submitSuccess) {
+          <div class="success-animation">
+            <div class="success-icon-circle">
+              <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+            </div>
+            <h2 class="success-title">¡Gracias!</h2>
+            <p class="success-message">Tu respuesta ha sido enviada correctamente.</p>
+          </div>
+        } @else {
         <div class="survey-info">
           @if (survey.description) {
             <p>{{ survey.description }}</p>
@@ -94,11 +103,15 @@
                 }
 
                 @case ('rating') {
-                  <div class="stars">
+                  <div class="stars" role="radiogroup" [attr.aria-label]="'Calificación para la pregunta ' + (i + 1)">
                     @for (starVal of [1,2,3,4,5]; track starVal) {
                       <ion-icon
                         [name]="starVal <= asNumber(answers[question.id]) ? 'star' : 'star-outline'"
                         (click)="setRating(question.id, starVal)"
+                        role="radio"
+                        [attr.aria-label]="'Calificar con ' + starVal + ' estrella' + (starVal === 1 ? '' : 's')"
+                        [attr.aria-checked]="starVal <= asNumber(answers[question.id])"
+                        tabindex="0"
                       ></ion-icon>
                     }
                   </div>
@@ -113,8 +126,7 @@
             expand="block"
             fill="solid"
             color="primary"
-            style="--background: var(--ion-color-primary); --color: var(--ion-color-primary-contrast); font-weight: 600;"
-            [disabled]="submitting || submitSuccess"
+            [disabled]="submitting"
             (click)="submit()"
           >
             @if (submitting) {
@@ -125,6 +137,7 @@
             }
           </ion-button>
         </div>
+        }
       }
     } @else {
       <p>Encuesta no encontrada.</p>

@@ -2,8 +2,8 @@
   <ion-toolbar color="primary">
     <ion-title>Dashboard</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/profile">
-        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      <ion-button routerLink="/profile" aria-label="Perfil">
+        <ion-icon slot="icon-only" name="person-circle" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,18 +16,11 @@
 
   @if (loading) {
     <div class="ion-padding">
-      @for (_ of [1,2,3]; track _) {
-        <ion-card>
-          <ion-card-header>
-            <ion-skeleton-text animated style="width: 60%; height: 20px"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 30%; height: 14px; margin-top: 8px"></ion-skeleton-text>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-skeleton-text animated style="width: 100%; height: 14px"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 80%; height: 14px; margin-top: 6px"></ion-skeleton-text>
-          </ion-card-content>
-        </ion-card>
-      }
+      <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+    </div>
+  } @else if (error) {
+    <div class="ion-padding">
+      <app-error-state message="No se pudieron cargar los datos del dashboard." (retry)="loadAll()"></app-error-state>
     </div>
   } @else {
     <div class="hero">
@@ -56,7 +49,7 @@
     <section class="section section-announcements">
       <div class="section-header">
         <div class="section-header-accent"></div>
-        <ion-icon name="megaphone" class="section-icon"></ion-icon>
+        <ion-icon name="megaphone" class="section-icon" aria-hidden="true"></ion-icon>
         <h2>Anuncios</h2>
         @if (announcements.length > 0) {
           <span class="count-badge">{{ announcements.length }}</span>
@@ -86,15 +79,21 @@
       }
 
       @if (filteredAnnouncements.length === 0) {
-        <div class="empty-state">
-          <ion-icon name="newspaper" class="empty-state-icon"></ion-icon>
-          <p class="empty-state-text">No hay anuncios disponibles{{ searchQuery ? ' para esta búsqueda' : ' en esta categoría' }}.</p>
-          <p class="empty-state-subtext">Los anuncios aparecerán aquí cuando sean publicados.</p>
-        </div>
+        <app-empty-state
+          icon="newspaper-outline"
+          title="No hay anuncios disponibles"
+          [message]="'No hay anuncios disponibles' + (searchQuery ? ' para esta búsqueda' : ' en esta categoría') + '. Los anuncios aparecerán aquí cuando sean publicados.'"
+        ></app-empty-state>
       } @else {
-        @for (announcement of filteredAnnouncements; track announcement.id) {
-          <app-announcement-card [announcement]="announcement"></app-announcement-card>
-        }
+        <ion-grid class="dashboard-grid ion-no-padding">
+          <ion-row class="animate-stagger">
+            @for (announcement of filteredAnnouncements; track announcement.id) {
+              <ion-col size="12" size-md="6">
+                <app-announcement-card [announcement]="announcement"></app-announcement-card>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
       }
     </section>
 
@@ -102,7 +101,7 @@
     <section class="section section-notices">
       <div class="section-header">
         <div class="section-header-accent"></div>
-        <ion-icon name="warning" class="section-icon"></ion-icon>
+        <ion-icon name="warning" class="section-icon" aria-hidden="true"></ion-icon>
         <h2>Avisos</h2>
         @if (notices.length > 0) {
           <span class="count-badge">{{ notices.length }}</span>
@@ -110,15 +109,21 @@
       </div>
 
       @if (notices.length === 0) {
-        <div class="empty-state">
-          <ion-icon name="checkmark-circle" class="empty-state-icon"></ion-icon>
-          <p class="empty-state-text">No hay avisos importantes</p>
-          <p class="empty-state-subtext">Todo en orden por ahora.</p>
-        </div>
+        <app-empty-state
+          icon="checkmark-circle"
+          title="No hay avisos importantes"
+          message="Todo en orden por ahora."
+        ></app-empty-state>
       } @else {
-        @for (notice of notices; track notice.id) {
-          <app-notice-card [notice]="notice"></app-notice-card>
-        }
+        <ion-grid class="dashboard-grid ion-no-padding">
+          <ion-row class="animate-stagger">
+            @for (notice of notices; track notice.id) {
+              <ion-col size="12" size-md="6">
+                <app-notice-card [notice]="notice"></app-notice-card>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
       }
     </section>
 
@@ -126,27 +131,33 @@
     <section class="section section-events">
       <div class="section-header">
         <div class="section-header-accent"></div>
-        <ion-icon name="calendar" class="section-icon"></ion-icon>
+        <ion-icon name="calendar" class="section-icon" aria-hidden="true"></ion-icon>
         <h2>Próximos Eventos</h2>
       </div>
 
       @if (events.length === 0) {
-        <div class="empty-state">
-          <ion-icon name="calendar-outline" class="empty-state-icon"></ion-icon>
-          <p class="empty-state-text">No hay eventos próximos</p>
-          <p class="empty-state-subtext">Los eventos del calendario académico aparecerán aquí.</p>
-        </div>
+        <app-empty-state
+          icon="calendar-outline"
+          title="No hay eventos próximos"
+          message="Los eventos del calendario académico aparecerán aquí."
+        ></app-empty-state>
       } @else {
-        @for (event of events; track event.id) {
-          <ion-card class="event-card">
-            <ion-card-header>
-              <ion-card-title>{{ event.title }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <span class="event-date">{{ event.start_time | date:'dd/MM/yyyy HH:mm' }}</span>
-            </ion-card-content>
-          </ion-card>
-        }
+        <ion-grid class="dashboard-grid ion-no-padding">
+          <ion-row class="animate-stagger">
+            @for (event of events; track event.id) {
+              <ion-col size="12" size-md="6">
+                <ion-card class="event-card">
+                  <ion-card-header>
+                    <ion-card-title>{{ event.title }}</ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <span class="event-date">{{ event.start_time | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
       }
     </section>
 
@@ -154,27 +165,33 @@
     <section class="section section-surveys">
       <div class="section-header">
         <div class="section-header-accent"></div>
-        <ion-icon name="checkbox" class="section-icon"></ion-icon>
+        <ion-icon name="checkbox" class="section-icon" aria-hidden="true"></ion-icon>
         <h2>Encuestas Activas</h2>
       </div>
 
       @if (surveyCount === 0) {
-        <div class="empty-state">
-          <ion-icon name="document-text" class="empty-state-icon"></ion-icon>
-          <p class="empty-state-text">No hay encuestas activas</p>
-          <p class="empty-state-subtext">Las encuestas disponibles aparecerán aquí.</p>
-        </div>
+        <app-empty-state
+          icon="document-text-outline"
+          title="No hay encuestas activas"
+          message="Las encuestas disponibles aparecerán aquí."
+        ></app-empty-state>
       } @else {
-        <ion-card button routerLink="/tabs/surveys" class="survey-cta-card card-tilt">
-          <ion-card-content class="survey-cta-content">
-            <ion-icon name="checkmark-circle" class="survey-icon-pulse"></ion-icon>
-            <div class="survey-cta-text">
-              <strong>{{ surveyCount }} encuesta{{ surveyCount === 1 ? '' : 's' }} disponible{{ surveyCount === 1 ? '' : 's' }}</strong>
-              <span>Toca para responder</span>
-            </div>
-            <ion-icon name="chevron-forward" class="survey-chevron"></ion-icon>
-          </ion-card-content>
-        </ion-card>
+        <ion-grid class="dashboard-grid ion-no-padding">
+          <ion-row class="animate-stagger">
+            <ion-col size="12" size-md="6">
+              <ion-card button routerLink="/tabs/surveys" class="survey-cta-card card-tilt">
+                <ion-card-content class="survey-cta-content">
+                  <ion-icon name="checkmark-circle" class="survey-icon-pulse" aria-hidden="true"></ion-icon>
+                  <div class="survey-cta-text">
+                    <strong>{{ surveyCount }} encuesta{{ surveyCount === 1 ? '' : 's' }} disponible{{ surveyCount === 1 ? '' : 's' }}</strong>
+                    <span>Toca para responder</span>
+                  </div>
+                  <ion-icon name="chevron-forward" class="survey-chevron" aria-hidden="true"></ion-icon>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       }
     </section>
   }

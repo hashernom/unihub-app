@@ -1,5 +1,5 @@
 ﻿import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
@@ -10,6 +10,10 @@ import {
 import { addIcons } from 'ionicons';
 import { add, create, trash, checkmarkCircle, closeCircle, barChart } from 'ionicons/icons';
 import { SurveyService, type Survey } from '../../core/services/survey.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-admin-surveys',
@@ -19,6 +23,7 @@ import { SurveyService, type Survey } from '../../core/services/survey.service';
     IonButtons, IonBackButton, IonButton, IonIcon, IonBadge,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonAlert, IonToggle, IonToast,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-surveys.page.html',
   styleUrl: './admin-surveys.page.scss',
@@ -26,9 +31,12 @@ import { SurveyService, type Survey } from '../../core/services/survey.service';
 export class AdminSurveysPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly surveyService = inject(SurveyService);
+  readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   surveys: (Survey & { response_count: number })[] = [];
   loading = true;
+  error: unknown = null;
   deleteTarget: Survey | null = null;
   showDeleteAlert = false;
   showToast = false;
@@ -41,15 +49,21 @@ export class AdminSurveysPage implements OnInit {
 
   ngOnInit(): void {
     addIcons({ add, create, trash, checkmarkCircle, closeCircle, barChart });
+  }
+
+  ionViewWillEnter(): void {
     this.loadSurveys();
   }
 
   async loadSurveys(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       this.surveys = await this.surveyService.getAllWithResponseCounts();
-    } catch {
+    } catch (err) {
       this.surveys = [];
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadSurveys());
     }
     this.loading = false;
     this.cdr.detectChanges();

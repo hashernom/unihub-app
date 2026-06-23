@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonButton, IonIcon, IonBadge,
@@ -10,6 +10,10 @@ import {
 import { addIcons } from 'ionicons';
 import { add, create, toggle, business, school, checkmarkCircle, time } from 'ionicons/icons';
 import { EventService, type Classroom, type CalendarEvent } from '../../core/services/event.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-admin-classrooms',
@@ -20,6 +24,7 @@ import { EventService, type Classroom, type CalendarEvent } from '../../core/ser
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonChip, IonLabel,
     IonModal, IonToggle, IonToast,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-classrooms.page.html',
   styleUrl: './admin-classrooms.page.scss',
@@ -27,12 +32,15 @@ import { EventService, type Classroom, type CalendarEvent } from '../../core/ser
 export class AdminClassroomsPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   readonly eventService = inject(EventService);
+  readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   classrooms: Classroom[] = [];
   filteredClassrooms: Classroom[] = [];
   buildings: string[] = [];
   activeBuildingFilter: string | null = null;
   loading = true;
+  error: unknown = null;
 
   selectedClassroom: Classroom | null = null;
   showAvailability = false;
@@ -46,18 +54,23 @@ export class AdminClassroomsPage implements OnInit {
 
   ngOnInit(): void {
     addIcons({ add, create, toggle, business, school, checkmarkCircle, time });
+  }
+
+  ionViewWillEnter(): void {
     this.loadAll();
   }
 
   async loadAll(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       this.classrooms = await this.eventService.getClassrooms();
       this.buildings = await this.eventService.getBuildings();
       this.applyFilter();
-    } catch {
+    } catch (err) {
       this.classrooms = [];
-      this.toast('Error al cargar aulas');
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
     this.loading = false;
     this.cdr.detectChanges();

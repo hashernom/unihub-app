@@ -1,6 +1,6 @@
-.admin-card { margin: var(--space-2) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid rgba(255,255,255,0.6); position: relative; overflow: hidden; }
+.admin-card { margin: var(--space-2) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid var(--border-subtle); position: relative; overflow: hidden; }
 .admin-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 3px; background: var(--ion-color-secondary); border-radius: 0 2px 2px 0; }
-.card-meta { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-1); }
+.card-meta { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-1); flex-wrap: wrap; }
 .card-date { font-size: var(--text-sm); color: var(--text-tertiary); }
 .card-content { white-space: pre-line; line-height: var(--leading-relaxed); color: var(--text-secondary); }
 .card-actions { display: flex; justify-content: flex-end; gap: var(--space-1); margin-top: var(--space-2); }

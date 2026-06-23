@@ -1,7 +1,7 @@
 .loading-container { display: flex; justify-content: center; align-items: center; min-height: 200px; }
 .survey-info { padding: 0 var(--space-1) var(--space-2); }
 .end-date { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--space-1); }
-.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid rgba(255,255,255,0.6); border-left: 3px solid var(--color-gold); }
+.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid var(--border-subtle); border-left: 3px solid var(--color-gold); }
 .required-star { color: var(--ion-color-danger); margin-left: 2px; }
 .error-text { font-size: var(--text-sm); color: var(--ion-color-danger); margin-bottom: var(--space-2); font-weight: var(--weight-medium); }
 .stars { display: flex; gap: var(--space-2); justify-content: center; font-size: 2rem; padding: var(--space-2) 0; }

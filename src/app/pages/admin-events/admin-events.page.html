@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-title>Eventos</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/admin/events/new">
-        <ion-icon slot="icon-only" name="add"></ion-icon>
+      <ion-button routerLink="/admin/events/new" aria-label="Nuevo evento">
+        <ion-icon slot="icon-only" name="add" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -14,73 +14,67 @@
 
 <ion-content class="ion-padding">
   @if (loading) {
-    <div class="ion-padding">
-      @for (_ of [1,2,3]; track _) {
-        <div class="skeleton-card-wrapped">
-          <div class="skeleton skeleton-title"></div>
-          <div class="skeleton skeleton-text-sm"></div>
-          <div class="skeleton skeleton-text"></div>
-        </div>
+    <app-skeleton-list type="card" [count]="3"></app-skeleton-list>
+  } @else if (error) {
+    <app-error-state message="No se pudieron cargar los eventos." (retry)="loadEvents()"></app-error-state>
+  } @else if (events.length === 0) {
+    <app-empty-state
+      icon="calendar"
+      title="No hay eventos"
+      message="Crea el primer evento para el calendario académico."
+      actionText="Crear evento"
+      (action)="router.navigate(['/admin/events/new'])"
+    ></app-empty-state>
+  } @else {
+    <div class="animate-stagger">
+      @for (event of events; track event.id) {
+        <ion-card class="admin-card" [class.cancelled]="event.is_cancelled">
+          <ion-card-header>
+            <ion-card-title>
+              @if (event.recurring_rule) { <span aria-hidden="true">⟳</span> }
+              {{ event.title }}
+            </ion-card-title>
+            <div class="card-meta">
+              <ion-badge [color]="eventStatus(event).color">{{ eventStatus(event).label }}</ion-badge>
+              <ion-badge
+                [style.--background]="getEventColor(event.event_type)"
+                [style.--color]="'#ffffff'"
+              >
+                {{ getEventTypeLabel(event.event_type) }}
+              </ion-badge>
+              <span class="card-date">{{ event.start_time | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </ion-card-header>
+          <ion-card-content>
+            @if (event.description) {
+              <p class="card-body">{{ event.description }}</p>
+            }
+            <div class="card-meta-details">
+              <span>{{ event.start_time | date:'h:mm a' }} - {{ event.end_time | date:'h:mm a' }}</span>
+              @if (event.classroom_name) {
+                <span> | {{ event.classroom_name }}</span>
+              }
+              @if (event.recurring_rule) {
+                <ion-badge color="medium" class="recurring-badge"><span aria-hidden="true">⟳</span> Recurrente</ion-badge>
+              }
+            </div>
+            @if (!event.is_cancelled) {
+              <div class="card-actions">
+                <ion-button size="small" fill="clear" (click)="editEventClick(event)" aria-label="Editar evento">
+                  <ion-icon slot="icon-only" name="create" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-button size="small" fill="clear" color="warning" (click)="confirmCancel(event)" aria-label="Cancelar evento">
+                  <ion-icon slot="icon-only" name="close-circle" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(event)" aria-label="Eliminar evento">
+                  <ion-icon slot="icon-only" name="trash" aria-hidden="true"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          </ion-card-content>
+        </ion-card>
       }
     </div>
-  } @else if (events.length === 0) {
-    <div class="empty-state">
-      <ion-icon name="calendar" class="empty-state-icon"></ion-icon>
-      <p class="empty-state-text">No hay eventos</p>
-      <p class="empty-state-subtext">Crea el primer evento para el calendario académico.</p>
-      <ion-button routerLink="/admin/events/new" color="primary">
-        <ion-icon slot="start" name="add"></ion-icon>
-        Crear evento
-      </ion-button>
-    </div>
-  } @else {
-    @for (event of events; track event.id) {
-      <ion-card class="admin-card" [class.cancelled]="event.is_cancelled">
-        <ion-card-header>
-          <ion-card-title>
-            @if (event.recurring_rule) { ⟳ }
-            {{ event.title }}
-          </ion-card-title>
-          <div class="card-meta">
-            <ion-badge [color]="eventStatus(event).color">{{ eventStatus(event).label }}</ion-badge>
-            <ion-badge
-              [style.--background]="getEventColor(event.event_type)"
-              [style.--color]="'#fff'"
-            >
-              {{ getEventTypeLabel(event.event_type) }}
-            </ion-badge>
-            <span class="card-date">{{ event.start_time | date:'dd/MM/yyyy' }}</span>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          @if (event.description) {
-            <p class="card-body">{{ event.description }}</p>
-          }
-          <div class="card-meta-details">
-            <span>{{ event.start_time | date:'h:mm a' }} - {{ event.end_time | date:'h:mm a' }}</span>
-            @if (event.classroom_name) {
-              <span> | {{ event.classroom_name }}</span>
-            }
-            @if (event.recurring_rule) {
-              <ion-badge color="medium" class="recurring-badge">⟳ Recurrente</ion-badge>
-            }
-          </div>
-          @if (!event.is_cancelled) {
-            <div class="card-actions">
-              <ion-button size="small" fill="clear" (click)="editEventClick(event)">
-                <ion-icon slot="icon-only" name="create"></ion-icon>
-              </ion-button>
-              <ion-button size="small" fill="clear" color="warning" (click)="confirmCancel(event)">
-                <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-              </ion-button>
-              <ion-button size="small" fill="clear" color="danger" (click)="confirmDelete(event)">
-                <ion-icon slot="icon-only" name="trash"></ion-icon>
-              </ion-button>
-            </div>
-          }
-        </ion-card-content>
-      </ion-card>
-    }
   }
 
   <ion-alert

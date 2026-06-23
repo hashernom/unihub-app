@@ -7,7 +7,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonItem, IonLabel,
   IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonButton, IonToggle, IonDatetime, IonToast,
+  IonButton, IonToggle, IonDatetime, IonToast, IonNote, IonSpinner,
   IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonRadioGroup, IonRadio, IonCheckbox,
 } from '@ionic/angular/standalone';
@@ -15,6 +15,7 @@ import { addIcons } from 'ionicons';
 import { add, remove, arrowUp, arrowDown, eye, eyeOff } from 'ionicons/icons';
 import { SurveyService } from '../../core/services/survey.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FormValidationService } from '../../core/services/form-validation.service';
 
 interface QuestionFormItem {
   tempId: string;
@@ -31,7 +32,7 @@ interface QuestionFormItem {
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonButtons, IonBackButton, IonItem, IonLabel,
     IonInput, IonTextarea, IonSelect, IonSelectOption,
-    IonButton, IonToggle, IonDatetime, IonToast,
+    IonButton, IonToggle, IonDatetime, IonToast, IonNote, IonSpinner,
     IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonRadioGroup, IonRadio, IonCheckbox,
   ],
@@ -44,6 +45,7 @@ export class SurveyFormPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly formValidation = inject(FormValidationService);
 
   isEdit = false;
   surveyId: string | null = null;

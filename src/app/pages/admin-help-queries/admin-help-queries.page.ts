@@ -6,11 +6,14 @@ import {
   IonButtons, IonBackButton, IonButton, IonIcon,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonList, IonItem, IonLabel, IonBadge, IonToast,
-  IonSpinner,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, addCircle, trendingUp, helpCircle } from 'ionicons/icons';
 import { HelpQueryService, type HelpQueryGroup, type WeeklyResolution } from '../../core/services/help-query.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { SkeletonListComponent } from '../../shared/components/skeleton-list/skeleton-list.component';
 
 Chart.register(...registerables);
 
@@ -21,7 +24,7 @@ Chart.register(...registerables);
     IonButtons, IonBackButton, IonButton, IonIcon,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonList, IonItem, IonLabel, IonBadge, IonToast,
-    IonSpinner,
+    EmptyStateComponent, ErrorStateComponent, SkeletonListComponent,
   ],
   templateUrl: './admin-help-queries.page.html',
   styleUrls: ['./admin-help-queries.page.scss'],
@@ -32,11 +35,13 @@ export class AdminHelpQueriesPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly helpQueryService = inject(HelpQueryService);
   private readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   groups: HelpQueryGroup[] = [];
   topQueries: HelpQueryGroup[] = [];
   weeklyStats: WeeklyResolution[] = [];
   loading = true;
+  error: unknown = null;
   showToast = false;
   toastMessage = '';
 
@@ -44,11 +49,15 @@ export class AdminHelpQueriesPage implements OnInit {
 
   ngOnInit(): void {
     addIcons({ 'checkmark-circle': checkmarkCircle, 'add-circle': addCircle, 'trending-up': trendingUp, 'help-circle': helpCircle });
+  }
+
+  ionViewWillEnter(): void {
     this.loadAll();
   }
 
   async loadAll(): Promise<void> {
     this.loading = true;
+    this.error = null;
     try {
       const [groups, top, weekly] = await Promise.all([
         this.helpQueryService.getGroupedUnresolvedQueries(),
@@ -58,8 +67,12 @@ export class AdminHelpQueriesPage implements OnInit {
       this.groups = groups;
       this.topQueries = top;
       this.weeklyStats = weekly;
-    } catch {
-      this.toast('Error al cargar consultas');
+    } catch (err) {
+      this.groups = [];
+      this.topQueries = [];
+      this.weeklyStats = [];
+      this.error = err;
+      this.errorHandler.handleHttpError(err, () => this.loadAll());
     }
     this.loading = false;
     this.cdr.detectChanges();

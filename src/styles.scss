@@ -19,7 +19,7 @@ ion-header {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--ion-color-primary-contrast-rgb), 0.15), transparent);
   }
 }
 
@@ -38,6 +38,7 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 body {
@@ -46,6 +47,7 @@ body {
   font-family: var(--font-sans);
   color: var(--text-primary);
   background: var(--surface-page);
+  overflow-x: hidden;
 }
 
 ion-content {
@@ -61,6 +63,9 @@ ion-card {
 ion-button {
   letter-spacing: 0.01em;
   text-transform: none;
+  --border-radius: var(--radius-lg);
+  min-height: 48px;
+  font-weight: var(--weight-semibold);
 }
 
 ion-button.button-solid {
@@ -70,6 +75,10 @@ ion-button.button-solid {
 ion-button.button-solid:active {
   --box-shadow: 0 1px 3px rgba(30,58,95,0.15);
   transform: scale(0.98);
+}
+
+ion-button.button-small {
+  min-height: 32px;
 }
 
 ion-toast {
@@ -120,4 +129,48 @@ body::after {
 ::selection {
   background: rgba(107, 163, 199, 0.3);
   color: var(--text-primary);
+}
+
+/* ── Focus visible (a11y) ── */
+:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+ion-button:focus-visible,
+ion-item:focus-visible,
+ion-input:focus-visible,
+ion-textarea:focus-visible,
+ion-select:focus-visible,
+ion-chip:focus-visible,
+ion-segment-button:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+ion-toggle:focus-visible::part(track) {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Skip-to-content link (optional a11y enhancement) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ion-color-primary);
+  color: var(--text-on-primary);
+  padding: var(--space-2) var(--space-4);
+  z-index: calc(var(--z-toast) + 1);
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
 }

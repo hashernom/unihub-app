@@ -1,5 +1,5 @@
 ﻿.auth-content {
-  --background: linear-gradient(180deg, #1E3A5F 0%, #1A2F4F 30%, #2C5282 55%, #1E3A5F 100%);
+  --background: var(--surface-gradient-header);
 
   &::part(scroll) {
     display: flex;
@@ -14,10 +14,10 @@
     right: 0;
     bottom: 0;
     background:
-      radial-gradient(ellipse at 15% 10%, rgba(107,163,199,0.10) 0%, transparent 45%),
-      radial-gradient(ellipse at 85% 20%, rgba(107,163,199,0.06) 0%, transparent 35%),
-      radial-gradient(ellipse at 40% 75%, rgba(255,255,255,0.04) 0%, transparent 30%),
-      radial-gradient(ellipse at 70% 60%, rgba(30,58,95,0.2) 0%, transparent 40%);
+      radial-gradient(ellipse at 15% 10%, rgba(var(--color-accent-rgb), 0.10) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 20%, rgba(var(--color-accent-rgb), 0.06) 0%, transparent 35%),
+      radial-gradient(ellipse at 40% 75%, rgba(255, 255, 255, 0.04) 0%, transparent 30%),
+      radial-gradient(ellipse at 70% 60%, rgba(var(--ion-color-primary-rgb), 0.2) 0%, transparent 40%);
     pointer-events: none;
   }
 
@@ -41,6 +41,10 @@
   position: relative;
   z-index: 1;
 
+  @media (max-width: 360px) {
+    padding: var(--space-8) var(--space-4) var(--space-6);
+  }
+
   /* ── Decorative floating shapes ── */
   .auth-decoration {
     position: absolute;
@@ -50,7 +54,7 @@
   .auth-decoration--diamond {
     width: 18px;
     height: 18px;
-    border: 1.5px solid rgba(107,163,199,0.2);
+    border: 1.5px solid rgba(var(--color-accent-rgb), 0.2);
     border-radius: 3px;
     transform: rotate(45deg);
   }
@@ -65,7 +69,7 @@
     width: 14px;
     height: 14px;
     animation: float-reverse 8s ease-in-out infinite;
-    border-color: rgba(255,255,255,0.12);
+    border-color: rgba(255, 255, 255, 0.12);
   }
   .auth-decoration--circle {
     position: absolute;
@@ -78,7 +82,7 @@
     left: 10%;
     width: 60px;
     height: 60px;
-    background: radial-gradient(circle, rgba(107,163,199,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--color-accent-rgb), 0.06) 0%, transparent 70%);
     animation: float 9s ease-in-out infinite;
   }
   .auth-decoration--circle-2 {
@@ -86,7 +90,7 @@
     right: 5%;
     width: 80px;
     height: 80px;
-    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
     animation: float-reverse 10s ease-in-out infinite;
   }
 
@@ -97,7 +101,7 @@
       width: 56px;
       height: 56px;
       border-radius: var(--radius-lg);
-      background: rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
@@ -120,7 +124,7 @@
     }
 
     .subtitle {
-      color: rgba(255,255,255,0.65);
+      color: rgba(255, 255, 255, 0.65);
       font-size: var(--text-base);
       margin: 0;
       line-height: var(--leading-normal);
@@ -128,10 +132,10 @@
   }
 
   .auth-card {
-    background: #ffffff;
+    background: var(--surface-card);
     border-radius: var(--radius-lg);
     padding: var(--space-6) var(--space-5);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow-lg);
     text-align: left;
     margin-bottom: var(--space-5);
 
@@ -149,11 +153,12 @@
 
     .auth-submit-btn {
       --background: var(--surface-gradient-header);
-      --background-hover: #1E3A5F;
+      --background-hover: var(--ion-color-primary-shade);
+      --color: #ffffff;
       height: 48px;
       font-size: var(--text-base);
       --border-radius: var(--radius-lg);
-      --box-shadow: 0 4px 12px rgba(30,58,95,0.25);
+      --box-shadow: var(--shadow-accent);
       margin-top: var(--space-2);
     }
   }
@@ -189,7 +194,7 @@
     align-items: center;
 
     a {
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
       text-decoration: none;
       font-weight: var(--weight-medium);
       font-size: var(--text-sm);

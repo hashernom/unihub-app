@@ -11,7 +11,7 @@
 .empty-state-icon {
   font-size: 3rem;
   margin-bottom: var(--space-4);
-  color: var(--ion-color-step-300, #c0c0c0);
+  color: var(--text-tertiary);
 }
 .empty-state-text {
   font-size: var(--text-lg);
@@ -19,6 +19,6 @@
 }
 .empty-state-subtext {
   font-size: var(--text-sm);
-  color: var(--ion-color-step-500, #888);
+  color: var(--text-secondary);
   margin-bottom: var(--space-4);
 }

@@ -2,10 +2,10 @@
 .results-header { padding: 0 var(--space-1) var(--space-4); }
 .results-header h2 { margin: 0 0 var(--space-1); font-size: var(--text-xl); color: var(--text-primary); }
 .stats-row { display: flex; gap: var(--space-3); margin-top: var(--space-2); flex-wrap: wrap; }
-.stat-card { background: var(--surface-card-warm); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); text-align: center; flex: 1; min-width: 100px; box-shadow: var(--shadow-sm); border: 1px solid rgba(212,168,67,0.1); }
+.stat-card { background: var(--surface-card-warm); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); text-align: center; flex: 1; min-width: 100px; box-shadow: var(--shadow-sm); border: 1px solid rgba(var(--color-gold-rgb), 0.1); }
 .stat-value { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--ion-color-primary); line-height: 1; }
 .stat-label { font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-1); }
-.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid rgba(255,255,255,0.6); }
+.question-card { margin: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--card-shadow); background: var(--surface-gradient-card); border: 1px solid var(--border-subtle); }
 .chart-container { height: 220px; margin: var(--space-2) 0; padding: var(--space-2) 0; }
 .rating-average { font-size: var(--text-lg); font-weight: var(--weight-semibold); color: var(--color-gold); text-align: center; padding: var(--space-2); }
 .empty-state { text-align: center; padding: var(--space-8) var(--space-4); color: var(--text-tertiary); }

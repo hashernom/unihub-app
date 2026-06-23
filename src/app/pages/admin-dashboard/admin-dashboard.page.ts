@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SupabaseService } from '../../core/services/supabase.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { addIcons } from 'ionicons';
 import { megaphone, notifications, checkbox, calendar, helpCircle, people, logOut, personCircle, business, trendingUp } from 'ionicons/icons';
 import {
@@ -26,6 +27,7 @@ interface AdminCard { title: string; icon: string; route: string; color: string;
 export class AdminDashboardPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   userCount = 0;
   surveyCount = 0;
   eventCount = 0;
@@ -52,15 +54,15 @@ export class AdminDashboardPage implements OnInit {
     try {
       const { count: uc } = await this.supabase.client.from("profiles").select("*", { count: "exact", head: true });
       this.userCount = uc ?? 0;
-    } catch { /* metrics not critical */ }
+    } catch (err) { this.errorHandler.handleHttpError(err); }
     try {
       const { count: sc } = await this.supabase.client.from("surveys").select("*", { count: "exact", head: true }).eq("is_active", true);
       this.surveyCount = sc ?? 0;
-    } catch { /* metrics not critical */ }
+    } catch (err) { this.errorHandler.handleHttpError(err); }
     try {
       const { count: ec } = await this.supabase.client.from("events").select("*", { count: "exact", head: true }).gte("start_time", new Date().toISOString());
       this.eventCount = ec ?? 0;
-    } catch { /* metrics not critical */ }
+    } catch (err) { this.errorHandler.handleHttpError(err); }
   }
 }
 

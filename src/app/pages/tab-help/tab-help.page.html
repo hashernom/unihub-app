@@ -1,7 +1,7 @@
 <ion-header class="help-header">
   <ion-toolbar>
     <ion-title>
-      <ion-icon name="chatbubbles" class="header-icon"></ion-icon>
+      <ion-icon name="chatbubbles" class="header-icon" aria-hidden="true"></ion-icon>
       Asistente UniHub
     </ion-title>
   </ion-toolbar>
@@ -9,11 +9,23 @@
 
 <ion-content class="chat-content" #content>
   <div class="chat-container">
+    @if (categoriesLoading) {
+      <app-skeleton-list type="item" [count]="3"></app-skeleton-list>
+    } @else if (categoriesError) {
+      <app-error-state message="No se pudieron cargar las categorías de ayuda." (retry)="loadQuickReplies()"></app-error-state>
+    } @else if (messages.length === 0) {
+      <app-empty-state
+        icon="chatbubbles"
+        title="No hay mensajes"
+        message="Envía tu primera pregunta para comenzar."
+      ></app-empty-state>
+    }
+
     @for (message of messages; track trackMessage($index, message)) {
       <div class="message-wrapper" [class.user]="message.role === 'user'" [class.bot]="message.role === 'bot'">
         @if (message.role === 'bot' && !message.isTyping) {
           <div class="avatar bot-avatar">
-            <ion-icon name="help-circle"></ion-icon>
+            <ion-icon name="help-circle" aria-hidden="true"></ion-icon>
           </div>
         }
 
@@ -79,6 +91,7 @@
         (ionInput)="onInputChange($any($event).target.value)"
         (keydown.enter)="sendMessage()"
         placeholder="Escribe tu pregunta..."
+        aria-label="Escribe tu pregunta"
         [disabled]="loading"
         fill="solid"
         class="message-input"
@@ -88,13 +101,14 @@
       class="send-button"
       fill="solid"
       shape="round"
+      aria-label="Enviar mensaje"
       [disabled]="!inputValue.trim() || loading"
       (click)="sendMessage()"
     >
       @if (loading) {
-        <ion-spinner name="crescent"></ion-spinner>
+        <ion-spinner name="crescent" aria-label="Enviando mensaje"></ion-spinner>
       } @else {
-        <ion-icon name="send" slot="icon-only"></ion-icon>
+        <ion-icon name="send" slot="icon-only" aria-hidden="true"></ion-icon>
       }
     </ion-button>
   </div>
