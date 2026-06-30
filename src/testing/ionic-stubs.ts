@@ -4,11 +4,15 @@ import {
   Input,
   Output,
   EventEmitter,
+  forwardRef,
   type TemplateRef,
 } from '@angular/core';
+import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Any = any;
+
+const noop = () => undefined;
 
 @Component({
   selector: 'ion-header',
@@ -146,8 +150,15 @@ export class IonCardContentStub {}
   selector: 'ion-input',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonInputStub),
+      multi: true,
+    },
+  ],
 })
-export class IonInputStub {
+export class IonInputStub implements ControlValueAccessor {
   @Input() value: string | number | null = '';
   @Input() type = 'text';
   @Input() label?: string;
@@ -167,6 +178,25 @@ export class IonInputStub {
   @Output() ionChange = new EventEmitter<Any>();
   @Output() ionBlur = new EventEmitter<Any>();
   @Output() ionFocus = new EventEmitter<Any>();
+
+  private onChange: (value: string | number | null) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string | number | null): void {
+    this.value = value ?? '';
+  }
+
+  registerOnChange(fn: (value: string | number | null) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
