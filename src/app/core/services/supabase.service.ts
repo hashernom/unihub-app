@@ -65,6 +65,11 @@ export class SupabaseService {
     await this._client.from("profiles").upsert(profile as Record<string, unknown>, { onConflict: 'id' });
   }
 
+  async promoteToAdmin(userId: string): Promise<void> {
+    const { error } = await this._client.rpc('promote_to_admin', { target_user_id: userId });
+    if (error) throw error;
+  }
+
   async uploadAvatar(userId: string, base64: string): Promise<string | null> {
     const blob = this.base64ToBlob(base64);
     if (blob.size > 5242880) throw new Error("FILE_TOO_LARGE");

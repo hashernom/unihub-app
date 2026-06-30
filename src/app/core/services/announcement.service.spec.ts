@@ -6,20 +6,24 @@ import { OfflineManagerService } from './offline-manager.service';
 import { DatabaseService } from '../storage/database.service';
 import { StorageService } from '../storage/storage.service';
 
+// Relative dates so specs never break when "today" crosses a hardcoded boundary.
+const futureDate = (days = 7) => new Date(Date.now() + days * 86400_000).toISOString();
+const pastDate = (days = 7) => new Date(Date.now() - days * 86400_000).toISOString();
+
 const mockAnnouncements: Announcement[] = [
   {
     id: '1', title: 'Urgente: Suspensión de clases',
     body: 'Por motivos de fuerza mayor se suspenden las clases.',
     category: 'urgent', is_pinned: true,
-    created_by: 'admin-1', expires_at: '2026-12-31T00:00:00Z',
-    created_at: '2026-05-10T10:00:00Z', updated_at: '2026-05-10T10:00:00Z',
+    created_by: 'admin-1', expires_at: futureDate(30),
+    created_at: pastDate(5), updated_at: pastDate(5),
   },
   {
     id: '2', title: 'Inscripciones abiertas',
     body: 'Las inscripciones para el próximo semestre están abiertas.',
     category: 'academic', is_pinned: false,
-    created_by: 'admin-1', expires_at: '2026-06-15T00:00:00Z',
-    created_at: '2026-05-08T08:00:00Z', updated_at: '2026-05-08T08:00:00Z',
+    created_by: 'admin-1', expires_at: futureDate(14),
+    created_at: pastDate(10), updated_at: pastDate(10),
   },
 ];
 
@@ -120,8 +124,8 @@ describe('AnnouncementService', () => {
           body: 'Este ya venció.',
           category: 'general', is_pinned: false,
           created_by: 'admin-1',
-          expires_at: '2020-01-01T00:00:00Z',
-          created_at: '2019-12-01T00:00:00Z', updated_at: '2019-12-01T00:00:00Z',
+          expires_at: pastDate(1),
+          created_at: pastDate(30), updated_at: pastDate(30),
         },
       ]);
       const { data } = await service.getAnnouncements();

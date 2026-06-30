@@ -113,7 +113,6 @@ export class TabDashboardPage implements OnInit, OnDestroy {
     ]);
     this.loading = false;
     this.cdr.detectChanges();
-    console.log("[Dashboard] Load complete");
   }
 
   private async withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

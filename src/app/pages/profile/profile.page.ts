@@ -70,8 +70,26 @@ export class ProfilePage implements OnDestroy {
   }
 
   get avatarUrl(): string {
-    return this.user?.profile.avatar_url ??
-      "https://api.dicebear.com/7.x/initials/svg?seed=" + (this.user?.profile.full_name ?? "U");
+    return this.user?.profile.avatar_url ?? this.buildInitialsAvatar(this.user?.profile.full_name ?? "U");
+  }
+
+  private buildInitialsAvatar(fullName: string): string {
+    const initials = fullName
+      .split(/\s+/)
+      .map((w) => w[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'U';
+
+    const svg = [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">',
+      '<rect width="100" height="100" fill="#1E3A5F"/>',
+      `<text x="50" y="55" font-family="Arial,sans-serif" font-size="40" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">${initials}</text>`,
+      '</svg>',
+    ].join('');
+
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
 
   toggleEdit(): void {

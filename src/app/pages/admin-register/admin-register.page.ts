@@ -8,6 +8,7 @@ import {
 } from "@ionic/angular/standalone";
 import { AuthService } from "../../core/services/auth.service";
 import { FormValidationService } from "../../core/services/form-validation.service";
+import { environment } from "../../../environments/environment";
 
 @Component({
   selector: "app-admin-register",
@@ -32,18 +33,50 @@ export class AdminRegisterPage {
   showToast = false;
   toastMessage = "";
 
-  register(): void {
+  async register(): Promise<void> {
     if (!this.email || !this.password || !this.fullName) {
       this.show("Todos los campos son obligatorios"); return;
     }
+    if (this.password.length < 8) {
+      this.show("La contraseña debe tener al menos 8 caracteres"); return;
+    }
+
     this.loading = true;
-    this.auth.signUp(this.email, this.password, this.fullName, '', '', 'admin').subscribe({
-      next: () => { this.loading = false; this.show("Admin registrado exitosamente"); this.router.navigate(["/admin/dashboard"]); },
-      error: (err) => { this.loading = false; this.show(String((err as Record<string,unknown>)['message'] ?? "Error al registrar")); },
-    });
+    try {
+      const token = await this.auth.getAccessToken();
+      if (!token) {
+        this.show("Sesión no válida. Inicia sesión de nuevo.");
+        return;
+      }
+
+      const res = await fetch(`${environment.supabaseUrl}/functions/v1/create-admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: this.email.trim(),
+          password: this.password,
+          full_name: this.fullName.trim(),
+        }),
+      });
+
+      const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+
+      if (!res.ok) {
+        this.show(String(body["error"] ?? "Error al registrar administrador"));
+        return;
+      }
+
+      this.show("Admin registrado exitosamente");
+      this.router.navigate(["/admin/dashboard"]);
+    } catch (err) {
+      this.show(String((err as Record<string, unknown>)["message"] ?? "Error al registrar administrador"));
+    } finally {
+      this.loading = false;
+    }
   }
 
   private show(msg: string): void { this.toastMessage = msg; this.showToast = true; }
 }
-
-

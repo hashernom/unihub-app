@@ -1,4 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Stub Ionic dependency used transitively by toast.service so this spec can
+// load without resolving Ionic's problematic bare ESM directory import.
+vi.mock('@ionic/angular/standalone', () => ({
+  ToastController: class ToastController {},
+}));
+
 import { ErrorHandlerService } from './error-handler.service';
 
 describe('ErrorHandlerService', () => {

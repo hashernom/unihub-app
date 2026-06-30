@@ -6,13 +6,13 @@ on:
     paths:
       - 'supabase/migrations/**'
       - 'supabase/seed.sql'
-      - 'supabase/edge-functions/**'
+      - 'supabase/functions/**'
   push:
     branches: [master]
     paths:
       - 'supabase/migrations/**'
       - 'supabase/seed.sql'
-      - 'supabase/edge-functions/**'
+      - 'supabase/functions/**'
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -42,8 +42,8 @@ jobs:
   edge-functions:
     name: Lint & test Edge Functions
     runs-on: ubuntu-latest
-    # Only run if edge-functions directory has actual files
-    if: hashFiles('supabase/edge-functions/**/*.ts') != ''
+    # Only run if functions directory has actual files
+    if: hashFiles('supabase/functions/**/*.ts') != ''
 
     steps:
       - name: Checkout
@@ -54,8 +54,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Check formatting
+        run: deno fmt --check supabase/functions/
+
       - name: Lint Edge Functions
-        run: deno lint supabase/edge-functions/
+        run: deno lint supabase/functions/
 
       - name: Test Edge Functions
-        run: deno test supabase/edge-functions/
+        run: deno test supabase/functions/

@@ -52,29 +52,24 @@ export class AuthService {
     const { data } = await this.supabase.client.auth.getSession();
     if (data.session?.user) {
       try {
-        console.log("[Auth] Restoring session:", data.session.user.email);
         await this.ensureProfile(data.session.user);
       } catch {
-        console.warn("[Auth] Stale session detected, signing out...");
         await this.supabase.client.auth.signOut();
         this.currentUserSubject.next(null);
       }
     }
   }
 
-  /** Registers a new user. Profile is auto-created by DB trigger. */
-  signUp(email: string, password: string, fullName: string, carrera: string, semestre: string, role: "student" | "admin" = "student"): Observable<AuthUser> {
-    console.log("[Auth] signUp:", email);
+  /** Registers a new user. Profile is auto-created by DB trigger as 'student'. */
+  signUp(email: string, password: string, fullName: string, carrera: string, semestre: string): Observable<AuthUser> {
     const studentCode = email.split("@")[0] ?? "";
     return from(this.supabase.signUp(email, password, {
       student_code: studentCode,
       full_name: fullName,
-      role: role,
       carrera: carrera,
       semestre: semestre,
     })).pipe(
       switchMap((res) => {
-        console.log("[Auth] signUp response:", { error: res.error?.message, hasUser: !!res.data.user });
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
         if (!user) return throwError(() => new Error('Registro exitoso. Revisa tu email para verificar tu cuenta.'));
@@ -85,7 +80,7 @@ export class AuthService {
             id: user.id,
             student_code: studentCode,
             full_name: fullName,
-            role: role,
+            role: 'student',
             avatar_url: null,
             carrera: carrera,
             semestre: semestre,
@@ -98,12 +93,21 @@ export class AuthService {
     );
   }
 
+  /** Promotes a freshly-created user to admin (admin-only RPC). */
+  async promoteToAdmin(userId: string): Promise<void> {
+    await this.supabase.promoteToAdmin(userId);
+  }
+
+  /** Returns the current session access token for Edge Function calls. */
+  async getAccessToken(): Promise<string | null> {
+    const { data } = await this.supabase.client.auth.getSession();
+    return data.session?.access_token ?? null;
+  }
+
   /** Signs in with email + password and loads the profile. */
   signIn(email: string, password: string): Observable<AuthUser> {
-    console.log("[Auth] signIn:", email);
     return from(this.supabase.signIn(email, password)).pipe(
       switchMap((res) => {
-        console.log("[Auth] signIn response:", { error: res.error?.message, hasUser: !!res.data.user });
         if (res.error) return throwError(() => res.error);
         const user = res.data.user;
         if (!user) return throwError(() => new Error('No user returned from signIn'));
@@ -114,37 +118,28 @@ export class AuthService {
 
   /** Ensures a profile exists for the given user. Signs out if profile cannot be created. */
   private async ensureProfile(user: User): Promise<AuthUser> {
-    console.log("[Auth] ensureProfile:", user.id, user.email);
     const existing = await this.supabase.fetchProfile(user.id);
-    console.log("[Auth] fetchProfile result:", existing ? "found" : "not found");
     if (existing) {
       const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile: existing };
       this.currentUserSubject.next(authUser);
       return authUser;
     }
     const meta = user.user_metadata ?? {};
-    try {
-      await this.supabase.createProfile({
-        id: user.id,
-        student_code: meta['student_code'] ?? '',
-        full_name: meta['full_name'] ?? user.email ?? '',
-        role: meta['role'] ?? 'student',
-        avatar_url: null,
-        carrera: meta['carrera'] ?? '',
-        semestre: meta['semestre'] ?? '',
-      });
-      console.log("[Auth] Profile created via fallback");
-      const profile = await this.supabase.fetchProfile(user.id);
-      if (profile) {
-        const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile };
-        this.currentUserSubject.next(authUser);
-        return authUser;
-      }
-    } catch (e) {
-      console.warn("[Auth] createProfile failed:", e);
-      throw e;
+    await this.supabase.createProfile({
+      id: user.id,
+      student_code: meta['student_code'] ?? '',
+      full_name: meta['full_name'] ?? user.email ?? '',
+      role: 'student',
+      avatar_url: null,
+      carrera: meta['carrera'] ?? '',
+      semestre: meta['semestre'] ?? '',
+    });
+    const profile = await this.supabase.fetchProfile(user.id);
+    if (profile) {
+      const authUser: AuthUser = { id: user.id, email: user.email ?? '', profile };
+      this.currentUserSubject.next(authUser);
+      return authUser;
     }
-    console.warn("[Auth] Could not load or create profile, signing out");
     await this.supabase.client.auth.signOut();
     this.currentUserSubject.next(null);
     throw new Error("Profile could not be created");

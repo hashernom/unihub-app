@@ -212,12 +212,14 @@ Documento `docs/M4-TESTING-GUIDE.md` con 50+ casos de prueba para:
 | `export-survey-results` | v2 | ✅ (JWT decode manual) | ✅ |
 | `deactivate-expired-surveys` | v1 | ❌ (cron) | N/A |
 | `remind-pending-surveys` | v1 | ❌ (cron) | N/A |
+| `create-admin` | v1 | ✅ (service_role + JWT check) | ✅ |
+| `validate-student-code` | v2 | ✅ | ✅ |
 
 **Importante**: Edge Functions con `verify_jwt: true` NO pueden usar `supabase.auth.getUser()` porque el token es consumido por el middleware. Se debe decodificar el JWT manualmente con `atob(token.split(".")[1])`. Esto está implementado en `process-survey-results` v3+ y `export-survey-results` v2+.
 
 ### DB — Migraciones aplicadas
 
-00001 (schema inicial), 00002 (RLS), 00003 (trigger perfil), 00005 (realtime), 00006 (survey_reminders + UNIQUE), 00007 (recurring_exceptions), 00008 (notification_settings)
+00001 (schema inicial), 00002 (RLS), 00003 (trigger perfil), 00005 (realtime), 00006 (survey_reminders + UNIQUE), 00007 (recurring_exceptions), 00008 (notification_settings), 00009 (help_bot_search), 00010 (faq_language), 00011 (fix role + SECURITY DEFINER search_path), 00012 (RLS faltante en recurring_exceptions/survey_reminders), 00013 (admin SELECT policies), 00014 (faq search search_path)
 
 ---
 
@@ -325,6 +327,27 @@ npx cap open android
 
 ---
 
+## Seguridad — Fase 0 completada (audit del 50%)
+
+| Hallazgo | Fix aplicado |
+|---|---|
+| F-01 Escalación de privilegios en registro | Trigger `handle_new_user` fuerza `role='student'` + Edge Function `create-admin` con Admin API + frontend ya no envía role |
+| F-02 `recurring_exceptions` sin RLS | RLS + policies (students SELECT, admins ALL) |
+| F-03 `survey_reminders` sin RLS | RLS + policies (admins SELECT, service_role ALL) |
+| F-04 Admin CRUDs no ven filas inactivas | 6 policies SELECT de admin sobre notices/events/surveys/classrooms/announcements/FAQs |
+| F-06 Tests con fechas hardcoded vencidas | Helpers `futureDate()` / `pastDate()` dinámicos |
+| F-07 Vitest no carga imports de Ionic | `vi.mock('@ionic/angular/standalone')` en specs afectados |
+| F-08 `validate-student-code` no se usa | Regex flexible + invocación desde registro + regex califica `extensions.` |
+| F-09 `supabase-ci.yml` apunta a ruta incorrecta | Corregido a `supabase/functions/**/*.ts` + `deno fmt --check` |
+| F-11 Funciones `SECURITY DEFINER` sin `search_path` | Recreadas con `SET search_path = public` |
+| F-12 `console.log` filtrando PII | Eliminados logs de debug |
+| F-15 `manifest.webmanifest` incompleto | Añadidos theme_color, background_color, display, orientation, categories |
+| F-16 Avatares DiceBear externos | Fallback SVG inline con iniciales |
+
+Documentos: `docs/AUDIT-50-PERCENT.md` y `docs/AUDIT-50-PERCENT-FIXES.md`.
+
+---
+
 ## Próximos milestones
 
 1. **M5 — Help Bot**: chatbot FAQ, búsqueda
@@ -341,17 +364,17 @@ npx cap open android
 
 ### Ionic CI
 - `npm run lint` → All files pass (0 errors)
-- `npm test` → 66 tests, 6 files
-- `npm run build` → Build exitoso (warnings de canvg/jspdf/localforage, no de código propio)
+- `npm test` → 119 tests, 13 files
+- `npm run build` → Build exitoso (warning de bundle budget 1.53 MB / 1.50 MB, pendiente M8)
 
 ### Supabase CI
-- `deno lint supabase/functions/` → .github/workflows/supabase-ci.yml
-- `supabase db lint --file supabase/migrations/*.sql`
+- `deno lint supabase/functions/**/*.ts` → .github/workflows/supabase-ci.yml
+- `supabase db push` → migraciones 00001–00014 aplicadas en remoto
 
 ---
 
 ## Tests
 
-- **66 tests** unitarios (servicios: auth, announcements, notices, events)
+- **119 tests** unitarios (servicios: auth, announcements, notices, events, faq, help-bot, theme, toast, error-handler, storage, database, form-validation)
 - **Lint**: 0 errores
 - **Build**: pasa (development + production)

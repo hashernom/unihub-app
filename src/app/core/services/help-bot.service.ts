@@ -103,7 +103,6 @@ export class HelpBotService {
       }
 
       const data = (await res.json()) as HelpSearchResponse;
-      console.log('[HelpBotService] search response', data);
 
       // Update cache with returned results
       if (data.results.length > 0) {

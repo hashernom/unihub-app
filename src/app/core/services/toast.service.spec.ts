@@ -1,4 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('@ionic/angular/standalone', () => ({
+  ToastController: class ToastController {
+    create = vi.fn().mockResolvedValue({ present: vi.fn() });
+  },
+}));
+
 import { ToastService } from './toast.service';
 
 describe('ToastService', () => {
