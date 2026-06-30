@@ -27,8 +27,13 @@ if (!globalThis.crypto?.randomUUID) {
   } as Crypto;
 }
 
-// Suppress Ionic console.error noise in jsdom
+// Suppress Ionic console.error/warn noise in jsdom
 const originalConsoleError = console.error;
 console.error = (...args: unknown[]) => {
   if (process.env['DEBUG_TESTS'] === 'true') originalConsoleError(...args);
+};
+
+const originalConsoleWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (process.env['DEBUG_TESTS'] === 'true') originalConsoleWarn(...args);
 };

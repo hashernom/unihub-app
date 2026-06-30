@@ -12,8 +12,6 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Any = any;
 
-const noop = () => undefined;
-
 @Component({
   selector: 'ion-header',
   template: '<ng-content></ng-content>',
@@ -203,8 +201,15 @@ export class IonInputStub implements ControlValueAccessor {
   selector: 'ion-textarea',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonTextareaStub),
+      multi: true,
+    },
+  ],
 })
-export class IonTextareaStub {
+export class IonTextareaStub implements ControlValueAccessor {
   @Input() value = '';
   @Input() placeholder?: string;
   @Input() label?: string;
@@ -215,14 +220,40 @@ export class IonTextareaStub {
   @Output() ionInput = new EventEmitter<Any>();
   @Output() ionChange = new EventEmitter<Any>();
   @Output() ionBlur = new EventEmitter<Any>();
+
+  private onChange: (value: string) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string): void {
+    this.value = value ?? '';
+  }
+
+  registerOnChange(fn: (value: string) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
   selector: 'ion-select',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonSelectStub),
+      multi: true,
+    },
+  ],
 })
-export class IonSelectStub {
+export class IonSelectStub implements ControlValueAccessor {
   @Input() value: string | string[] | null = null;
   @Input() label?: string;
   @Input() placeholder?: string;
@@ -230,6 +261,25 @@ export class IonSelectStub {
   @Input() disabled = false;
   @Input() interface?: string;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: string | string[] | null) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string | string[] | null): void {
+    this.value = value;
+  }
+
+  registerOnChange(fn: (value: string | string[] | null) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
@@ -245,22 +295,75 @@ export class IonSelectOptionStub {
   selector: 'ion-checkbox',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonCheckboxStub),
+      multi: true,
+    },
+  ],
 })
-export class IonCheckboxStub {
+export class IonCheckboxStub implements ControlValueAccessor {
   @Input() checked = false;
   @Input() disabled = false;
   @Input() value?: string;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: boolean) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: boolean): void {
+    this.checked = value ?? false;
+  }
+
+  registerOnChange(fn: (value: boolean) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
   selector: 'ion-radio-group',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonRadioGroupStub),
+      multi: true,
+    },
+  ],
 })
-export class IonRadioGroupStub {
+export class IonRadioGroupStub implements ControlValueAccessor {
   @Input() value?: string;
+  @Input() disabled = false;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: string) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string): void {
+    this.value = value;
+  }
+
+  registerOnChange(fn: (value: string) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
@@ -277,12 +380,38 @@ export class IonRadioStub {
   selector: 'ion-toggle',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonToggleStub),
+      multi: true,
+    },
+  ],
 })
-export class IonToggleStub {
+export class IonToggleStub implements ControlValueAccessor {
   @Input() checked = false;
   @Input() disabled = false;
   @Input() label?: string;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: boolean) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: boolean): void {
+    this.checked = value ?? false;
+  }
+
+  registerOnChange(fn: (value: boolean) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
