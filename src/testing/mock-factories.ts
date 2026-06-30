@@ -22,12 +22,34 @@ export interface QueryBuilderMockOptions {
   then?: { data: unknown; error: Error | null };
 }
 
-export function createQueryBuilderMock(
-  overrides: QueryBuilderMockOptions = {},
-): Record<string, ReturnType<typeof vi.fn>> & {
+export interface QueryBuilderMock {
+  select: ReturnType<typeof vi.fn>;
+  eq: ReturnType<typeof vi.fn>;
+  neq: ReturnType<typeof vi.fn>;
+  gt: ReturnType<typeof vi.fn>;
+  gte: ReturnType<typeof vi.fn>;
+  lt: ReturnType<typeof vi.fn>;
+  lte: ReturnType<typeof vi.fn>;
+  like: ReturnType<typeof vi.fn>;
+  ilike: ReturnType<typeof vi.fn>;
+  in: ReturnType<typeof vi.fn>;
+  contains: ReturnType<typeof vi.fn>;
+  order: ReturnType<typeof vi.fn>;
+  range: ReturnType<typeof vi.fn>;
+  limit: ReturnType<typeof vi.fn>;
   single: ReturnType<typeof vi.fn>;
   maybeSingle: ReturnType<typeof vi.fn>;
-} {
+  insert: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+  upsert: ReturnType<typeof vi.fn>;
+  then: ReturnType<typeof vi.fn>;
+  [key: string]: ReturnType<typeof vi.fn>;
+}
+
+export function createQueryBuilderMock(
+  overrides: QueryBuilderMockOptions = {},
+): QueryBuilderMock {
   const self = {
     select: vi.fn(() => self),
     eq: vi.fn(() => self),
@@ -58,10 +80,7 @@ export function createQueryBuilderMock(
         resolve,
       ),
     ),
-  } as unknown as Record<string, ReturnType<typeof vi.fn>> & {
-    single: ReturnType<typeof vi.fn>;
-    maybeSingle: ReturnType<typeof vi.fn>;
-  };
+  } as unknown as QueryBuilderMock;
 
   return self;
 }
