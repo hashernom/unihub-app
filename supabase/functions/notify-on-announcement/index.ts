@@ -22,7 +22,21 @@ const FCM_SERVER_KEY = Deno.env.get("FCM_SERVER_KEY") ?? "";
 
 const FCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
 
-serve(async (req: Request) => {
+export interface SupabaseClientLike {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: unknown) => Promise<{ data: unknown[] | null; error?: Error | null }>;
+    };
+    update: (values: unknown) => {
+      eq: (column: string, value: unknown) => Promise<{ data?: unknown; error?: Error | null }>;
+    };
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike; fetch?: typeof fetch },
+): Promise<Response> {
   try {
     const payload: WebhookPayload = await req.json();
     const { record } = payload;
@@ -31,7 +45,8 @@ serve(async (req: Request) => {
       return new Response("Invalid payload", { status: 400 });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
+    const fetchFn = deps?.fetch ?? fetch;
 
     // Fetch all active notification tokens
     const { data: tokens, error: tokenError } = await supabase
@@ -58,9 +73,9 @@ serve(async (req: Request) => {
     let failed = 0;
 
     // Send to each token individually
-    for (const token of tokens) {
+    for (const token of tokens as { fcm_token: string; user_id: string }[]) {
       try {
-        const fcmResponse = await fetch(FCM_ENDPOINT, {
+        const fcmResponse = await fetchFn(FCM_ENDPOINT, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -112,4 +127,6 @@ serve(async (req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

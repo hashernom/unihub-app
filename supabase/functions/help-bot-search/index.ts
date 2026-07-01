@@ -32,9 +32,9 @@ interface HelpSearchResponse {
 
 const DEFAULT_MAX_RESULTS = 5;
 const RESOLVED_THRESHOLD = 0.3;
-const TRIGRAM_FALLBACK_THRESHOLD = 0.1;
+export const TRIGRAM_FALLBACK_THRESHOLD = 0.1;
 
-const CORS_HEADERS = {
+export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -54,7 +54,7 @@ const SPANISH_STOPWORDS = new Set([
   "mi", "tu", "su", "nuestro", "vuestra",
 ]);
 
-function normalizeQuery(raw: string): string {
+export function normalizeQuery(raw: string): string {
   return raw
     .toLowerCase()
     .replace(/[^a-záéíóúüñ0-9\s]/g, " ")
@@ -62,13 +62,13 @@ function normalizeQuery(raw: string): string {
     .replace(/\s+/g, " ");
 }
 
-function removeAccents(raw: string): string {
+export function removeAccents(raw: string): string {
   return raw
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function detectLanguage(raw: string): string {
+export function detectLanguage(raw: string): string {
   const q = raw.toLowerCase();
   const words = q.split(/\s+/).filter((w) => w.length > 0);
 
@@ -87,14 +87,14 @@ function detectLanguage(raw: string): string {
   return "es";
 }
 
-function tsQueryTerms(query: string): string {
+export function tsQueryTerms(query: string): string {
   const words = query.split(/\s+/).filter((w) => w.length > 0);
   if (words.length === 0) return "";
   return words.map((w) => `${w}:*`).join(" | ");
 }
 
-async function searchFaq(
-  client: ReturnType<typeof createClient>,
+export async function searchFaq(
+  client: SupabaseClientLike,
   queryText: string,
   language: string,
   maxResults: number,
@@ -141,7 +141,7 @@ async function searchFaq(
   return rows;
 }
 
-function mapRows(rows: Record<string, unknown>[]): FaqMatch[] {
+export function mapRows(rows: Record<string, unknown>[]): FaqMatch[] {
   return rows
     .filter((r) => Number(r.relevance_score) >= TRIGRAM_FALLBACK_THRESHOLD)
     .map((r) => ({
@@ -154,7 +154,31 @@ function mapRows(rows: Record<string, unknown>[]): FaqMatch[] {
     }));
 }
 
-serve(async (req: Request) => {
+export interface SupabaseClientLike {
+  auth: {
+    getUser: (token: string) => Promise<{ data: { user: { id: string } } | { user: null }; error?: Error | null }>;
+  };
+  rpc: (name: string, args?: unknown) => Promise<{ data: unknown; error?: Error | null }>;
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: unknown) => {
+        eq: (column: string, value: unknown) => {
+          ilike: (column: string, value: string) => {
+            order: (column: string, opts?: unknown) => {
+              limit: (n: number) => Promise<{ data: unknown[] | null; error?: Error | null }>;
+            };
+          };
+        };
+      };
+    };
+    insert: (values: unknown) => Promise<{ data?: unknown; error?: Error | null }>;
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
@@ -168,7 +192,7 @@ serve(async (req: Request) => {
 
   try {
     const authHeader = req.headers.get("Authorization")?.replace("Bearer ", "") ?? "";
-    const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const anonClient = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) as unknown as SupabaseClientLike;
 
     const { data: { user }, error: authError } = await anonClient.auth.getUser(authHeader);
     if (authError || !user) {
@@ -202,20 +226,20 @@ serve(async (req: Request) => {
     const detectedLanguage = body.language ?? detectLanguage(rawQuery);
     const fallbackLanguage = detectedLanguage === "es" ? "en" : "es";
 
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const serviceClient = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
 
     // 1. Exact category match (e.g. user taps a quick-reply chip like "Cuenta")
     let matches: FaqMatch[] = [];
     let usedLanguage = detectedLanguage;
 
-    const { data: categoryResults, error: categoryError } = await serviceClient
+    const { data: categoryResults, error: categoryError } = await (serviceClient
       .from("faq_entries")
       .select("id, question, answer, category, language")
       .eq("is_active", true)
       .eq("language", detectedLanguage)
       .ilike("category", removeAccents(query))
       .order("sort_order", { ascending: true })
-      .limit(maxResults);
+      .limit(maxResults) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
     if (!categoryError && categoryResults && categoryResults.length > 0) {
       matches = (categoryResults as unknown as Record<string, unknown>[]).map((r) => ({
@@ -291,4 +315,6 @@ serve(async (req: Request) => {
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

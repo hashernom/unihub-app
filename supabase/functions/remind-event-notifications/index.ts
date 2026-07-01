@@ -13,9 +13,30 @@ interface NotificationSetting {
   event_reminder_15m: boolean;
 }
 
-serve(async (_req: Request) => {
+interface QueryBuilderLike {
+  eq: (column: string, value: unknown) => QueryBuilderLike;
+  gte: (column: string, value: string) => QueryBuilderLike;
+  lt: (column: string, value: string) => QueryBuilderLike;
+  in: (column: string, values: unknown[]) => QueryBuilderLike;
+}
+
+export interface SupabaseClientLike {
+  from: (table: string) => {
+    select: (columns: string) => QueryBuilderLike;
+    update: (values: unknown) => {
+      eq: (column: string, value: unknown) => Promise<{ data?: unknown; error?: Error | null }>;
+    };
+  };
+}
+
+export async function handler(
+  _req: Request,
+  deps?: { supabase?: SupabaseClientLike; fetch?: typeof fetch },
+): Promise<Response> {
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
+    const fetchFn = deps?.fetch ?? fetch;
+
     const now = new Date();
 
     const inOneHour = new Date(now.getTime() + 60 * 60 * 1000);
@@ -52,7 +73,7 @@ serve(async (_req: Request) => {
 
     let totalSent = 0;
     for (const n of notifications) {
-      const sent = await sendFCM(supabase, n.userIds, n.title, n.body);
+      const sent = await sendFCM(supabase, n.userIds, n.title, n.body, fetchFn);
       totalSent += sent;
     }
 
@@ -71,14 +92,16 @@ serve(async (_req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-});
+}
 
-async function findEvents(
-  supabase: ReturnType<typeof createClient>,
+serve(handler);
+
+export async function findEvents(
+  supabase: SupabaseClientLike,
   from: Date,
   to: Date,
 ): Promise<{ id: string; title: string; start_time: string; classroom_name: string | null }[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase
     .from("events")
     .select(`
       id, title, start_time,
@@ -86,54 +109,55 @@ async function findEvents(
     `)
     .eq("is_cancelled", false)
     .gte("start_time", from.toISOString())
-    .lt("start_time", to.toISOString());
+    .lt("start_time", to.toISOString()) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
   if (error) {
     console.error("Error fetching events:", error);
     return [];
   }
 
-  return (data ?? []).map((e: Record<string, unknown>) => ({
-    id: e["id"] as string,
-    title: e["title"] as string,
-    start_time: e["start_time"] as string,
-    classroom_name: (e["classrooms"] as Record<string, unknown> | null)?.["name"] as string | null ?? null,
+  return (data ?? []).map((e: unknown) => ({
+    id: (e as Record<string, unknown>)["id"] as string,
+    title: (e as Record<string, unknown>)["title"] as string,
+    start_time: (e as Record<string, unknown>)["start_time"] as string,
+    classroom_name: ((e as Record<string, unknown>)["classrooms"] as Record<string, unknown> | null)?.["name"] as string | null ?? null,
   }));
 }
 
-async function getEnabledUsers(
-  supabase: ReturnType<typeof createClient>,
+export async function getEnabledUsers(
+  supabase: SupabaseClientLike,
   setting: "event_reminder_1h" | "event_reminder_15m",
 ): Promise<string[]> {
-  const { data } = await supabase
+  const { data } = await (supabase
     .from("user_notification_settings")
     .select("user_id")
-    .eq(setting, true);
+    .eq(setting, true) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
-  return (data ?? []).map((r: Record<string, unknown>) => r["user_id"] as string);
+  return (data ?? []).map((r: unknown) => (r as Record<string, unknown>)["user_id"] as string);
 }
 
-function formatTime(iso: string): string {
+export function formatTime(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit", hour12: true });
 }
 
-async function sendFCM(
-  supabase: ReturnType<typeof createClient>,
+export async function sendFCM(
+  supabase: SupabaseClientLike,
   userIds: string[],
   title: string,
   body: string,
+  fetchFn?: typeof fetch,
 ): Promise<number> {
   if (!FCM_SERVER_KEY) {
     console.warn("FCM_SERVER_KEY not configured");
     return 0;
   }
 
-  const { data: tokens } = await supabase
+  const { data: tokens } = await (supabase
     .from("notification_tokens")
     .select("fcm_token, user_id")
     .eq("is_active", true)
-    .in("user_id", userIds);
+    .in("user_id", userIds) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
   if (!tokens || tokens.length === 0) return 0;
 
@@ -145,7 +169,7 @@ async function sendFCM(
     seen.add(t.fcm_token);
 
     try {
-      const fcmRes = await fetch(FCM_ENDPOINT, {
+      const fcmRes = await (fetchFn ?? fetch)(FCM_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,7 +187,8 @@ async function sendFCM(
       if (fcmRes.ok) {
         sent++;
       } else if (fcmRes.status === 400 || fcmRes.status === 404) {
-        await supabase.from("notification_tokens")
+        await supabase
+          .from("notification_tokens")
           .update({ is_active: false })
           .eq("fcm_token", t.fcm_token);
       }

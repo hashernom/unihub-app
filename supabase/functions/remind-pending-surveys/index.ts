@@ -7,19 +7,41 @@ const FCM_SERVER_KEY = Deno.env.get("FCM_SERVER_KEY") ?? "";
 
 const FCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
 
-serve(async (_req: Request) => {
+interface QueryBuilderLike {
+  eq: (column: string, value: unknown) => QueryBuilderLike;
+  gte: (column: string, value: string) => QueryBuilderLike;
+  lte: (column: string, value: string) => QueryBuilderLike;
+}
+
+export interface SupabaseClientLike {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: unknown) => QueryBuilderLike;
+    };
+    update: (values: unknown) => {
+      eq: (column: string, value: unknown) => Promise<{ data?: unknown; error?: Error | null }>;
+    };
+    insert: (values: unknown) => Promise<{ data?: unknown; error?: Error | null }>;
+  };
+}
+
+export async function handler(
+  _req: Request,
+  deps?: { supabase?: SupabaseClientLike; fetch?: typeof fetch },
+): Promise<Response> {
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
+    const fetchFn = deps?.fetch ?? fetch;
 
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    const { data: surveys } = await supabase
+    const { data: surveys } = await (supabase
       .from("surveys")
       .select("id, title")
       .eq("is_active", true)
       .gte("end_date", now.toISOString())
-      .lte("end_date", in24h.toISOString());
+      .lte("end_date", in24h.toISOString()) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
     if (!surveys || surveys.length === 0) {
       return new Response(JSON.stringify({ sent: 0, surveys: 0 }), {
@@ -27,10 +49,10 @@ serve(async (_req: Request) => {
       });
     }
 
-    const { data: allTokens } = await supabase
+    const { data: allTokens } = await (supabase
       .from("notification_tokens")
       .select("user_id, fcm_token")
-      .eq("is_active", true);
+      .eq("is_active", true) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
     if (!allTokens || allTokens.length === 0) {
       return new Response(JSON.stringify({ sent: 0, surveys: surveys.length, skipped: true }), {
@@ -40,22 +62,22 @@ serve(async (_req: Request) => {
 
     let totalSent = 0;
 
-    for (const survey of surveys) {
-      const { data: responded } = await supabase
+    for (const survey of surveys as { id: string; title: string }[]) {
+      const { data: responded } = await (supabase
         .from("survey_responses")
         .select("user_id")
-        .eq("survey_id", survey.id);
+        .eq("survey_id", survey.id) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
-      const respondedIds = new Set(responded?.map(r => r.user_id) ?? []);
+      const respondedIds = new Set((responded ?? []).map(r => (r as { user_id: string }).user_id));
 
-      const { data: reminded } = await supabase
+      const { data: reminded } = await (supabase
         .from("survey_reminders")
         .select("user_id")
-        .eq("survey_id", survey.id);
+        .eq("survey_id", survey.id) as unknown as Promise<{ data: unknown[] | null; error?: Error | null }>);
 
-      const remindedIds = new Set(reminded?.map(r => r.user_id) ?? []);
+      const remindedIds = new Set((reminded ?? []).map(r => (r as { user_id: string }).user_id));
 
-      const pending = allTokens.filter(
+      const pending = (allTokens as { user_id: string; fcm_token: string }[]).filter(
         t => !respondedIds.has(t.user_id) && !remindedIds.has(t.user_id),
       );
 
@@ -67,7 +89,7 @@ serve(async (_req: Request) => {
       let sent = 0;
       for (const p of pending) {
         try {
-          const fcmRes = await fetch(FCM_ENDPOINT, {
+          const fcmRes = await fetchFn(FCM_ENDPOINT, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -115,4 +137,6 @@ serve(async (_req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

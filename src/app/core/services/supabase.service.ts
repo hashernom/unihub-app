@@ -1,6 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 import { createClient, SupabaseClient, type AuthResponse, type UserResponse } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
+
+/** Optional injection token for supplying a Supabase client in tests. */
+export const SUPABASE_CLIENT = new InjectionToken<SupabaseClient>('SUPABASE_CLIENT');
 
 export interface Profile {
   id: string;
@@ -19,7 +22,8 @@ export class SupabaseService {
   private readonly _client: SupabaseClient;
 
   constructor() {
-    this._client = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
+    const injectedClient = inject(SUPABASE_CLIENT, { optional: true });
+    this._client = injectedClient ?? createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
     });
   }

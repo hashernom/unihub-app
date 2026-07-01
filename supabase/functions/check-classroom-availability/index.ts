@@ -4,29 +4,55 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-const corsHeaders = {
+export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
+interface QueryResult {
+  data: Record<string, unknown>[] | null;
+  error?: Error | null;
+}
+
+interface QueryBuilderLike {
+  eq: (column: string, value: unknown) => QueryBuilderLike;
+  in: (column: string, values: unknown[]) => QueryBuilderLike;
+  neq: (column: string, value: unknown) => QueryBuilderLike;
+  lt: (column: string, value: string) => QueryBuilderLike;
+  gt: (column: string, value: string) => QueryBuilderLike;
+  contains: (column: string, value: unknown) => QueryBuilderLike;
+}
+
+export interface SupabaseClientLike {
+  auth: {
+    getUser: (token: string) => Promise<{ data: { user: { id: string } } | { user: null }; error?: Error | null }>;
+  };
+  from: (table: string) => {
+    select: (columns: string) => QueryBuilderLike;
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: CORS_HEADERS });
   }
 
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
     const token = authHeader.replace("Bearer ", "");
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       global: { headers: { Authorization: `Bearer ${token}` } },
-    });
+    }) as unknown as SupabaseClientLike;
 
     const { data: { user } } = await supabase.auth.getUser(token);
     if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -40,7 +66,7 @@ serve(async (req: Request) => {
 
     if (!body.start_time || !body.end_time) {
       return new Response(JSON.stringify({ error: "start_time and end_time are required" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -58,7 +84,7 @@ serve(async (req: Request) => {
       classroomQuery = classroomQuery.contains("resources", body.resources);
     }
 
-    const { data: classrooms, error: clsError } = await classroomQuery;
+    const { data: classrooms, error: clsError } = await (classroomQuery as unknown as Promise<QueryResult>);
     if (clsError) throw clsError;
     if (!classrooms || classrooms.length === 0) {
       return new Response(JSON.stringify({
@@ -66,7 +92,7 @@ serve(async (req: Request) => {
         message: body.classroom_id
           ? { available: false, reason: "Aula no encontrada o inactiva" }
           : "No hay aulas disponibles",
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
     }
 
     // Find conflicting events
@@ -84,7 +110,7 @@ serve(async (req: Request) => {
       eventQuery = eventQuery.neq("id", body.exclude_event_id);
     }
 
-    const { data: conflicts, error: evtError } = await eventQuery;
+    const { data: conflicts, error: evtError } = await (eventQuery as unknown as Promise<QueryResult>);
     if (evtError) throw evtError;
 
     const busyClassroomIds = new Set((conflicts ?? []).map((e: Record<string, unknown>) => e["classroom_id"]));
@@ -127,7 +153,7 @@ serve(async (req: Request) => {
         available_classrooms: isAvailable
           ? [{ id: classroom["id"], name: classroom["name"] }]
           : [],
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
     }
 
     // Return all available
@@ -135,11 +161,13 @@ serve(async (req: Request) => {
       available_classrooms: availableClassrooms,
       total: availableClassrooms.length,
       range: { start_time: body.start_time, end_time: body.end_time },
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
   } catch (err) {
     console.error("Error:", err);
     return new Response(JSON.stringify({ error: "Internal error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

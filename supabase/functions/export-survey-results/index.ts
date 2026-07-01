@@ -4,14 +4,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-function escapeCsv(val: string): string {
+export function escapeCsv(val: string): string {
   if (val.includes('"') || val.includes(",") || val.includes("\n")) {
     return `"${val.replace(/"/g, '""')}"`;
   }
   return val;
 }
 
-function answerDisplay(a: {
+export function answerDisplay(a: {
   answer_text: string | null;
   answer_options: string[] | null;
   answer_rating: number | null;
@@ -21,25 +21,42 @@ function answerDisplay(a: {
   return a.answer_text ?? "";
 }
 
-serve(async (req: Request) => {
+export interface SupabaseClientLike {
+  auth: {
+    getUser: (token: string) => Promise<{ data: { user: { id: string } } | { user: null }; error?: Error | null }>;
+  };
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => {
+        order: (column: string, opts?: unknown) => Promise<{ data: unknown[] | null; error?: Error | null }>;
+      };
+    };
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   try {
     if (req.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
 
     const authHeader = req.headers.get("Authorization")?.replace("Bearer ", "") ?? "";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader);
     if (authError || !user) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase
       .from("profiles")
       .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
+      .eq("id", user.id) as unknown as {
+        maybeSingle: () => Promise<{ data: { role: string } | null; error?: Error | null }>;
+      }).maybeSingle();
 
     if (!profile || profile.role !== "admin") {
       return new Response("Forbidden", { status: 403 });
@@ -88,13 +105,14 @@ serve(async (req: Request) => {
       });
     }
 
-    const questionIds = questions.map(q => q.id);
+    const questionIds = (questions as { id: string }[]).map(q => q.id);
 
-    const headerRow = questions.map(q => escapeCsv(q.question_text)).join(",");
-    const dataRows = responses.map(r => {
+    const headerRow = (questions as { question_text: string }[]).map(q => escapeCsv(q.question_text)).join(",");
+    const dataRows = (responses as { survey_answers?: unknown[] }[]).map(r => {
       const answers = r.survey_answers ?? [];
-      const answerMap = new Map<string, typeof answers[0]>();
-      for (const a of answers) {
+      type Answer = { question_id: string; answer_text: string | null; answer_options: string[] | null; answer_rating: number | null };
+      const answerMap = new Map<string, Answer>();
+      for (const a of answers as Answer[]) {
         answerMap.set(a.question_id, a);
       }
       return questionIds.map(qId => escapeCsv(answerDisplay(answerMap.get(qId) ?? { answer_text: null, answer_options: null, answer_rating: null }))).join(",");
@@ -112,4 +130,6 @@ serve(async (req: Request) => {
     console.error("Export error:", err);
     return new Response("Internal error", { status: 500 });
   }
-});
+}
+
+serve(handler);

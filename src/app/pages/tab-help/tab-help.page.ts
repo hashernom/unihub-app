@@ -222,7 +222,7 @@ export class TabHelpPage implements OnInit, OnDestroy {
 
   private scrollToBottom(): void {
     setTimeout(() => {
-      this.content?.scrollToBottom(300);
+      (this.content as { scrollToBottom?: (duration: number) => Promise<void> })?.scrollToBottom?.(300);
     }, 50);
   }
 }

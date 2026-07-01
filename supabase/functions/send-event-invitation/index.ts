@@ -6,24 +6,45 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "noreply@unihub.app";
 
-const corsHeaders = {
+export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
+export interface SupabaseClientLike {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => {
+        single: () => Promise<{ data: unknown | null; error?: Error | null }>;
+      };
+      limit: (n: number) => Promise<{ data: unknown[] | null; error?: Error | null }>;
+    };
+  };
+  auth: {
+    admin: {
+      listUsers: () => Promise<{ data?: { users: { id: string; email?: string }[] } | null; error?: Error | null }>;
+      sendRawEmail: (opts: unknown) => Promise<{ error?: Error | null }>;
+    };
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike; fetch?: typeof fetch },
+): Promise<Response> {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: CORS_HEADERS });
   }
 
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
+    const fetchFn = deps?.fetch ?? fetch;
 
     const body: { event_id: string; recipient_emails?: string[] } = await req.json();
     if (!body.event_id) {
       return new Response(JSON.stringify({ error: "event_id is required" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -40,7 +61,7 @@ serve(async (req: Request) => {
 
     if (evtError || !event) {
       return new Response(JSON.stringify({ error: "Event not found" }), {
-        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 404, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -58,11 +79,11 @@ serve(async (req: Request) => {
 
       if (!profiles || profiles.length === 0) {
         return new Response(JSON.stringify({ sent: 0, message: "No recipients" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
         });
       }
 
-      const userIds = profiles.map((p: Record<string, unknown>) => p["id"]);
+      const userIds = profiles.map((p: unknown) => (p as Record<string, unknown>)["id"]);
       const { data: users } = await supabase.auth.admin.listUsers();
 
       recipients = users?.users
@@ -73,7 +94,7 @@ serve(async (req: Request) => {
 
     if (!recipients || recipients.length === 0) {
       return new Response(JSON.stringify({ sent: 0, message: "No valid recipients" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -129,7 +150,7 @@ serve(async (req: Request) => {
     if (RESEND_API_KEY) {
       for (const email of recipients) {
         try {
-          const res = await fetch("https://api.resend.com/emails", {
+          const res = await fetchFn("https://api.resend.com/emails", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${RESEND_API_KEY}`,
@@ -176,16 +197,18 @@ serve(async (req: Request) => {
       sent,
       total: recipients.length,
       event_id: body.event_id,
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
   } catch (err) {
     console.error("Error:", err);
     return new Response(JSON.stringify({ error: "Internal error", sent: 0 }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
   }
-});
+}
 
-function generateICS(params: {
+serve(handler);
+
+export function generateICS(params: {
   uid: string;
   title: string;
   description: string;
@@ -222,7 +245,7 @@ function generateICS(params: {
   return lines.join("\r\n");
 }
 
-function getTypeLabel(type: string): string {
+export function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
     class: "Clase", exam: "Examen", meeting: "Reunión",
     workshop: "Taller", other: "Otro",

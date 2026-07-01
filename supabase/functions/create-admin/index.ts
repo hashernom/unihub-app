@@ -11,13 +11,35 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-const CORS_HEADERS = {
+export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
+export interface SupabaseClientLike {
+  auth: {
+    getUser: (token: string) => Promise<{ data: { user: { id: string } } | { user: null }; error?: Error | null }>;
+    admin: {
+      createUser: (opts: unknown) => Promise<{ data: { user: { id: string } | null }; error?: Error | null }>;
+    };
+  };
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => {
+        single: () => Promise<{ data: { role: string } | null; error?: Error | null }>;
+      };
+    };
+    update: (values: unknown) => {
+      eq: (column: string, value: string) => Promise<{ data?: unknown; error?: Error | null }>;
+    };
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
@@ -38,7 +60,8 @@ serve(async (req: Request) => {
       });
     }
 
-    const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const injectedClient = deps?.supabase;
+    const anonClient = injectedClient ?? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) as unknown as SupabaseClientLike;
     const { data: { user }, error: authError } = await anonClient.auth.getUser(authHeader);
 
     if (authError || !user) {
@@ -48,7 +71,7 @@ serve(async (req: Request) => {
       });
     }
 
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const serviceClient = injectedClient ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
 
     // Only existing admins can create new admins
     const { data: callerProfile, error: callerError } = await serviceClient
@@ -125,4 +148,6 @@ serve(async (req: Request) => {
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

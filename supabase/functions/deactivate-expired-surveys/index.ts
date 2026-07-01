@@ -4,16 +4,33 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-serve(async (_req: Request) => {
+export interface SupabaseClientLike {
+  from: (table: string) => {
+    update: (values: unknown) => {
+      is: (column: string, value: unknown, negation?: unknown) => {
+        lt: (column: string, value: string) => {
+          eq: (column: string, value: unknown) => {
+            select: (columns: string) => Promise<{ data: unknown[] | null; error?: Error | null }>;
+          };
+        };
+      };
+    };
+  };
+}
+
+export async function handler(
+  _req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) as unknown as SupabaseClientLike;
 
     const { data, error } = await supabase
       .from("surveys")
       .update({ is_active: false })
-      .is("end_date", "not", null)        // only surveys with an end_date
-      .lt("end_date", new Date().toISOString())  // that has passed
-      .eq("is_active", true)               // and are currently active
+      .is("end_date", "not", null) // only surveys with an end_date
+      .lt("end_date", new Date().toISOString()) // that has passed
+      .eq("is_active", true) // and are currently active
       .select("id, title");
 
     if (error) {
@@ -36,4 +53,6 @@ serve(async (_req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-});
+}
+
+serve(handler);

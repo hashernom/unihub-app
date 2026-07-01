@@ -8,6 +8,7 @@ import {
   type TemplateRef,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
+import { vi } from 'vitest';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Any = any;
@@ -77,6 +78,13 @@ export class IonColStub {
 export class IonListStub {
   @Input() lines?: string;
 }
+
+@Component({
+  selector: 'ion-list-header',
+  template: '<ng-content></ng-content>',
+  standalone: true,
+})
+export class IonListHeaderStub {}
 
 @Component({
   selector: 'ion-item',
@@ -726,6 +734,72 @@ export class IonPopoverStub {
 })
 export class IonRouterOutletStub {}
 
+@Component({
+  selector: 'app-skeleton-list',
+  template: '',
+  standalone: true,
+})
+export class AppSkeletonListStub {
+  @Input() type = 'list';
+  @Input() count = 3;
+}
+
+@Component({
+  selector: 'app-error-state',
+  template: '',
+  standalone: true,
+})
+export class AppErrorStateStub {
+  @Input() message?: string;
+  @Output() retry = new EventEmitter<Any>();
+}
+
+@Component({
+  selector: 'app-empty-state',
+  template: '',
+  standalone: true,
+})
+export class AppEmptyStateStub {
+  @Input() icon?: string;
+  @Input() title?: string;
+  @Input() message?: string;
+}
+
+@Component({
+  selector: 'app-announcement-card',
+  template: '',
+  standalone: true,
+})
+export class AppAnnouncementCardStub {
+  @Input() announcement?: unknown;
+}
+
+@Component({
+  selector: 'app-notice-card',
+  template: '',
+  standalone: true,
+})
+export class AppNoticeCardStub {
+  @Input() notice?: unknown;
+}
+
+@Component({
+  selector: 'full-calendar',
+  template: '',
+  standalone: true,
+})
+export class FullCalendarStub {
+  @Input() options?: Any;
+  getApi() {
+    return {
+      changeView: vi.fn(),
+      today: vi.fn(),
+      prev: vi.fn(),
+      next: vi.fn(),
+    };
+  }
+}
+
 /** Aggregate array of all Ionic stub components. */
 export const IONIC_STUBS = [
   IonHeaderStub,
@@ -736,6 +810,7 @@ export const IONIC_STUBS = [
   IonRowStub,
   IonColStub,
   IonListStub,
+  IonListHeaderStub,
   IonItemStub,
   IonLabelStub,
   IonNoteStub,
@@ -784,6 +859,12 @@ export const IONIC_STUBS = [
   IonAccordionGroupStub,
   IonPopoverStub,
   IonRouterOutletStub,
+  AppSkeletonListStub,
+  AppErrorStateStub,
+  AppEmptyStateStub,
+  AppAnnouncementCardStub,
+  AppNoticeCardStub,
+  FullCalendarStub,
 ];
 
 /** Helper to declare an ion-backdrop or ion-router-link if needed. */

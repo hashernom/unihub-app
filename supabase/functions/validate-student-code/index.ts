@@ -8,23 +8,36 @@ interface ValidationRequest {
   student_code: string;
 }
 
-interface ValidationResponse {
+export interface ValidationResponse {
   valid: boolean;
-  error?: "INVALID_FORMAT" | "ALREADY_EXISTS" | "BLACKLISTED";
+  error?: "INVALID_FORMAT" | "ALREADY_EXISTS" | "BLACKLISTED" | "INTERNAL_ERROR";
   message?: string;
 }
 
 // Supports both the documented U######## format and the 11-digit numeric
 // prefix used by the institutional email (e.g. 01240371032).
-const CODE_REGEX = /^[Uu]?\d{8,11}$/;
+export const CODE_REGEX = /^[Uu]?\d{8,11}$/;
 
-const CORS_HEADERS = {
+export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
+interface SupabaseClientLike {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => {
+        maybeSingle: () => Promise<{ data: { id: string } | null }>;
+      };
+    };
+  };
+}
+
+export async function handler(
+  req: Request,
+  deps?: { supabase?: SupabaseClientLike },
+): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
@@ -45,7 +58,7 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify(res), { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = deps?.supabase ?? createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // AC4: Check blacklist
     const { data: blacklisted } = await supabase
@@ -80,5 +93,6 @@ serve(async (req: Request) => {
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
   }
-});
+}
 
+serve(handler);

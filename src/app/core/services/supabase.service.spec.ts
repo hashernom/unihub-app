@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { SupabaseService, type Profile } from './supabase.service';
+import { SupabaseService, SUPABASE_CLIENT, type Profile } from './supabase.service';
 
 const mockProfile: Profile = {
   id: 'user-1',
@@ -39,21 +39,18 @@ const createMockClient = () => ({
   rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
 });
 
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => createMockClient()),
-}));
-
 describe('SupabaseService', () => {
   let service: SupabaseService;
   let mockClient: ReturnType<typeof createMockClient>;
 
   beforeEach(async () => {
     mockClient = createMockClient();
-    const { createClient } = vi.mocked(await import('@supabase/supabase-js'));
-    createClient.mockReturnValue(mockClient as never);
 
     TestBed.configureTestingModule({
-      providers: [SupabaseService],
+      providers: [
+        SupabaseService,
+        { provide: SUPABASE_CLIENT, useValue: mockClient },
+      ],
     });
     service = TestBed.inject(SupabaseService);
   });
