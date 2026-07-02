@@ -94,8 +94,9 @@ export class NotificationSettingsPage implements OnInit {
     } catch (err) {
       this.error = true;
       this.errorHandler.handleHttpError(err, () => this.loadSettings());
+    } finally {
+      this.loading = false;
     }
-    this.loading = false;
   }
 
   async onToggleChange(key: keyof NotificationSettings): Promise<void> {

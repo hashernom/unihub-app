@@ -25,7 +25,7 @@
     <div class="profile-header">
       <ion-avatar class="profile-avatar">
         <img [src]="avatarUrl" alt="Avatar" />
-        <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onAvatarSelected($event)" class="avatar-input" />
+        <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onAvatarSelected($event)" class="avatar-input" aria-label="Cambiar foto de perfil" />
       </ion-avatar>
       <ion-badge [color]="user.profile.role === 'admin' ? 'danger' : 'primary'">
         {{ user.profile.role === "admin" ? "Administrador" : "Estudiante" }}
@@ -54,23 +54,23 @@
           <p>Elige el tema de la aplicación</p>
         </ion-label>
       </ion-item>
-      <div class="theme-segment-wrapper">
-        <ion-segment [value]="themeMode" (ionChange)="onThemeChange($any($event).detail.value)">
-          <ion-segment-button value="light">
-            <ion-icon name="sunny" aria-hidden="true"></ion-icon>
-            <ion-label>Claro</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="system">
-            <ion-icon name="desktop" aria-hidden="true"></ion-icon>
-            <ion-label>Sistema</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="dark">
-            <ion-icon name="moon" aria-hidden="true"></ion-icon>
-            <ion-label>Oscuro</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
     </ion-list>
+    <div class="theme-segment-wrapper">
+      <ion-segment [value]="themeMode" (ionChange)="onThemeChange($any($event).detail.value)">
+        <ion-segment-button value="light">
+          <ion-icon name="sunny" aria-hidden="true"></ion-icon>
+          <ion-label>Claro</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="system">
+          <ion-icon name="desktop" aria-hidden="true"></ion-icon>
+          <ion-label>Sistema</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="dark">
+          <ion-icon name="moon" aria-hidden="true"></ion-icon>
+          <ion-label>Oscuro</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
 
     <div class="profile-actions">
       @if (editing) {

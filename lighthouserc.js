@@ -12,13 +12,11 @@ module.exports = {
     assert: {
       preset: 'lighthouse:recommended',
       assertions: {
-        'categories:performance': ['warn', { minScore: 0.5 }],
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['warn', { minScore: 0.8 }],
-        'categories:seo': ['warn', { minScore: 0.8 }],
-        'categories:pwa': 'off',
-        'uses-responsive-images': 'off',
-        'unused-javascript': 'off',
+        'categories:performance': ['error', { minScore: 0.9 }],
+        'categories:accessibility': ['error', { minScore: 0.95 }],
+        'categories:best-practices': ['error', { minScore: 0.9 }],
+        'categories:seo': ['error', { minScore: 0.9 }],
+        'categories:pwa': ['error', { minScore: 0.8 }],
       },
     },
     upload: {

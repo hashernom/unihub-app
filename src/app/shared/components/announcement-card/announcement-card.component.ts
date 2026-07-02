@@ -17,27 +17,7 @@ import type { Announcement } from '../../../core/services/announcement.service';
     IonBadge, IonIcon,
   ],
   styleUrl: './announcement-card.component.scss',
-  template: `
-    <ion-card class="announcement-card">
-      <ion-card-header>
-        <ion-card-title>
-          @if (announcement.is_pinned) {
-            <ion-icon name="pin" class="pinned-icon"></ion-icon>
-          }
-          {{ announcement.title }}
-        </ion-card-title>
-        <div class="card-meta">
-          <ion-badge [color]="badgeColor" class="category-badge">
-            {{ categoryLabel }}
-          </ion-badge>
-          <span class="card-date">{{ announcement.created_at | date:'dd/MM/yyyy' }}</span>
-        </div>
-      </ion-card-header>
-      <ion-card-content>
-        <p class="card-body">{{ announcement.body }}</p>
-      </ion-card-content>
-    </ion-card>
-  `,
+  templateUrl: './announcement-card.component.html',
 })
 export class AnnouncementCardComponent {
   @Input({ required: true }) announcement!: Announcement;

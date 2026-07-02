@@ -12,6 +12,7 @@ import { NoticeService, type Notice } from '../../core/services/notice.service';
 import { RealtimeService } from '../../core/services/realtime.service';
 import { SurveyService } from '../../core/services/survey.service';
 import { IONIC_STUBS } from '../../../testing/ionic-stubs';
+import { createSupabaseServiceMock } from '../../../testing/mock-factories';
 
 const mockUser: AuthUser = {
   id: 'user-1',
@@ -97,6 +98,7 @@ describe('TabDashboardPage', () => {
       currentUser$: currentUserSubject,
       isAdmin$: currentUserSubject.pipe(map((u) => u?.profile.role === 'admin')),
     };
+    supabaseMock = createSupabaseServiceMock();
     const eventsQueryMock = {
       select: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
@@ -104,18 +106,8 @@ describe('TabDashboardPage', () => {
       order: vi.fn().mockReturnThis(),
       limit: vi.fn().mockResolvedValue({ data: mockEvents }),
     };
-    supabaseMock = {
-      client: {
-        from: vi.fn().mockReturnValue(eventsQueryMock),
-        auth: { getSession: vi.fn().mockResolvedValue({ data: { session: null } }) },
-        channel: vi.fn().mockReturnValue({
-          on: vi.fn().mockReturnThis(),
-          subscribe: vi.fn().mockReturnThis(),
-          unsubscribe: vi.fn().mockResolvedValue(undefined),
-        }),
-        removeChannel: vi.fn().mockResolvedValue(undefined),
-      },
-    } as unknown as SupabaseService;
+    supabaseMock.client.from = vi.fn().mockReturnValue(eventsQueryMock);
+
     announcementMock = { getAnnouncements: vi.fn() };
     noticeMock = { getNotices: vi.fn() };
     realtimeMock = {
@@ -149,6 +141,10 @@ describe('TabDashboardPage', () => {
     router = TestBed.inject(Router);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -172,6 +168,45 @@ describe('TabDashboardPage', () => {
     expect(realtimeMock.subscribe).toHaveBeenCalledWith('notices');
     expect(realtimeMock.onChanges).toHaveBeenCalledWith('announcements');
     expect(realtimeMock.onChanges).toHaveBeenCalledWith('notices');
+  });
+
+  it('should not redirect non-admin users on ionViewWillEnter', async () => {
+    currentUserSubject.next(mockUser);
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    await component.ionViewWillEnter();
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('should unsubscribe from realtime on destroy', () => {
+    const unsubscribeSpy = vi.fn();
+    realtimeMock.onChanges.mockReturnValue({ subscribe: () => ({ unsubscribe: unsubscribeSpy }) } as unknown as ReturnType<typeof of>);
+    fixture.detectChanges();
+    component.ngOnDestroy();
+    expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  it('should handle realtime subscription failure gracefully', () => {
+    realtimeMock.subscribe.mockImplementation(() => {
+      throw new Error('realtime fail');
+    });
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should refresh data on doRefresh', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: mockAnnouncements, count: mockAnnouncements.length });
+    noticeMock.getNotices.mockResolvedValue({ data: mockNotices, count: mockNotices.length });
+
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    const refresher = { complete: vi.fn() } as unknown as HTMLIonRefresherElement;
+    await component.doRefresh({ target: refresher } as unknown as CustomEvent);
+
+    expect(announcementMock.getAnnouncements).toHaveBeenCalledTimes(2);
+    expect(noticeMock.getNotices).toHaveBeenCalledTimes(2);
+    expect(refresher.complete).toHaveBeenCalled();
   });
 
   it('should filter announcements by category', async () => {
@@ -201,19 +236,92 @@ describe('TabDashboardPage', () => {
     expect(component.filteredAnnouncements[0].id).toBe('ann-2');
   });
 
-  it('should refresh data on doRefresh', async () => {
+  it('should filter announcements by category and search query together', async () => {
     announcementMock.getAnnouncements.mockResolvedValue({ data: mockAnnouncements, count: mockAnnouncements.length });
     noticeMock.getNotices.mockResolvedValue({ data: mockNotices, count: mockNotices.length });
 
     fixture.detectChanges();
     await vi.waitFor(() => !component.loading);
 
-    const refresher = { complete: vi.fn() } as unknown as HTMLIonRefresherElement;
-    await component.doRefresh({ target: refresher } as unknown as CustomEvent);
+    component.filterByCategory('urgent');
+    component.searchQuery = 'servicio';
 
-    expect(announcementMock.getAnnouncements).toHaveBeenCalledTimes(2);
-    expect(noticeMock.getNotices).toHaveBeenCalledTimes(2);
-    expect(refresher.complete).toHaveBeenCalled();
+    expect(component.filteredAnnouncements).toHaveLength(1);
+    expect(component.filteredAnnouncements[0].id).toBe('ann-2');
+  });
+
+  it('should debounce search input', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: mockAnnouncements, count: mockAnnouncements.length });
+    noticeMock.getNotices.mockResolvedValue({ data: mockNotices, count: mockNotices.length });
+
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const input = document.createElement('ion-searchbar') as unknown as HTMLIonSearchbarElement;
+    input.value = 'mantenimiento';
+    component.onSearchInput({ target: input } as unknown as Event);
+
+    expect(component.searchQuery).toBe('');
+    vi.advanceTimersByTime(400);
+    expect(component.searchQuery).toBe('mantenimiento');
+    expect(component.filteredAnnouncements).toHaveLength(1);
+    expect(component.filteredAnnouncements[0].id).toBe('ann-2');
+    vi.useRealTimers();
+  });
+
+  it('should set survey count to 0 when user is not logged in', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: [], count: 0 });
+    noticeMock.getNotices.mockResolvedValue({ data: [], count: 0 });
+
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    expect(surveyMock.getPendingSurveyCount).not.toHaveBeenCalled();
+    expect(component.surveyCount).toBe(0);
+  });
+
+  it('should handle survey count load error', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: [], count: 0 });
+    noticeMock.getNotices.mockResolvedValue({ data: [], count: 0 });
+    surveyMock.getPendingSurveyCount.mockRejectedValue(new Error('survey error'));
+    currentUserSubject.next(mockUser);
+
+    await component.loadAll();
+
+    expect(component.error).toBe(true);
+    expect(component.surveyCount).toBe(0);
+  });
+
+  it('should set error when notice loading fails', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: mockAnnouncements, count: mockAnnouncements.length });
+    noticeMock.getNotices.mockRejectedValue(new Error('notice error'));
+
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    expect(component.error).toBe(true);
+    expect(errorHandlerMock.handleHttpError).toHaveBeenCalled();
+  });
+
+  it('should set error when events loading fails', async () => {
+    announcementMock.getAnnouncements.mockResolvedValue({ data: [], count: 0 });
+    noticeMock.getNotices.mockResolvedValue({ data: [], count: 0 });
+    const eventsQueryMock = {
+      select: vi.fn().mockReturnThis(),
+      gte: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockRejectedValue(new Error('events error')),
+    };
+    supabaseMock.client.from = vi.fn().mockReturnValue(eventsQueryMock);
+
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    expect(component.error).toBe(true);
+    expect(component.events).toEqual([]);
+    expect(errorHandlerMock.handleHttpError).toHaveBeenCalled();
   });
 
   it('should redirect admin users on ionViewWillEnter', async () => {

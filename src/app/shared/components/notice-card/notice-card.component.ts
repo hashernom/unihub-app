@@ -17,27 +17,7 @@ import type { Notice } from '../../../core/services/notice.service';
     IonBadge, IonIcon,
   ],
   styleUrl: './notice-card.component.scss',
-  template: `
-    <ion-card class="notice-card" [class.notice-high]="notice.priority === 'high'">
-      <ion-card-header>
-        <ion-card-title>
-          @if (notice.priority === 'high') {
-            <ion-icon name="alert-circle" class="alert-icon"></ion-icon>
-          }
-          {{ notice.title }}
-        </ion-card-title>
-        <div class="card-meta">
-          <ion-badge [color]="badgeColor" class="priority-badge">
-            {{ priorityLabel }}
-          </ion-badge>
-          <span class="card-date">{{ notice.created_at | date:'dd/MM/yyyy' }}</span>
-        </div>
-      </ion-card-header>
-      <ion-card-content>
-        <p class="card-content">{{ notice.content }}</p>
-      </ion-card-content>
-    </ion-card>
-  `,
+  templateUrl: './notice-card.component.html',
 })
 export class NoticeCardComponent {
   @Input({ required: true }) notice!: Notice;

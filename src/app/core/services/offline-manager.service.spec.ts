@@ -61,6 +61,12 @@ describe('OfflineManagerService', () => {
     expect(await promise).toBe(false);
   });
 
+  it('isOnline$ should emit true when browser comes online', async () => {
+    const promise = firstValueFrom(service.isOnline$);
+    window.dispatchEvent(new Event('online'));
+    expect(await promise).toBe(true);
+  });
+
   describe('fetchWithCache', () => {
     it('should return network data and cache it when online', async () => {
       const fresh = [{ id: '1', name: 'A' }];

@@ -1,6 +1,7 @@
 /* eslint-disable @angular-eslint/component-selector */
 import {
   Component,
+  Directive,
   Input,
   Output,
   EventEmitter,
@@ -426,10 +427,37 @@ export class IonToggleStub implements ControlValueAccessor {
   selector: 'ion-segment',
   template: '<ng-content></ng-content>',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonSegmentStub),
+      multi: true,
+    },
+  ],
 })
-export class IonSegmentStub {
+export class IonSegmentStub implements ControlValueAccessor {
   @Input() value?: string;
+  @Input() disabled = false;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: string | undefined) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string | undefined): void {
+    this.value = value;
+  }
+
+  registerOnChange(fn: (value: string | undefined) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }
 
 @Component({
@@ -671,11 +699,38 @@ export class IonDatetimeButtonStub {
   selector: 'ion-datetime',
   template: '',
   standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => IonDatetimeStub),
+      multi: true,
+    },
+  ],
 })
-export class IonDatetimeStub {
+export class IonDatetimeStub implements ControlValueAccessor {
   @Input() value?: string;
   @Input() presentation?: string;
   @Output() ionChange = new EventEmitter<Any>();
+
+  private onChange: (value: string | undefined) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+
+  writeValue(value: string | undefined): void {
+    this.value = value;
+  }
+
+  registerOnChange(fn: (value: string | undefined) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setDisabledState(isDisabled: boolean): void {
+    // no-op stub
+  }
 }
 
 @Component({
@@ -684,6 +739,21 @@ export class IonDatetimeStub {
   standalone: true,
 })
 export class IonRippleEffectStub {}
+
+@Component({
+  selector: 'ion-alert',
+  template: '',
+  standalone: true,
+})
+export class IonAlertStub {
+  @Input() isOpen = false;
+  @Input() header?: string;
+  @Input() subHeader?: string;
+  @Input() message?: string;
+  @Input() buttons: unknown[] = [];
+  @Input() inputs: unknown[] = [];
+  @Output() didDismiss = new EventEmitter<Any>();
+}
 
 @Component({
   selector: 'ion-action-sheet',
@@ -774,6 +844,17 @@ export class AppAnnouncementCardStub {
   @Input() announcement?: unknown;
 }
 
+/** Stub for the Angular RouterLink directive to avoid needing ActivatedRoute. */
+/* eslint-disable @angular-eslint/directive-selector */
+@Directive({
+  selector: '[routerLink]',
+  standalone: true,
+})
+export class RouterLinkStub {
+  @Input() routerLink?: string | unknown[];
+}
+/* eslint-enable @angular-eslint/directive-selector */
+
 @Component({
   selector: 'app-notice-card',
   template: '',
@@ -854,6 +935,7 @@ export const IONIC_STUBS = [
   IonDatetimeButtonStub,
   IonDatetimeStub,
   IonRippleEffectStub,
+  IonAlertStub,
   IonActionSheetStub,
   IonAccordionStub,
   IonAccordionGroupStub,
@@ -865,6 +947,7 @@ export const IONIC_STUBS = [
   AppAnnouncementCardStub,
   AppNoticeCardStub,
   FullCalendarStub,
+  RouterLinkStub,
 ];
 
 /** Helper to declare an ion-backdrop or ion-router-link if needed. */

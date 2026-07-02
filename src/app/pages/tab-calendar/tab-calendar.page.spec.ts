@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DatePipe } from '@angular/common';
 import { vi } from 'vitest';
-import type { EventClickArg } from '@fullcalendar/core/index.js';
+import type { EventClickArg, DatesSetArg } from '@fullcalendar/core/index.js';
 import { TabCalendarPage } from './tab-calendar.page';
 import { EventService, type CalendarEvent, type Classroom } from '../../core/services/event.service';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
@@ -55,6 +55,16 @@ const mockExam: CalendarEvent = {
   updated_at: '2026-01-01T00:00:00Z',
 };
 
+const mockRecurring: CalendarEvent = {
+  ...mockEvent,
+  id: 'event-3',
+  title: 'Weekly Meeting',
+  event_type: 'meeting',
+  classroom_id: 'room-1',
+  recurring_rule: 'FREQ=WEEKLY',
+  color: '',
+};
+
 describe('TabCalendarPage', () => {
   let component: TabCalendarPage;
   let fixture: ReturnType<typeof TestBed.createComponent<TabCalendarPage>>;
@@ -92,6 +102,10 @@ describe('TabCalendarPage', () => {
     component = fixture.componentInstance;
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -103,6 +117,25 @@ describe('TabCalendarPage', () => {
     await vi.waitFor(() => !component.loading);
     expect(component.events.length).toBe(2);
     expect(component.allClassrooms.length).toBe(1);
+  });
+
+  it('should handle classroom load error', async () => {
+    eventMock.getClassrooms.mockRejectedValue(new Error('network'));
+    eventMock.getEvents.mockResolvedValue([mockEvent]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+    expect(errorHandlerMock.handleHttpError).toHaveBeenCalled();
+    expect(component.allClassrooms).toEqual([]);
+  });
+
+  it('should handle events load error', async () => {
+    eventMock.getClassrooms.mockResolvedValue([mockClassroom]);
+    eventMock.getEvents.mockRejectedValue(new Error('network'));
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+    expect(component.error).toBe(true);
+    expect(component.events).toEqual([]);
+    expect(errorHandlerMock.handleHttpError).toHaveBeenCalled();
   });
 
   it('should filter events by type', async () => {
@@ -125,6 +158,22 @@ describe('TabCalendarPage', () => {
     expect((component.calendarOptions.events as { id: string }[])[0].id).toBe('event-1');
   });
 
+  it('should apply combined filters and render recurring events with fallback color', async () => {
+    eventMock.getClassrooms.mockResolvedValue([mockClassroom]);
+    eventMock.getEvents.mockResolvedValue([mockEvent, mockExam, mockRecurring]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    component.filterByType('meeting');
+    component.filterByClassroom('room-1');
+
+    const events = component.calendarOptions.events as { id: string; title: string; backgroundColor: string }[];
+    expect(events).toHaveLength(1);
+    expect(events[0].id).toBe('event-3');
+    expect(events[0].title).toContain('⟳');
+    expect(events[0].backgroundColor).toBe('#9CA3AF');
+  });
+
   it('should clear filters', async () => {
     eventMock.getClassrooms.mockResolvedValue([mockClassroom]);
     eventMock.getEvents.mockResolvedValue([mockEvent, mockExam]);
@@ -135,6 +184,15 @@ describe('TabCalendarPage', () => {
     expect(component.activeFilter).toBeNull();
     expect(component.activeClassroomFilter).toBeNull();
     expect(component.calendarOptions.events).toHaveLength(2);
+  });
+
+  it('should report active filters', () => {
+    expect(component.hasActiveFilters()).toBe(false);
+    component.activeFilter = 'exam';
+    expect(component.hasActiveFilters()).toBe(true);
+    component.activeFilter = null;
+    component.activeClassroomFilter = 'room-1';
+    expect(component.hasActiveFilters()).toBe(true);
   });
 
   it('should show empty state when no events', async () => {
@@ -167,12 +225,86 @@ describe('TabCalendarPage', () => {
     expect(component.selectedEventClassroom?.id).toBe('room-1');
   });
 
+  it('should ignore event click when event is not found', async () => {
+    eventMock.getClassrooms.mockResolvedValue([]);
+    eventMock.getEvents.mockResolvedValue([mockEvent]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    const clickArg = {
+      event: { id: 'unknown' },
+      el: document.createElement('div'),
+      jsEvent: new MouseEvent('click'),
+      view: { calendar: {} },
+    } as unknown as EventClickArg;
+    component.onEventClick(clickArg);
+
+    expect(component.selectedEvent).toBeNull();
+    expect(component.showModal).toBe(false);
+  });
+
+  it('should use cached classroom when event classroom is already loaded', async () => {
+    eventMock.getClassrooms.mockResolvedValue([mockClassroom]);
+    eventMock.getEvents.mockResolvedValue([mockEvent]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    const clickArg = {
+      event: { id: 'event-1' },
+      el: document.createElement('div'),
+      jsEvent: new MouseEvent('click'),
+      view: { calendar: {} },
+    } as unknown as EventClickArg;
+    component.onEventClick(clickArg);
+
+    expect(component.selectedEventClassroom?.id).toBe('room-1');
+    expect(eventMock.getClassrooms).toHaveBeenCalledTimes(1);
+  });
+
+  it('should clear classroom when event has no classroom', async () => {
+    eventMock.getClassrooms.mockResolvedValue([]);
+    eventMock.getEvents.mockResolvedValue([mockExam]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+
+    const clickArg = {
+      event: { id: 'event-2' },
+      el: document.createElement('div'),
+      jsEvent: new MouseEvent('click'),
+      view: { calendar: {} },
+    } as unknown as EventClickArg;
+    component.onEventClick(clickArg);
+
+    expect(component.selectedEventClassroom).toBeNull();
+  });
+
+  it('should handle classroom lookup error gracefully', async () => {
+    eventMock.getClassrooms.mockResolvedValue([]);
+    eventMock.getEvents.mockResolvedValue([mockEvent]);
+    fixture.detectChanges();
+    await vi.waitFor(() => !component.loading);
+    eventMock.getClassrooms.mockRejectedValue(new Error('network'));
+
+    const clickArg = {
+      event: { id: 'event-1' },
+      el: document.createElement('div'),
+      jsEvent: new MouseEvent('click'),
+      view: { calendar: {} },
+    } as unknown as EventClickArg;
+    component.onEventClick(clickArg);
+    await vi.waitFor(() => component.selectedEvent !== null);
+
+    expect(component.selectedEventClassroom).toBeNull();
+  });
+
   it('should dismiss modal', async () => {
     component.selectedEvent = mockEvent;
     component.showModal = true;
+    component.selectedEventClassroom = mockClassroom;
     component.dismissModal();
     expect(component.showModal).toBe(false);
     expect(component.selectedEvent).toBeNull();
+    expect(component.selectedEventClassroom).toBeNull();
   });
 
   it('should refresh events', async () => {
@@ -186,10 +318,63 @@ describe('TabCalendarPage', () => {
     expect(refresher.complete).toHaveBeenCalled();
   });
 
+  it('should change calendar view', () => {
+    const changeViewSpy = vi.fn();
+    component.calendarComponent = {
+      getApi: () => ({ changeView: changeViewSpy, today: vi.fn(), prev: vi.fn(), next: vi.fn() }),
+    } as unknown as NonNullable<typeof component.calendarComponent>;
+
+    component.onCalendarViewChange(undefined);
+    component.onCalendarViewChange('timeGridWeek');
+    expect(component.currentView).toBe('timeGridWeek');
+    expect(changeViewSpy).toHaveBeenCalledWith('timeGridWeek');
+  });
+
+  it('should navigate calendar dates', () => {
+    const todaySpy = vi.fn();
+    const prevSpy = vi.fn();
+    const nextSpy = vi.fn();
+    component.calendarComponent = {
+      getApi: () => ({ changeView: vi.fn(), today: todaySpy, prev: prevSpy, next: nextSpy }),
+    } as unknown as NonNullable<typeof component.calendarComponent>;
+
+    component.goToToday();
+    expect(todaySpy).toHaveBeenCalled();
+
+    component.navigateDate(-1);
+    expect(prevSpy).toHaveBeenCalled();
+
+    component.navigateDate(1);
+    expect(nextSpy).toHaveBeenCalled();
+
+    component.calendarComponent = undefined;
+    component.navigateDate(-1);
+    component.goToToday();
+  });
+
+  it('should update month label on dates set', () => {
+    const arg = { view: { title: 'Julio 2026' } } as unknown as DatesSetArg;
+    (component as unknown as { onDatesSet: (arg: DatesSetArg) => void }).onDatesSet(arg);
+    expect(component.currentMonthLabel).toBe('Julio 2026');
+  });
+
+  it('should highlight clicked day', () => {
+    const dayEl = document.createElement('div');
+    dayEl.classList.add('fc-daygrid-day');
+    document.body.appendChild(dayEl);
+
+    (component as unknown as { onDateClick: (dateStr: string, dayEl: HTMLElement) => void }).onDateClick('2026-07-01', dayEl);
+    expect(dayEl.classList.contains('fc-day-selected')).toBe(true);
+
+    document.body.removeChild(dayEl);
+  });
+
   it('should count events by type and classroom', () => {
     component.events = [mockEvent, mockExam];
     expect(component.getEventCountByType('class')).toBe(1);
     expect(component.getEventCountByType('exam')).toBe(1);
+    expect(component.getEventCountByType('workshop')).toBe(0);
     expect(component.getEventCountByClassroom('room-1')).toBe(1);
+    expect(component.getEventCountByClassroom('room-2')).toBe(0);
   });
 });

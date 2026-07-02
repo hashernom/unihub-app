@@ -77,7 +77,27 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true,
+            "coverageInclude": ["src/app/**/*.ts"],
+            "coverageExclude": [
+              "src/app/**/*.spec.ts",
+              "src/app/**/*.routes.ts",
+              "src/app/**/environment*.ts",
+              "src/app/app.config.ts",
+              "src/app/app.ts",
+              "src/app/core/interfaces/cache-entity.ts",
+              "src/app/main.ts",
+              "src/testing/**/*"
+            ],
+            "coverageThresholds": {
+              "statements": 80,
+              "branches": 70,
+              "functions": 80,
+              "lines": 80
+            }
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

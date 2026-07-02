@@ -4,7 +4,7 @@ import { type DatabaseService } from '../app/core/storage/database.service';
 import { type StorageService } from '../app/core/storage/storage.service';
 import { type SupabaseService } from '../app/core/services/supabase.service';
 import { type ToastService } from '../app/core/services/toast.service';
-import { type Router } from '@angular/router';
+import { type Router, type ActivatedRoute, type ParamMap } from '@angular/router';
 
 /**
  * Creates a chainable Supabase query-builder mock.
@@ -19,7 +19,7 @@ import { type Router } from '@angular/router';
 export interface QueryBuilderMockOptions {
   single?: { data: unknown; error: Error | null };
   maybeSingle?: { data: unknown; error: Error | null };
-  then?: { data: unknown; error: Error | null };
+  then?: { data?: unknown; count?: number; error: Error | null };
 }
 
 export interface QueryBuilderMock {
@@ -217,6 +217,38 @@ export function createRouterMock(): Router {
     navigateByUrl: vi.fn().mockResolvedValue(true),
     parseUrl: vi.fn().mockReturnValue({} as ReturnType<Router['parseUrl']>),
     url: '/',
-    events: {} as Router['events'],
+    events: {
+      subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
+    } as unknown as Router['events'],
   } as unknown as Router;
+}
+
+/**
+ * Creates a mock of Angular `ActivatedRoute`.
+ */
+export function createActivatedRouteMock(params: Record<string, string> = {}): ActivatedRoute {
+  const paramMap = {
+    has: (key: string) => key in params,
+    get: (key: string) => params[key] ?? null,
+    getAll: (key: string) => (params[key] ? [params[key]] : []),
+    keys: Object.keys(params),
+  } as ParamMap;
+
+  return {
+    snapshot: { paramMap, params },
+    paramMap: {
+      subscribe: vi.fn((cb: (value: ParamMap) => void) => {
+        cb(paramMap);
+        return { unsubscribe: vi.fn() };
+      }),
+    },
+    params: {
+      subscribe: vi.fn((cb: (value: Record<string, string>) => void) => {
+        cb(params);
+        return { unsubscribe: vi.fn() };
+      }),
+    },
+    queryParams: { subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })) },
+    queryParamMap: { subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })) },
+  } as unknown as ActivatedRoute;
 }

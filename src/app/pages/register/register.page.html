@@ -36,7 +36,7 @@
       </ion-item>
       <ion-item class="auth-item">
         <ion-label position="stacked">Carrera</ion-label>
-        <ion-select [(ngModel)]="carrera" name="carrera" required interface="popover" placeholder="Selecciona tu carrera">
+        <ion-select [(ngModel)]="carrera" name="carrera" interface="popover" placeholder="Selecciona tu carrera">
           @for (c of carreras; track c) {
             <ion-select-option [value]="c">{{ c }}</ion-select-option>
           }
@@ -44,7 +44,7 @@
       </ion-item>
       <ion-item class="auth-item">
         <ion-label position="stacked">Semestre</ion-label>
-        <ion-select [(ngModel)]="semestre" name="semestre" required interface="popover" placeholder="Selecciona tu semestre">
+        <ion-select [(ngModel)]="semestre" name="semestre" interface="popover" placeholder="Selecciona tu semestre">
           @for (s of semestres; track s) {
             <ion-select-option [value]="s">{{ s }}</ion-select-option>
           }

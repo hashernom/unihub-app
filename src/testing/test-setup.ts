@@ -1,3 +1,9 @@
+import { addIcons } from 'ionicons';
+import { helpCircle, calendarOutline, warningOutline } from 'ionicons/icons';
+
+// Register common icons used by shared components to avoid Ionic URL warnings in jsdom.
+addIcons({ helpCircle, calendarOutline, warningOutline });
+
 // Polyfill BroadcastChannel for jsdom
 if (typeof BroadcastChannel === 'undefined') {
   class BroadcastChannelMock {
